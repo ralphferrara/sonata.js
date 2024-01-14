@@ -1,0 +1,28 @@
+{
+      "databases" : {
+            "testDB" : {
+                  "host"     : "127.0.0.1",
+                  "port"      : "3306"
+            }
+      },
+      "varTest" : {
+            "a"      : "IS A STRING",
+            "b"      : "6CHARS",
+            "c"      : "THIS IS A MINIMUM OF 20 CHARACTERS", 
+            "d"      : "MAX10CHAR",
+            "e"      : 1234,
+            "f"      : true,
+            "g"      : [1,2,3],
+            "h"      : "testDB"
+      },
+      "fileTest" : {
+            "testPath"     : "/src/",
+            "testFile"     : "src/.tests/assets/check.json"
+      },
+      "validTest" : {
+            "testEmail"    : "test@maestrojs.com",
+            "testPhone"    : "16025551212"
+      },
+      "notRequired" : {
+      }
+}

@@ -1,0 +1,29 @@
+{
+      "databases" : {
+            ":type[mysql]" : {
+                  "host"     : "string",
+                  "port"      : "number"
+            }
+      },
+      "varTest" : {
+            "a"      : "string",
+            "b"      : "string[6]",
+            "c"      : "string[min:20]",
+            "d"      : "string[max:10]",
+            "e"      : "number",
+            "f"      : "boolean",
+            "g"      : "array",
+            "h"      : "database"
+      },
+      "fileTest" : {
+            "testPath"     : "path",
+            "testFile"     : "file"
+      },
+      "validTest" : {
+            "testEmail"    : "email",
+            "testPhone"    : "phone"
+      },
+      "!notRequired" : {
+            "!test"        : "string"
+      }
+}

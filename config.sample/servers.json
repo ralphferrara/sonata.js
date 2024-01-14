@@ -1,0 +1,39 @@
+{
+      "assets" : {
+            "enabled"         : true, 
+            "path"            : "/public",
+            "resize"          : true,
+            "maxSize"         : 1600
+      },       
+      "cors" : {
+            "origins"   : [
+                  "http://localhost", 
+                  "https://localhost"
+            ]
+      },
+      "csrf" : {
+            "required" : false,
+            "ttl"      : 300
+      },
+      "http"       : { 
+            "port"      : 80
+      },
+      "https"       : {
+            "port"      : 443,
+            "key"       : "key.pem",
+            "cert"      : "cert1.pem",
+            "ca"        : "ca.pem"            
+      },
+      "sockets" : {
+            "port"      : 8080,
+            "ssl"       : {
+                  "key"       : "key.pem",
+                  "cert"      : "cert1.pem",
+                  "ca"        : "ca.pem"            
+            }
+      },      
+      "twofactor" : {
+            "attempts"   : 5,
+            "expires"    : 600
+      }
+}

@@ -1,0 +1,13 @@
+{
+      "twilio"   : {
+            "type"      : "sms", 
+            "account"   : "ACCOUNT",
+            "token"     : "TOKEN",
+            "number"    : "16025551212"
+      },
+      "sendgrid"  : {
+            "type"      : "email",
+            "token"     : "TOKEN",
+            "from"      : "noreply@maestrojs.com"
+      }
+}

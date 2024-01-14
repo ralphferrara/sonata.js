@@ -1,0 +1,111 @@
+{
+      "!databases" : {
+            ":type[mysql]" : {
+                  "host"     : "string",
+                  "port"     : "number",
+                  "database" : "string"
+            },
+            ":type[mongo]" : {
+                  "host"     : "string",
+                  "port"     : "number",
+                  "database" : "string"
+            }
+      },
+      "!languages" : {
+            "root" : "string[2]",
+            "available" : "array"
+      },
+      "maestro" :  {
+            "name"    : "string[min:2]",
+            "salt"    : "string[min:32]",
+            "tempDir" : "string[min:32]"
+      },
+      "!queries" : {
+            "path" : "path"
+      },
+      "!senders" : {
+            ":type[email]" : {
+                  "token"    : "string",
+                  "from"     : "email"
+            },
+            ":type[sms]" : {
+                  "number"   : "phone",
+                  "token"   : "string"
+            }
+      },
+      "!servers" : {
+            "!assets" : {
+                  "enabled" : "boolean",
+                  "path"    : "path",
+                  "resize"  : "boolean"
+            },
+            "!cors" : {
+                  "origins" : "array"
+            },
+            "!csrf" : {
+                  "required" : "boolean",
+                  "ttl"      : "number"
+            },
+            "!http"  : {
+                  "port"    : "number",
+                  "host"    : "string"
+            },
+            "!https" : {
+                  "port"    : "number",
+                  "key"     : "file",
+                  "cert"    : "file",
+                  "!ca"     : "file"
+            },
+            "!sockets" : {
+                  "port"    : "number",
+                  "!ssl"    : {
+                        "key"     : "file",
+                        "cert"    : "file",
+                        "!ca"     : "file"
+                  }
+            },
+            "!twofactor" : {
+                  "attempts"  : "number",
+                  "ttl"       : "number"
+            }                  
+      },
+      "!storages" : {
+            ":type[local]" : {
+                  "path" : "path"
+            },
+            ":type[redis]" : {
+                  "host"     : "string",
+                  "port"     : "number",
+                  "!username": "string",
+                  "!password" : "string"
+            },
+            ":type[s3]" : {
+                  "key"     : "string",
+                  "secret"  : "string",
+                  "bucket"  : "string",
+                  "region"  : "string"
+            }
+      },   
+      "!templates" : {    
+            "!base" : {
+                  "js"  : "array",
+                  "css" : "array"
+            },
+            "!components" : {
+                  "path"  : "path",
+                  "cache" : "boolean"
+            },
+            "!templates" : {
+                  "path"  : "path",
+                  "cache" : "boolean"
+            },
+            "!views" : {
+                  "path"  : "path",
+                  "cache" : "boolean"
+            }
+      },
+      "!users" : {
+            "fields"   : "array",
+            "database" : "database"
+      }      
+}

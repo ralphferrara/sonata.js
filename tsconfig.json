@@ -1,0 +1,17 @@
+{
+      "compilerOptions": {
+            "target"                                  : "ES2020",       /* Specify the ECMAScript target version */
+            "module"                                  : "ES2022",
+            "strict"                                  : true,           /* Enable all strict type-checking options */
+            "esModuleInterop"                         : true,           /* Enable the `--esModuleInterop` flag */
+            "moduleResolution"                        : "node",         /* Specify module resolution strategy */
+            "skipLibCheck"                            : true,           /* Skip type checking of declaration files */
+            "forceConsistentCasingInFileNames"        : true,           /* Ensure that casing is consistent in file names */
+            "outDir"                                  : "./dist",       /* Specify an output directory for compiled files */
+            "rootDir"                                 : "./src",        /* Specify the root directory of input files */
+            "declaration"                             : true,           /* Generate corresponding `.d.ts` file */
+            "sourceMap"                               : true            /* Generate source maps */
+      },
+      "include"                                       : [ "src/**/*.ts", "src/sonata/utils/.interfaces.ts"  ],           /* Specify the files to include in compilation */      
+      "exclude"                                       : [ "node_modules" ]           /* Specify the files to exclude from compilation */      
+}

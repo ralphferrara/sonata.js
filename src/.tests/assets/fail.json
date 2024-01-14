@@ -1,0 +1,28 @@
+{
+      "databases" : {
+            "na" : {
+                  "host"     : "127.0.0.1",
+                  "port"      : "3306"
+            }
+      },
+      "varTest" : {
+            "a"      : ["SHOULD","BE","STRING"],
+            "b"      : "SHOULD BE 6 CHAR",
+            "c"      : "MINIMUM OF 20 CHAR",
+            "d"      : "MAXIMUM OF 10 CHARACTERS",
+            "e"      : "SHOULD BE NUMBER",
+            "f"      : "SHOULD BE BOOLEAN",
+            "g"      : "SHOULD BE ARRAY",
+            "h"      : "SHOULD-BE-A-DB-NAME"
+      },
+      "fileTest" : {
+            "testPath"     : "/SHOULD-BE-EXISTING-DIR/",
+            "testFile"     : "/SHOULD-BE-EXISTING-FILE.FAIL"
+      },
+      "validTest" : {
+            "testEmail"    : "SHOULD.BE.EMAIL.ADDRESS.COM",
+            "testPhone"    : "SHOULD-BE-PHONE-NUMBER"
+      },
+      "notRequired" : {
+      }
+}
