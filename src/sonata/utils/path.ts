@@ -127,9 +127,9 @@
             //|| Header for this file, based on extension
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public header(nameOrExt:string) : string { 
-                  let fileExt: string;
-                  fileExt = (nameOrExt.includes('.')) ? path.extname(nameOrExt).slice(1) : fileExt = nameOrExt;
+            public header() : string { 
+                  var relative = this.relative();
+                  var fileExt:string = (relative.includes('.')) ? path.extname(relative).slice(1) : fileExt = relative;
                   const fileTypes: { [key: string]: string } = {
                         txt: 'text/plain',
                         csv: 'text/csv',

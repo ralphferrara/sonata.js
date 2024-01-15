@@ -120,6 +120,20 @@ describe('Path', () => {
             });
       });
 
+      describe('header', () => {
+            it('should return true if the path is "."', () => {
+                  const headPath = new Path('test.txt');
+                  const result = headPath.header();
+                  expect(result).toBe('text/plain');
+            });
+
+            it('should return false if the path is not "."', () => {
+                  const headPath = new Path('test.jpg');
+                  const result = headPath.header();
+                  expect(result).toBe('image/jpeg');
+            });
+      });      
+
       describe('exists', () => {
             it('should return true if the file/directory exists', async () => {
                   const existingPath = new Path('src/.tests/assets/check.txt');

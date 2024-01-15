@@ -79,7 +79,6 @@
             async setupHTTP(): Promise<void> {
                   app.log('Setting up HTTP', 'info');
                   var port = app('config', 'servers').http.port;
-
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Setting up non-https server
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -87,7 +86,7 @@
                         let requestBody = '';
                         request.on('data', (chunk) => { requestBody += chunk; });                      
                         request.on('end', () => {
-                              var chirp = new Chirp(new ChirpRequest().native(request, requestBody), new ChirpResponse().native(response));                        
+                              app.route(new Chirp(new ChirpRequest().native(request, requestBody), new ChirpResponse().native(response)));
                         });
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

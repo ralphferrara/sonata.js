@@ -117,7 +117,7 @@
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                                     let ext = path.extname(relative).slice(1).replace('.', '');
                                     let extMatch = (typeof this.extMatch === 'string') ? this.extMatch.replace('.', '') : '';
-                                    if (this.extMatch === undefined || ext === extMatch) {
+                                    if (this.extMatch === null || ext === extMatch) {
                                           this.list.push(newFWObj);
                                     }
                               }
