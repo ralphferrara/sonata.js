@@ -15,12 +15,12 @@
 
             constructor(message : string | string[], level : string, e?:any) { 
                   switch(level) {
-                        case 'info'     : this.echo(message, 'INFO', 'fgCyan');     break;
+                        case 'info'     : this.echo(message, 'INFO', 'fgGray');     break;
                         case 'warn'     : this.echo(message, 'WARN', 'fgYellow');   break;
                         case 'error'    : this.echo(message, 'ERR ', 'fgRed');      break;
                         case 'debug'    : this.echo(message, 'DBUG', 'fgGreen');    break;
                         case 'success'  : this.echo(message, '   ►', 'fgBlue');     break;
-                        case 'timer'    : this.echo(message, '   ∞', 'fgGray');     break;
+                        case 'timer'    : this.echo(message, '   ∞', 'fgCyan');     break;
                         case 'head'     : this.head(message); break;
                         case 'break'    : 
                               this.head(message, 'bgRed');
@@ -45,14 +45,15 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
             head(message : string | string[], color : string = 'bgBlue') {
+                  const width = 120;
                   console.log('');
-                  console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(60) + this.color('reset'));
+                  console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(width) + this.color('reset'));
                   const lines = (typeof(message) == 'string')  ? [message] : message;
                   for (const line of lines) {
-                        const indent = '  ' + line + ' '.padEnd(60 - line.length - 2);
+                        const indent = '  ' + line + ' '.padEnd(width - line.length - 2);
                         console.log(this.color(color) + this.color('fgWhite') + indent + this.color('reset'));
                   }
-                  console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(60) + this.color('reset'));
+                  console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(width) + this.color('reset'));
                   console.log('');
             }
                                     

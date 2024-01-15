@@ -8,6 +8,6 @@
       "sendgrid"  : {
             "type"      : "email",
             "token"     : "TOKEN",
-            "from"      : "noreply@maestrojs.com"
+            "from"      : "noreply@sonatajs.com"
       }
 }

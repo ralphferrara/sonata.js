@@ -154,6 +154,18 @@ describe('Path', () => {
             });
       });
 
+      describe('write', () => {
+            it('should return the file content as a string', async () => {
+                  const filePath = new Path('src/.tests/assets/testwatch.txt');
+                  try { 
+                        const result = await filePath.write(new Date().toISOString());
+                        expect(true).toBe(true);
+                  } catch (error) {
+                        expect(false).toBe(true);
+                  }
+            });
+      });      
+
       describe('json', () => {
             it('should return the file content as a JSON object', async () => {
                   const filePath = new Path('src/.tests/assets/check.json');

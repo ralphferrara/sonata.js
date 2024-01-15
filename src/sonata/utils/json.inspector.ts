@@ -126,6 +126,7 @@ export default class JSONInspector {
                         return true;
                         break;
                   default:
+                        if (compareType.includes('in[')) return this.inCheck(key, compareType, checkValue, parents);
                         return this.fail(key, "[UNKNOWN-TYPE]" + compareType, checkValue, parents);
             }
             throw new Error("[UNSPECIFIED-TYPE]->" + compareType + '->'+ checkValue);
@@ -174,6 +175,19 @@ export default class JSONInspector {
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             return false;
       }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Check if a string matches the :match[term] format
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      private inCheck(key:any, compareType : any, checkValue : any, parents:any[]):boolean {
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Straight String Check
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            const values = compareType.replace('in[', '').replace(']', '').split('|'); 
+            if (values.includes(checkValue)) return true;
+            return this.fail(key, compareType, checkValue, parents);
+      }      
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Check if a subitem matches the :match[term] format

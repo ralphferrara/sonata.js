@@ -1,4 +1,6 @@
 {
+      "use"    : "native",
+            
       "assets" : {
             "enabled"         : true, 
             "path"            : "/public",

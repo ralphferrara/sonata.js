@@ -20,7 +20,7 @@
             "testFile"     : "src/.tests/assets/check.json"
       },
       "validTest" : {
-            "testEmail"    : "test@maestrojs.com",
+            "testEmail"    : "test@sonatajs.com",
             "testPhone"    : "16025551212"
       },
       "notRequired" : {

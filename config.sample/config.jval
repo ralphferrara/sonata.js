@@ -15,7 +15,7 @@
             "root" : "string[2]",
             "available" : "array"
       },
-      "maestro" :  {
+      "sonata" :  {
             "name"    : "string[min:2]",
             "salt"    : "string[min:32]",
             "tempDir" : "string[min:32]"

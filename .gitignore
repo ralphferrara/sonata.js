@@ -2,3 +2,5 @@ node_modules
 config
 dist
 package-lock.json
+documents
+TODO.md
