@@ -36,7 +36,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface Route {
-            type        : 'page' | 'service' | 'asset' | 'component' | 'controller' | 'middleware' | 'socket' | 'internal';
+            type        : RouteTypes;
             name        : string;
             path        : string;
             method      : 'GET' | 'POST' | 'SOCKET' | 'INTERNAL';
@@ -58,4 +58,4 @@
       //|| Route Types
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
       
-      export type RouteTypes = "page" | "service" | "asset" | "component" | "controller" | "middleware" | "socket" | "internal";
+      export type RouteTypes = "page" | "endpoint" | "asset" | "component" | "controller" | "middleware" | "socket" | "internal";

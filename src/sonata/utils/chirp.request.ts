@@ -20,49 +20,59 @@
             //|| Var
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public url          : string = '';
-            public method       : "POST" | "GET" | "PUT" | "OPTIONS" | "SOCKET" = "GET";
-            public headers      : Record<string, string> = {};
-            public body         : any = null;
-            public query        : Record<string, string> = {};
+            public body         : any = {};
             public cookies      : Record<string, string> = {};
-            public ip           : string | undefined = '';
+            public headers      : Record<string, string> = {};
             public hostname     : string | undefined = undefined;
+            public ip           : string | undefined = '';
+            public method       : "POST" | "GET" | "PUT" | "OPTIONS" | "SOCKET" = "GET";
+            public params       : Record<string, string> = {};
             public protocol     : "http" | "https" = "http";
+            public url          : string = '';
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            native(req: http.IncomingMessage, body: string | undefined) {
+            native(request: http.IncomingMessage, body: string | undefined) {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process URL
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const parsedUrl = new URL((req.url) ? req.url : '/', `http://${req.headers.host}`);
+                  const parsedUrl = new URL((request.url) ? request.url : '/', `http://${request.headers.host}`);
                   this.url = parsedUrl.pathname;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process Others
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.query        = Object.fromEntries(parsedUrl.searchParams.entries());
-                  this.method       = this.parseMethod(req.method);
-                  this.body         = body;
-                  this.ip           = req.connection.remoteAddress;
-                  this.hostname     = req.headers.host;
-                  this.protocol     = (req.url?.startsWith('https://')) ? 'https' : 'http';
+                  this.method       = this.parseMethod(request.method);
+                  this.ip           = request.connection.remoteAddress;
+                  this.hostname     = request.headers.host;
+                  this.protocol     = (request.url?.startsWith('https://')) ? 'https' : 'http';
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Body
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  try { 
+                        if (this.method == 'GET') { 
+                              this.params = Object.fromEntries(parsedUrl.searchParams.entries());
+                        } else {
+                              if (body === undefined) this.params = {}; else this.params = JSON.parse(body);
+                        }
+                  } catch(e) { 
+                        this.params = {};
+                  }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Headers
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.headers = Object.keys(req.headers).reduce((acc, key) => {
-                        if (typeof req.headers[key] === 'string') {
-                          acc[key] = req.headers[key] as string;
+                  this.headers = Object.keys(request.headers).reduce((acc, key) => {
+                        if (typeof request.headers[key] === 'string') {
+                          acc[key] = request.headers[key] as string;
                         }
                         return acc;
                   }, {} as Record<string, string>);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Cookies
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (req.headers['cookie']) {
-                        req.headers['cookie'].split(';').forEach((cookie) => {
+                  if (request.headers['cookie']) {
+                        request.headers['cookie'].split(';').forEach((cookie) => {
                         const [name, value] = cookie.trim().split('=');
                         this.cookies[name] = decodeURIComponent(value);
                     });
@@ -74,31 +84,42 @@
             //|| Process Fastify
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            fastify(req: FastifyRequest) {
+            fastify(request: FastifyRequest) {
+                  const parsedUrl = new URL((request.url) ? request.url : '/', `http://${request.hostname}`);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process Fastify
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.url          = req.url;
-                  this.method       = this.parseMethod(req.method);
-                  this.body         = req.body;                  
-                  this.query        = Object.assign({}, req.query);
-                  this.ip           = req.ip;
-                  this.hostname     = req.hostname;
-                  this.protocol     = req.protocol;
+                  this.url          = request.url;
+                  this.method       = this.parseMethod(request.method);
+                  this.ip           = request.ip;
+                  this.hostname     = request.hostname;
+                  this.protocol     = request.protocol;
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Body
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  try { 
+                        if (this.method == 'GET') { 
+                              this.params = request.query as Record<string, string>;
+                        } else {
+                              if (request.body && request.body === null) this.params = {}; else this.params = JSON.parse(String(request.body));
+                        }
+                  } catch(e) { 
+                        this.params = {};
+                  }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Headers
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.headers = Object.keys(req.headers).reduce((acc, key) => {
-                        if (typeof req.headers[key] === 'string') {
-                          acc[key] = req.headers[key] as string;
+                  this.headers = Object.keys(request.headers).reduce((acc, key) => {
+                        if (typeof request.headers[key] === 'string') {
+                          acc[key] = request.headers[key] as string;
                         }
                         return acc;
                   }, {} as Record<string, string>);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Cookies
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (req.headers['cookie']) {
-                        req.headers['cookie'].split(';').forEach((cookie) => {
+                  if (request.headers['cookie']) {
+                        request.headers['cookie'].split(';').forEach((cookie) => {
                         const [name, value] = cookie.trim().split('=');
                         this.cookies[name] = decodeURIComponent(value);
                     });

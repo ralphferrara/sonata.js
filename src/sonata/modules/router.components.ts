@@ -1,32 +1,28 @@
 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-//|| Sonata.js :: Core Classes
-//|| Assets Class 
+//|| Maestro.js :: Core Classes
+//|| Views Class 
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import * as fs                         from 'fs/promises';
-      import * as path                       from 'path';
-
-      import  app                            from '../app.js'
-      import  Chirp                          from '../utils/chirp.js'
-      import  FileWatcher                    from '../utils/filewatcher.js'
-      import  Router                         from '../utils/router.js'
-      import  { FileWatcherObject }          from '../utils/.interfaces.js'
-        
+      import  app                               from '../app.js'
+      import  Chirp                             from '../utils/chirp.js'
+      import  FileWatcher                       from '../utils/filewatcher.js'
+      import  { FileWatcherObject, ParseData }  from '../utils/.interfaces.js'
+  
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class Assets {
+      export default class Components {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Var    
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            private list         : { [key: string]: Buffer } = {};
+            private list         : { [key: string]: ParseData } = {};
             private watcher      : FileWatcher | null;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -43,45 +39,43 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async init() : Promise<void> {
-                  app.log('Searching for assets. ['+app('config', 'servers').assets.path+']', 'info');
+                  app.log('Searching for components [' + app('config', 'servers').components.path + ']', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Options
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  this.watcher                  = new FileWatcher(app('config', 'servers').assets.path);
+                  this.watcher                  = new FileWatcher(app('config', 'servers').components.path);
                   this.watcher.recursive        = true;
                   this.watcher.watch            = true;
-                  this.watcher.resizeImage      = (app('config', 'servers').assets.resize === true) ? app('config', 'servers').assets.maxSize : null;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
-                        console.log('CLEARING');
-                        await Router.clear('asset');
                         this.list = {};
                         for (const item of structure) {
-                              if (item.isFile === true) {
-                                    Router.register(item.relative, 'GET', (chirp: Chirp) => { return this.route(chirp) }, 'asset');                              
-                                    if (item.contents !== null) this.list[item.relative] = item.contents;
+                              if (item.isFile === true) {    
+                                    var keyName = item.relative.replace('/component.html', '');                               
+                                    const pathSegments = keyName.split('/');
+                                    const componentName = pathSegments[pathSegments.length - 1];                                    
+                                    console.log(componentName); 
+                                    var parsedData = (item.contents !== undefined && item.contents != null) ? await app.path(item.relative).parseSS(item.contents.toString('utf8')) : null;
+                                    if (parsedData !== undefined && parsedData !== null) app('components', componentName, parsedData);
                               }
                         }
-                  };                                              
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Begin
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  await this.watcher.init();                  
+                        app.recache(true);
+                        return;
+                  };      
+                  await this.watcher.init();
                   return;
-
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            route(chirp: Chirp): any {   
-                  console.log('ASSET ROUTE CALLED - ' + chirp.request.url);         
-                  const file = this.list[chirp.request.url];
-                  if (file === undefined) return chirp.respond(404, 'File not Found ['+chirp.request.url +'] ', {});
-                  return chirp.respond(200, file, {'file' : true});
+            static route(key:string): ParseData {   
+                  const parsed = app('components', key);                  
+                  if (parsed === undefined) app.log('Component not found: ' + key, 'break');
+                  return parsed;                  
             }
 
 

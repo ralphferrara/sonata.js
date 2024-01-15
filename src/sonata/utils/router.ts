@@ -50,7 +50,7 @@
                   //|| Make a Route Object
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const newRoute: Route = {
-                        type        : (typeof objOrFunction === 'function') ? 'service' : 'page',
+                        type        : type,
                         name        : (typeof objOrFunction === 'function') ? objOrFunction.name : 'execute()',
                         path        : url, 
                         method      : method,

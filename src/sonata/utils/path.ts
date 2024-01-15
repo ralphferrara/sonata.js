@@ -208,8 +208,8 @@
             //|| Parse Page Parts from Page Dir
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public async parseSS(): Promise<ParseData | undefined> {
-                  var fileData = await this.read();
+            public async parseSS(content? : string): Promise<ParseData | undefined> {
+                  var fileData = (content) ? content : await this.read();
                   if (fileData === undefined) return undefined;
                   if (typeof fileData !== 'string') fileData = fileData.toString('utf-8');
                   const cssMatches = fileData.match(/<style>([\s\S]*?)<\/style>/g);

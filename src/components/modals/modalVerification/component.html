@@ -1,0 +1,68 @@
+<style>
+
+      section.modal.verification div.content {
+            height      : 40%;
+            width       : 40%;
+            top         : 50%;
+            left        : 50%;
+            margin      : -10% auto auto -20%;
+            min-height  : 325px;
+      }
+
+      section.modal.vertification div.content h2 {
+            margin      : 20px 0 20px 0;
+      }
+
+      div.form-group input.verificationCode {
+            font-size      : 200%;
+            letter-spacing : 50px;
+            text-align     : center;            
+            border-radius  : 0;
+      }
+
+
+</style>
+
+<section class="modal verification" id="modalVerification">
+      <div class="content"> 
+            <a class="close" href="#">&times;</a>
+
+            <hr class="divide">
+
+            <form action="/auth/verify" method="post" id="verificationCode">
+                  <h2>[[Enter Verification Code]]</h2>
+                  
+                  <div class="form-group" data-validation="code" data-error="[[Please enter a valid verification code]]" data-label="[[Verification Code]]">
+                        <label for="code"></label>
+                        <input name="code" placeholder="" pattern ="\d{6}" maxlength="6" type="text" class="form-control verificationCode" id="code" aria-describedby="" value="">
+                  </div>
+                  <input type="submit" class="btn btn-primary" value=" [[Verify]] " />
+            </form>
+
+      </div>
+</section>
+
+<script>
+      $.init('AuthVerification', class { 
+            modal(data) {
+                  $.modal('modalVerification','verification',{'csrf' : true});
+                  var keys = Object.keys(data);
+                  for (var i = 0; i < keys.length; i++) {
+                        $('#code').append('<input type="text" name="' + keys[i] + '" value="' + data[keys[i]] + '" /><br>');
+                  }
+            };
+
+            onError(result)  { 
+                  console.log('AUTH Verify ERROR');
+                  console.log(result.data); 
+                  $('snackbar').show(result.data.errors);
+            };
+
+            onSuccess() {
+                  console.log('AUTH Verify SUCCESS');
+                  $('snackbar').show('Your account has been verified.');
+                  $('#modalRegister').hide();
+            };
+            
+      });
+</script>

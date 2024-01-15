@@ -18,6 +18,7 @@
       import Log              from './utils/log.js';
       import Path             from './utils/path.js';
       import Router           from './utils/router.js';
+      import  { ParseData }   from './utils/.interfaces.js'
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Import Functions
@@ -31,16 +32,18 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       class global {
-            public static config    : { [key: string]: any } = {};
-            public static data      : { [key: string]: any } = {};
-            public static databases : { [key: string]: any } = {};
-            public static routes    : { [key: string]: any } = {};
-            public static senders   : { [key: string]: any } = {};
-            public static storages  : { [key: string]: any } = {};
+            public static config      : { [key: string]: any } = {};
+            public static data        : { [key: string]: any } = {};
+            public static databases   : { [key: string]: any } = {};
+            public static routes      : { [key: string]: any } = {};
+            public static senders     : { [key: string]: any } = {};
+            public static storages    : { [key: string]: any } = {};
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Router
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-            public static router    : Router | null = new Router();
+            public static router      : Router | null = new Router();
+            public static views       : { [key: string]: ParseData } = {};
+            public static components  : { [key: string]: ParseData } = {};
       }
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
