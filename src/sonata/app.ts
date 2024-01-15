@@ -32,6 +32,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       class global {
+            public static base        : { [key: string]: any } = {};
             public static config      : { [key: string]: any } = {};
             public static data        : { [key: string]: any } = {};
             public static databases   : { [key: string]: any } = {};

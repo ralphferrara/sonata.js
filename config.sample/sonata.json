@@ -1,6 +1,25 @@
 {
-      "name"        : "Sonata.js",
-      "version"     : "0.0.1",
-      "tempDir"     : "/.tmp",
-      "salt"        : "5294e0817a8ce3d4bf5d1f759b40eb07"  
+      "base"         : {
+            "js"        : [
+                  "/src/base/js/zepto.js",
+                  "/src/base/js/maestro.js",
+                  "/src/base/js/config.js",
+                  "/src/base/js/autoload.js",
+                  "/src/base/js/forms.js",
+                  "/src/base/js/chirp.js",
+                  "/src/base/js/snackbar.js",
+                  "/src/base/js/csrf.js"
+            ],
+            "css"       : [
+                  "/src/base/css/reset.css",
+                  "/src/base/css/root.css",
+                  "/src/base/css/base.css",
+                  "/src/base/css/modal.css",
+                  "/src/base/css/forms.css", 
+                  "/src/base/css/snackbar.css"
+            ]
+      },
+      "public" : {
+            "sample" : "test"
+      }   
 }
