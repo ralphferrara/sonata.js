@@ -83,7 +83,7 @@
                         if (contents === undefined) return chirp.respond(404, 'File not Found ['+chirp.request.url +'] ', {});
                         return chirp.respond(200, contents, { 'contentType' : app.path(chirp.request.url).header() });                  
                   }
-                  return chirp.respond(200, file, { 'contentType' : app.path(chirp.request.url).header() });                  
+                  return chirp.file(200, file, { 'contentType' : app.path(chirp.request.url).header() });                  
             }
 
 
