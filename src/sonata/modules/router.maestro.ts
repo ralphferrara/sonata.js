@@ -68,6 +68,7 @@
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
+                        console.log('RELOADING MAESTRO');
                         var css = "";
                         var js  = "";
                         this.list = {};
@@ -78,7 +79,7 @@
                         var orderJS  = app("config", "maestro").order.js;
                         for (const item of orderCSS) if (this.list[item] !== undefined) css = css + "\n" + this.list[item];                        
                         for (const item of orderJS)  if (this.list[item] !== undefined) js  = js  + "\n" + this.list[item];
-                        app('maestro', 'css', css);
+                        app('maestro', 'css', css); 
                         app('maestro', 'js',  js);
                         app.recache(true);
                   };                                              
@@ -96,7 +97,7 @@
 
             static route(route:Route, chirp:Chirp): ParseData {   
                   switch(chirp.request.url) {
-                        case '/maestro/cachekey' : return chirp.respond(200, app.recache(), { 'contentType' : 'text/html' });                  
+                        case '/maestro/cachekey' : return chirp.respond(200, {"key" : app.recache()}, { 'contentType' : 'text/html' });                  
                         case '/maestro/config'   : return this.configuration(chirp);
                   }
                   const parsed = app("maestro", chirp.request.url.replace('/maestro/', ''));                  

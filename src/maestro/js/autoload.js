@@ -4,7 +4,7 @@ window.setInterval(function() {
       .then(response => response.text())
       .then(respData => {
             const json = JSON.parse(respData);
-            const cacheKey = json.message;
+            const cacheKey = json.key;
             const inputElement = document.getElementById('cachekey');
             var isMatch = (inputElement.value === cacheKey) ? 'MATCH!' : 'NO MATCH! ' + inputElement.value + ' vs ' + cacheKey;
             console.log('Cache vs New -> ' + isMatch);

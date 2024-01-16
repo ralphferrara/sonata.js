@@ -62,8 +62,8 @@
                         var response = xhr.responseText;
                         try { 
                               console.log(response);
-                              response = (typeof(response) == 'object') ? response : JSON.parse(response);
-                              var respData = response.data || { message: error.message };
+                              response = (typeof(response) == 'object') ? response : JSON.parse(response);                                
+                              var respData = response || { message: error.message };
                         } catch(e) {
                               $('snackbar').show("Response Error : Bad JSON ["+url +"|"+ xhr.status + "]");
                               console.log(response);
