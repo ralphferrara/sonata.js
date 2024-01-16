@@ -49,18 +49,18 @@
             //|| Respond
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            respond(status: number, body: any, options: any) {
-                  if (this.use === 'native')    return this.respondNative(status,  body, options);
-                  if (this.use === 'fastify')   return this.respondFastify(status, body, options);
+            respond(status: number, body: any, contentType : string, options : {}) {
+                  if (this.use === 'native')    return this.respondNative(status,  body, contentType, options);
+                  if (this.use === 'fastify')   return this.respondFastify(status, body, contentType, options);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            respondNative(status: number, body: any, options: any) {
+            respondNative(status: number, body: any, contentType : string, options: any) {
                   var native = this.object as http.ServerResponse;
-                  native.setHeader('Content-Type', (options.fileType) ? options.fileType : 'application/json');
+                  native.setHeader('Content-Type', contentType);
                   native.statusCode = status;
                   native.end(body);            
                   return true;
@@ -70,9 +70,9 @@
             //|| Fastify
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            respondFastify(status: number, body: any, options: any) {
+            respondFastify(status: number, body: any, contentType : string, options: any) {
                   var fastify = this.object as FastifyReply;
-                  if (options.fileType) fastify.type = options.fileType;
+                  fastify.type = options.contentType;
                   fastify.status(status).send(body);
                   return true;            
             }

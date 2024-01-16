@@ -56,7 +56,6 @@
                                     var keyName = item.relative.replace('/component.html', '');                               
                                     const pathSegments = keyName.split('/');
                                     const componentName = pathSegments[pathSegments.length - 1];                                    
-                                    console.log(componentName); 
                                     var parsedData = (item.contents !== undefined && item.contents != null) ? await app.path(item.relative).parseSS(item.contents.toString('utf8')) : null;
                                     if (parsedData !== undefined && parsedData !== null) app('components', componentName, parsedData);
                               }

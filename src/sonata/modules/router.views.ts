@@ -54,9 +54,9 @@
                         this.list = {};
                         for (const item of structure) {
                               if (item.isFile === true) {                                    
-                                    console.log(item.relative);
+                                    var keyName = item.relative.replace(app('config', 'servers').views.path + '/', '');
                                     var parsedData = (item.contents !== undefined && item.contents != null) ? await app.path(item.relative).parseSS(item.contents.toString('utf8')) : null;
-                                    if (parsedData !== undefined && parsedData !== null) app('views', item.relative, parsedData);
+                                    if (parsedData !== undefined && parsedData !== null) app('views', keyName, parsedData);
                               }
                         }
                         app.recache(true);

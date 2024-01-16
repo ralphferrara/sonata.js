@@ -57,6 +57,7 @@
       import  Router                             from './utils/router.js';
       import  AppDefinedRoutes                   from '../routes.js';
       import  Assets                             from './modules/router.assets.js';
+      import  Maestro                            from './modules/router.maestro.js';
       import  Components                         from './modules/router.components.js';
       import  Views                              from './modules/router.views.js'; 
 
@@ -80,6 +81,7 @@
             private configDir   : string;
             private watcher     : any;
             private assets      : any;
+            private maestro     : any;
             private components  : any;
             private views       : any;
             
@@ -92,6 +94,7 @@
                   this.watcher    = null;
                   this.configDir  = configDir;
                   this.assets     = null;
+                  this.maestro    = null;
                   this.components = null;
                   this.views      = null;
             }      
@@ -291,19 +294,15 @@
                         await this.assets.init();
                   } else app.log('No assets configuration found in the config directory. No assets configured.', 'warn');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Sonata Internal Routes
+                  //|| Base
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  Router.register('/maestro/base/',          'GET', () => {},     'internal');
-                  Router.register('/maestro/config/',        'GET', () => {},     'internal');
-                  Router.register('/maestro/cachekey/',      'GET', () => {},     'internal');
-                  Router.register('/maestro/csrf/',          'GET', () => {},     'internal');
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| User Supplied
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  new AppDefinedRoutes();
+                  if (app('config', 'maestro') !== undefined) {
+                        this.maestro = new Maestro();
+                        await this.maestro.init();
+                  } else app.log('No base configuration found in the config directory. No base configured.', 'warn');                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Views
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (app('config', 'servers').views !== undefined) {
                         this.views = new Views();
                         await this.views.init();
@@ -314,7 +313,11 @@
                   if (app('config', 'servers').components !== undefined) {
                         this.components = new Components();
                         await this.components.init();
-                  } else app.log('No components configuration found in the config directory. No components configured.', 'warn');                  
+                  } else app.log('No components configuration found in the config directory. No components configured.', 'warn');                     
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| User Supplied
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  var xRoutes = new AppDefinedRoutes();               
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| User defined routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

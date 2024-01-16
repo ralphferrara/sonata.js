@@ -1,0 +1,17 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| Maestro.js :: Public Library
+//|| Maestro CSS Library - Root Styles!!!
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      :root {
+            --color-primary         : #3498db;
+            --color-secondary       : #2ecc71;
+            --color-font-primary    : #fff;
+            --color-font-inverse    : #fff;
+            --color-bg-highlight    : blue;
+            --color-font-highlight  : #fff;
+      }
+
+
+
+

@@ -55,13 +55,14 @@
             //|| Response
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            respond(status: ChirpStatusCodes, data:{}, options:any = {}) : any {
-                  app.log('CHIRP RESPONDING!', 'info');
-                  if (typeof(options) !== 'undefined' && typeof(options['file']) === 'boolean' && options['file'] === true) {
-                        this.response.respond(status, data, {'fileType' : app.path(this.request.url).header() });
-                  } else {
-                        this.response.respond(status, JSON.stringify(data), options);
+            respond(status: ChirpStatusCodes, data:any, options:any = {}) : any {                  
+                  var contentType = (typeof(options) !== 'undefined' && typeof(options.contentType) !== 'undefined') ? options.contentType : app.path(this.request.url).header();
+                  if (typeof(data) == 'object') {
+                        contentType = 'application/json';
+                        data        = JSON.stringify(data);
                   }
+                  console.log('Content : ' + contentType + ' : ' + data);
+                  return this.response.respond(status, data, contentType, options);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

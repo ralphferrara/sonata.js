@@ -1,0 +1,51 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| Maestro.js :: Public Library
+//|| Maestro CSS Library - Form Classes
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Form Fields
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      form {
+            margin      : 0;
+            padding     : 0;
+            border      : 0;
+            font-size   : 100%;
+            font        : inherit;
+            vertical-align: baseline;
+      }
+
+      div.form-group {
+            padding    : 10px 0;
+      }
+
+      div.form-group.error { 
+            color      : red;
+            font-weight: bold;
+      }
+
+      div.form-group.error input {
+            border-color: red;
+      }
+
+      div.form-group.error select {
+            border-color: red;
+      }
+
+      div.form-group label {
+            display     : block;
+            font-size   : 1em;
+            font-weight : bold;
+            margin      : 0 0 0.5em 0;
+      }
+      
+      div.form-group input {
+            display     : block;
+            width       : 100%;
+            padding     : 0.5em;
+            font-size   : 1em;
+            border      : 1px solid #ccc;
+            border-radius: 0.5em;
+      }
+
