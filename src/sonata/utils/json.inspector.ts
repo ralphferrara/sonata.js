@@ -156,7 +156,7 @@ export default class JSONInspector {
             if (param.includes('min:')) {
                   try { 
                         const minLength = parseInt(param.replace('min:', ''));
-                        if (checkValue.length <= minLength) return this.fail(key, "stringcheck:min["+minLength+"] Actual = ["+checkValue.length+"]", checkValue, parents);
+                        if (checkValue.length < minLength) return this.fail(key, "stringcheck:min["+minLength+"] Actual = ["+checkValue.length+"]", checkValue, parents);
                   } catch(e) {}
                   return true;
             }            
@@ -165,7 +165,7 @@ export default class JSONInspector {
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             if (param.includes('max:')) {
                   try { 
-                        const  maxLength = parseInt(param.replace('mxa:', ''));
+                        const  maxLength = parseInt(param.replace('max:', ''));
                         if (checkValue.length > maxLength) return this.fail(key, "stringcheck:max["+maxLength+"] Actual = ["+checkValue.length+"]", checkValue, parents);
                   } catch(e) {}
                   return true;

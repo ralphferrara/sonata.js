@@ -37,7 +37,6 @@
             public static cache       : { [key: string]: any } = {};
             public static data        : { [key: string]: any } = {};
             public static databases   : { [key: string]: any } = {};
-            public static maestro     : { [key: string]: any } = {};
             public static routes      : { [key: string]: any } = {};
             public static senders     : { [key: string]: any } = {};
             public static storages    : { [key: string]: any } = {};
@@ -45,8 +44,12 @@
             //|| Router
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             public static router      : Router | null = new Router();
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Should go to .data
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             public static views       : { [key: string]: ParseData } = {};
             public static components  : { [key: string]: ParseData } = {};
+            public static maestro     : { [key: string]: any } = {};
       }
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

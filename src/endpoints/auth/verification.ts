@@ -15,7 +15,7 @@
       //|| Home Page Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      //@endpoint('/auth/register');
+      //@endpoint("/auth/register");
       export class AuthVerification{
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -31,7 +31,7 @@
 
             constructor() {
                   this.name         = this.constructor.name;
-                  this.database     = 'main';
+                  this.database     = "main";
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -39,20 +39,20 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async process(chirp : Chirp): Promise<void> {
-                  // console.log('PROCESSING AUTH VERIFICATION');
+                  // console.log("PROCESSING AUTH VERIFICATION");
                   // /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   // //|| Process Here
                   // //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   // try {
                   //       await this.validate(chirp);
                   //       await this.verify(chirp);
-                  //       return chirp.respond(200, 'Success', {});
+                  //       return chirp.respond(200, "Success", {});
                   // /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   // //|| Process Here
                   // //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   // } catch (error) {
-                  //       console.error('Failed:', error);                        
-                  //       chirp.respond(500, 'AuthRegister Failed', error);
+                  //       console.error("Failed:", error);                        
+                  //       chirp.respond(500, "AuthRegister Failed", error);
                   // }
             }            
 
@@ -65,22 +65,22 @@
                   //       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //       //|| Clean the Data
                   //       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  //       chirp.data('email', Str.cleanEmail(chirp.data('email')));
-                  //       chirp.data('phone', Str.cleanEmail(chirp.data('phone')));
+                  //       chirp.data("email", Str.cleanEmail(chirp.data("email")));
+                  //       chirp.data("phone", Str.cleanEmail(chirp.data("phone")));
                   //       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //       //|| Handle Validation
                   //       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   //       const validator = new Validator();
-                  //       if (validator.inArray(chirp.data('registerType'), ['email', 'phone'], "Registration Type is not email | phone") == true) {
-                  //             if (chirp.data('registerType') == 'email') validator.email(chirp.data('email'), 'Invalid Email');
-                  //             if (chirp.data('registerType') == 'phone') validator.phone(chirp.data('phone'), 'Invalid Phone');
-                  //             validator.verification(chirp.data('code'), 'Invalid Verification Code');
+                  //       if (validator.inArray(chirp.data("registerType"), ["email", "phone"], "Registration Type is not email | phone") == true) {
+                  //             if (chirp.data("registerType") == "email") validator.email(chirp.data("email"), "Invalid Email");
+                  //             if (chirp.data("registerType") == "phone") validator.phone(chirp.data("phone"), "Invalid Phone");
+                  //             validator.verification(chirp.data("code"), "Invalid Verification Code");
                   //       }
                   //       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //       //|| Return
                   //       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   //       if (validator.errored) {
-                  //             reject({ 'errors' : validator.errors });
+                  //             reject({ "errors" : validator.errors });
                   //       } else {
                   //             resolve();
                   //       }
@@ -96,9 +96,9 @@
                   //       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //       //|| Validate Token
                   //       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  //       let result = TwoStep.verify((chirp.data('registerType') == 'phone') ? chirp.data('phone') : chirp.data('email'), chirp.data('code'));
-                  //       if (typeof(result) !== 'object' || result.status === undefined || result.errors === undefined) return reject( { 'errors' : 'Invalid Response' } );
-                  //       if (result.status == false) return reject({'errors' : result.errors});
+                  //       let result = TwoStep.verify((chirp.data("registerType") == "phone") ? chirp.data("phone") : chirp.data("email"), chirp.data("code"));
+                  //       if (typeof(result) !== "object" || result.status === undefined || result.errors === undefined) return reject( { "errors" : "Invalid Response" } );
+                  //       if (result.status == false) return reject({"errors" : result.errors});
                   //       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //       //|| Return
                   //       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

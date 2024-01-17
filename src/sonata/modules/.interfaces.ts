@@ -8,7 +8,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface DatabaseConfig {
-            type        : 'mysql' | 'mongo' | 'cassandra' | 'postgres';
+            type        : "mysql" | "mongo" | "cassandra" | "postgres";
             host        : string;
             username    : string;
             password    : string;
@@ -70,7 +70,7 @@
             connection    : any;        
             id            : string;
             created       : Date;
-            status        : 'ACTIVE' | 'CLOSED';
+            status        : "ACTIVE" | "CLOSED";
             close         : Function;
       }      
 
