@@ -1,0 +1,361 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Nav :: Public - Large Size
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Main
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic {
+            position          : fixed;
+            top               : 0;
+            left              : 0;   
+            right             : 0;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop {
+            background              : var(--nav-color-top-bg);
+            height                  : var(--nav-height);
+            display                 : grid;
+            grid-template-columns   : auto 350px 300px;
+            align-items             : center;
+            padding                 : 0 20px;   
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top - Global 
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop button {
+            background              : transparent;
+            border                  : none;
+            color                   : #FFF;
+            font-size               : 1.1em; 
+            cursor                  : pointer;  
+      }
+
+      .navTopSection {
+            height                  : 100%;
+            display                 : flex;
+            align-items             : center;
+            justify-content         : center;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top - LOGO
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop div.navTopLogo.navTopSection  {
+            justify-content         : left;
+      }
+
+      nav.navPublic div.navPublicTop div.navTopLogoWrap a.logoImg {
+            display                 : block;
+            width                   : 150px;
+            height                  : 30px;
+            background-image        : url(/public/img/logo.png);
+            background-repeat       : no-repeat;
+            background-size         : contain;
+            padding                 : 0;
+            margin                  : 0;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top - Notify
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop div.navTopNotify div.navTopNotifyWrap {
+            display                 : flex;
+            align-items             : center;
+            justify-content         : center;
+            height                  : 100%;
+      }
+
+      nav.navPublic div.navPublicTop div.navTopNotify button {
+            height                  : 100%;
+            width                   : var(--nav-top-button-width);
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top - Auth
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop div.navTopAuth button {
+            margin                  : 0 10px;
+            padding                 : 10px 20px;
+            font-size               : 0.9em;
+            font-weight             : bold;
+            background              : rgba(255,255,255,0.2);
+            border-radius           : 5px; 
+      }
+
+      nav.navPublic div.navPublicTop div.navTopAuth button span {
+            padding                 : 5px;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Top - Menu
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicTop div.navTopMenu {
+            display                 : none;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Bottom
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicBottom {
+            background        : var(--nav-color-bottom-bg);
+            height            : var(--nav-height);
+            display           : flex;
+            justify-content   : space-between;
+            align-items       : center;
+            padding           : 0 20px;   
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Bottom Links
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      nav.navPublic div.navPublicBottomWrap  {
+            display                 : flex;
+            flex-wrap               : wrap;
+            justify-content         : space-between;
+            max-width               : 100vw;
+            width                   : 100%;
+            height                  : 100%;
+      }
+
+      .svg-inline--fa {
+            font-size               : 13px;
+            height                  : 1em;
+            width                   : 1em;
+      }
+
+      .navPublicBottomWrap .svg-inline--fa {
+            font-size               : 13px;
+            height                  : 1em;
+            width                   : 1em;
+      }      
+
+      nav.navPublic div.navPublicBottom .navBottomLink {
+            display                 : flex;
+            align-items             : center;
+            justify-content         : center;
+            flex                    : 1;
+            text-align              : center;
+            height                  : 100%;
+            cursor                  : pointer;
+            transition              : background-color 0.3s ease;
+      }      
+
+      nav.navPublic div.navPublicBottom .navBottomLink:hover {
+            background        : var(--nav-color-bottom-bg-hover);
+      }
+
+      nav.navPublic div.navPublicBottom .navBottomLink a {
+            text-decoration         : none;
+            color                   : #FFF;
+      }
+
+      nav.navPublic div.navPublicBottom .navBottomLink a span {
+            padding                 : 0 10px;
+            font-size               : 90%;
+      }
+
+      nav.navPublic div.navPublicBottom .navBottomLink b {
+            font-weight             : 600;       
+            font-size               : 0.9em;
+            color                   : #FFF;
+      }
+
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Nav :: Public - Mobile/Small Size
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+        //|| Side Nav
+        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        @media (max-width: 1023px) {
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Nav Auth
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            nav.navPublic div.navPublicTop div.navTopAuth.navTopSection {
+                    position                : fixed;
+                    height                  : var(--nav-height);
+                    right                   : 0;
+                    top                     : var(--nav-height);
+                    left                    : auto;
+                    width                   : 100%;                        
+                    max-width               : 320px;
+                    z-index                 : 205;
+                    background              : #CCC;
+                    padding                 : 0;
+            }
+
+            nav.navPublic div.navPublicTop div.navTopAuth.navTopSection div.navTopAuthWrap {
+                    display                 : grid;
+                    grid-template-columns   : 50% 50%;
+                    width                   : 100%;
+                    height                  : 100%;
+                    border-bottom           : 1px solid rgba(0,0,0,0.2);
+            }
+
+            nav.navPublic div.navPublicTop div.navTopAuth.navTopSection button {
+                    display                 : block;
+                    width                   : 100%;
+                    height                  : 100%;
+                    text-align              : center;
+                    margin                  : 0;
+                    padding                 : 0;
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Align Right
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            nav.navPublic div.navPublicBottom {
+                    position                : fixed;
+                    display                 : flex;
+                    right                   : 0;
+                    bottom                  : 0;
+                    top                     : calc(var(--nav-height) * 2);
+                    left                    : auto;
+                    right                   : 0;                        
+                    height                  : calc(100% - 250px);
+                    padding                 : 0;
+                    width                   : 100%;                        
+                    max-width               : 320px;
+                    min-width               : 320px;
+                    height                  : 100%;
+                    overflow-y              : scroll;                        
+                    z-index                 : 101;
+                    align-items             : flex-start;
+                    background              : var(--nav-color-bottom-bg);                                
+            }
+
+            nav.navPublic div.navPublicBottomWrap {
+                    display                 : flex;
+                    padding                 : 0 0;
+                    width                   : 100%;
+                    height                  : auto;
+            }
+
+            nav.navPublic div.navPublicBottom .navBottomLink {
+                    display                 : flex;
+                    align-items             : center;
+                    justify-content         : left;
+                    width                   : 100%;
+                    flex                    : auto;
+                    padding                 : 0 0;
+                    width                   : 100%;
+                    height                  : var(--nav-height);
+                    margin                  : 0;
+                    color                   : #FFF;
+                    text-decoration         : none;
+            }
+
+            nav.navPublic div.navPublicBottom .navBottomLink:hover {
+                    background              : var(--nav-color-bottom-bg-hover);     
+            }
+
+            nav.navPublic div.navPublicBottom .navBottomLink a {
+                    display                 : grid;
+                    width                   : 100%;
+                    height                  : 100%;
+                    grid-template-columns   : 50px auto;
+            }
+
+            nav.navPublic div.navPublicBottom .navBottomLink span {
+                    display                 : flex;
+                    justify-content         : center;
+                    align-items             : center;
+                    background              : rgba(0,0,0,0.1);
+            }
+
+            nav.navPublic div.navPublicBottom .navBottomLink b {
+                    display                 : flex;
+                    justify-content         : left;
+                    align-items             : center;
+                    padding                 : 10px;
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Top - Menu
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+
+
+    }
+
+    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+    //|| Top Auth
+    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+    @media (max-width: 1023px) {
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Top - Container
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            nav.navPublic div.navPublicTop {
+                    grid-template-columns   : auto calc(5 * var(--nav-top-button-width)) var(--nav-top-button-width);
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Top - Menu
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            nav.navPublic div.navPublicTop div.navTopMenu {
+                    display                 : flex;
+            }
+
+
+    }
+
+    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+    //|| Top Auth - Small Screen
+    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+    @media (max-width: 768px) {
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Top - Container
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            nav.navPublic div.navPublicTop { 
+                    grid-template-columns : auto auto auto;
+            }
+
+            nav.navPublic div.navPublicTop div.navTopLogo.navTopSection  {
+                    width                   : 32px;
+                    overflow                : hidden;
+            }
+
+    }        
+
+    @media (max-width: 460px) {
+
+            nav.navPublic div.navPublicTop {
+                    padding                 : 0 5px;
+            }
+            
+            nav.navPublic div.navPublicTop { 
+                    grid-template-columns : auto calc(5 * 45px) 45px;
+                    min-width               : 320px;
+            }
+
+            nav.navPublic div.navPublicTop div.navTopNotify button {
+                    width                   : 45px;
+            }                
+    }

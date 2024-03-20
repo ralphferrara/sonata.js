@@ -3,8 +3,6 @@
       <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta name="description" content="Your website description here">
-            <meta name="keywords" content="your, keywords, here">
             <meta name="author" content="Your Name">
 
             <!-- Open Graph meta tags for social sharing -->
@@ -20,18 +18,36 @@
             <meta name="twitter:description" content="Your website description here">
             <meta name="twitter:image" content="path/to/your/image.jpg">
 
-            <!-- Title -->
-            <title>Sample Page Title</title>
+            <!-- Title/Description/Keywords -->
+            <title></title>
+            <meta name="description" content="Your website description here">
+            <meta name="keywords" content="your, keywords, here">
+
+            <!-- Stylesheets -->
             <link rel="stylesheet" href="/maestro/css">
             <link rel="stylesheet" href="/index.css">
 
-            <!-- JavaScript -->
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0&display=swap" rel="stylesheet">
       </head>
       <body>
-            <component name="mainMenu" id="mainMenu"></component>
-            <component name="modalRegister" id="modalRegister"></component>
-            <component name="modalVerification" id="modalVerification"></component>
-            {{SUBPAGE}} 
+            <style>
+                  main {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        height: calc(100vh - var(--nav-height));
+                        font-family: 'Noto Sans', sans-serif;
+                  }
+            </style>
+            <component name="NavPublic" id="navPublic"></component>
+            <main>
+
+            </main>
+            <component name="NavFooter" id="navFooter"></component>
+
             <script src="/maestro/js"></script>
             <script src="/index.js"></script>
       </body>

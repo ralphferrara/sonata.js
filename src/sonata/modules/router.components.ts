@@ -3,14 +3,20 @@
 //|| Views Class 
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
+      import { promises as fs }                       from 'fs';
+      import path                                     from 'path';
+      import { URL }                                  from 'url';
+      import { JSDOM }                                from 'jsdom';
+
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  app                               from '../app.js'
-      import  Chirp                             from '../utils/chirp.js'
-      import  FileWatcher                       from '../utils/filewatcher.js'
-      import  { FileWatcherObject, ParseData }  from '../utils/.interfaces.js'
+      import  app                                     from '../app.js'
+      import  Chirp                                   from '../utils/chirp.js'
+      import  FileWatcher                             from '../utils/filewatcher.js'
+      import  { FileWatcherObject, ComponentData }    from '../utils/.interfaces.js'
+      import { FontAwesome }                          from "./icons.fontawesome.js";         
   
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -22,7 +28,7 @@
             //|| Var    
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            private list         : { [key: string]: ParseData } = {};
+            private list         : { [key: string]: ComponentData } = {};
             private watcher      : FileWatcher | null;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -52,12 +58,33 @@
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
                         this.list = {};
                         for (const item of structure) {
-                              if (item.isFile === true) {    
-                                    var keyName = item.relative.replace('/component.html', '');                               
-                                    const pathSegments = keyName.split('/');
-                                    const componentName = pathSegments[pathSegments.length - 1];                                    
-                                    var parsedData = (item.contents !== undefined && item.contents != null) ? await app.path(item.relative).parseSS(item.contents.toString('utf8')) : null;
-                                    if (parsedData !== undefined && parsedData !== null) app('components', componentName, parsedData);
+                              if (item.isFile === false) {
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Check if there is a html file by the same Base Name
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                    
+                                    const baseName = app.path(item.relative).base();
+                                    const basePath = item.relative + "/" + baseName;
+                                    if (!await app.path(basePath + ".html").exists()) continue;
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Get the HTML
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                    
+                                    const parseHTML = await app.path(basePath + ".html").read(false);
+                                    const parseCSS  = await app.path(basePath + ".css").read(false);
+                                    const parseJS   = await app.path(basePath + ".js").read(false);
+                                    if (parseHTML === null) continue;
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Create the ComponentData Obj
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                    
+                                    console.log(item.relative);
+                                    const componentData: ComponentData = {
+                                          path        : item.relative, 
+                                          params      : {},
+                                          html        : typeof(parseHTML) == 'string'     ? parseHTML : '',
+                                          css         : typeof(parseCSS) == 'string'      ? parseCSS : '',
+                                          js          : typeof(parseJS) == 'string'       ? parseJS : '',
+                                    };
+                                    app.log('Component Found: ' + baseName, 'info');
+                                    if (componentData !== undefined && componentData !== null) app('components', baseName, componentData);
                               }
                         }
                         app.recache(true);
@@ -68,11 +95,44 @@
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Initialize Component
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async initializeComponent(componentName: string, parsed: ComponentData): Promise<ComponentData> {
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Make the Path
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  const filePath    = path.resolve(parsed.path, `${componentName}.server.ts`);
+                  const fileURL     = new URL(`file://${filePath}`);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Try Importing 
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  try {
+                        const module = await import(fileURL.href);
+                        if (module.default && typeof module.default.init === 'function') {
+                              let initParsed = module.default.init(parsed);
+                              return initParsed;
+                        }
+                  } catch (error) {
+                        app.log("Server Side Component Code does not exist: " + componentName, 'info');
+                        console.log(error);
+                        return parsed;
+                  }                        
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Is it the default?
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  return parsed;
+            }
+              
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static route(key:string): ParseData {   
-                  const parsed = app('components', key);                  
+            static async route(key:string): Promise<ComponentData> {   
+                  let parsed  = app('components', key);  
+                  parsed      = await this.initializeComponent(key, parsed);                
+                  parsed.html = await FontAwesome.parseHTML(parsed.html);
                   if (parsed === undefined) app.log('Component not found: ' + key, 'break');
                   return parsed;                  
             }

@@ -48,6 +48,9 @@
             async connect() {
                   app.log("Connecting to MySQL["+this.name+"]..." +this.config.host, "info");
                   try { 
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create MYSQL Pool
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         this.client = await mysql.createPool({
                               host                   : this.config.host,
                               user                   : this.config.username,
@@ -58,12 +61,24 @@
                               connectionLimit         : 10,
                               queueLimit              : 0
                         });
-                        this.status = "OK";
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Attempt Connection to Test
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        app.log("Checking Connection  ["+this.name+"]..." +this.config.host, "info");
+                        const connection  = await this.client.getConnection();
+                        connection.release(); // Release the connection back to the pool                
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| All good in the hood
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        this.status       = "OK";
                         await this.setCollate();    
                         app.log("MySQL Connected", "success");
                         return;  
                   } catch(err) { 
-                        app.log("Could not connect to MySQL", "break");
+                        app.log("Could not connect to MySQL", "err");
+                        console.log(err);                        
+                        app.log("Exiting...", "break");
+                        process.exit();
                   }
             }
 
@@ -80,6 +95,7 @@
                         connection.release();
                         await this.checkTZ();
                   } catch(err) {
+                        console.log(err);
                         app.log("MYSQL::COLLATE::FAILED", "warn");
                   }                           
             }

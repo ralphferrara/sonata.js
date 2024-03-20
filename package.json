@@ -9,6 +9,7 @@
       "scripts": {
             "production": "set NODE_ENV=production && tsc",
             "start": "set NODE_ENV=development && tsc && node dist/index.js",
+            "dev": "set NODE_ENV=development && tsx src/index.ts",
             "test": "cls && jest"
       },
       "keywords": [],
@@ -21,8 +22,6 @@
             "@types/node": "^16.18.70",
             "@types/ws": "^8.5.10",
             "@types/xmldom": "^0.1.34",
-            "@types/fastify": "^0.1.34",
-            "@types/fastify-websocket": "^0.1.34",
             "crypto": "^1.0.1",
             "fastify": "^4.25.2",
             "fastify-websocket": "^4.3.0",
@@ -38,13 +37,17 @@
             "ws": "^7.5.9"
       },
       "dependencies": {
+            "@fortawesome/fontawesome-svg-core": "^6.5.1",
+            "@fortawesome/free-solid-svg-icons": "^6.5.1",
             "@sendgrid/mail": "^7.4.6",
             "@types/mongodb": "^4.0.7",
             "@types/twilio": "^3.19.3",
+            "clean-css": "^5.3.3",
             "crypto": "latest",
             "fs": "^0.0.1-security",
             "mysql2": "^latest",
             "sendgrid": "^5.2.3",
+            "terser": "^5.29.2",
             "twilio": "^3.84.0",
             "xmldom": "^0.6.0"
       },

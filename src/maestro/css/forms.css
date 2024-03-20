@@ -44,8 +44,107 @@
             display     : block;
             width       : 100%;
             padding     : 0.5em;
-            font-size   : 1em;
+            font-size   : 1.5em;
             border      : 1px solid #ccc;
             border-radius: 0.5em;
       }
+      
+      input.btn.btn-full {
+            width       : 100%;
+            padding     : 0.5em;
+            font-size   : 1.5em;
+            border      : 1px solid #ccc;
+            border-radius: 10px;
+      }
 
+      .divide { 
+            border-top        : 1px solid var(--color-border-primary);
+            text-align        : center;
+            padding           : 10px;
+            display           : block;
+            width             : 100%;
+            margin            : 30px 0;
+            font-size         : 120%;
+      }
+
+      .divide b {
+            display           : inline-block;
+            margin-top        : -21px;
+            background        : #FFF;
+            padding           : 0 10px;
+      }
+
+      button.icon { 
+            display           : table;
+            width             : 100%;
+            font-size         : 1.5em;
+            border            : 1px solid #ccc;
+            border-radius     : 10px;
+            margin            : 10px 0;
+            text-align        : center;
+            background        : #FFF;
+            overflow          : hidden;
+            cursor            : pointer;
+      }
+
+      button.icon i { 
+            display           : table-cell;
+            width             : 20%;
+            text-align        : right;
+            font-size         : 1em;
+            padding           : 20px 20px 20px 0;
+            vertical-align    : middle;
+            background        : #000;
+      }
+
+      button.icon span { 
+            display           : table-cell;
+            width             : 9999px;
+            vertical-align    : middle;
+            text-align        : left;
+            padding           : 20px 0 20px 20px;
+            color             : #FFF;
+            background        : #000;
+      }
+
+      button.icon.social  { 
+            width             : 80%;
+            margin            : 10px auto;
+      }
+
+      button.icon.social i { 
+            width             : 20%;
+      }
+
+      button.icon i,
+      button.icon span {
+            color             : #FFF;
+      }
+
+      button.icon span {
+            opacity           : 0.8;
+      }
+
+      button.icon:hover i {        
+            color             : #FFF;
+      }      
+
+      button.icon:hover span {
+            opacity                : 1;
+            color                  : #FFF;
+      }
+
+      button.google i,
+      button.google span {
+            background        : var(--color-brand-google);
+      } 
+
+      button.apple i,
+      button.apple span {
+            background        : var(--color-brand-apple);
+      } 
+
+      button.twitter i,
+      button.twitter span {
+            background        : var(--color-brand-twitter);
+      } 

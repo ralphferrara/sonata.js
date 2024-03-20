@@ -1,0 +1,19 @@
+
+<section class="modal verification" id="modalVerification">
+      <div class="content"> 
+            <a class="close" href="#">&times;</a>
+
+            <hr class="divide">
+
+            <form action="/auth/verify" method="post" id="verificationCode">
+                  <h2>[[Enter Verification Code]]</h2>
+                  
+                  <div class="form-group" data-validation="code" data-error="[[Please enter a valid verification code]]" data-label="[[Verification Code]]">
+                        <label for="code"></label>
+                        <input name="code" placeholder="" pattern ="\d{6}" maxlength="6" type="text" class="form-control verificationCode" id="code" aria-describedby="" value="">
+                  </div>
+                  <input type="submit" class="btn btn-primary" value=" [[Verify]] " />
+            </form>
+
+      </div>
+</section>

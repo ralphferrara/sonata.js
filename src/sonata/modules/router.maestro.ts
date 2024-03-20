@@ -7,13 +7,21 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import * as fsSync                               from "fs";
+      import * as fsSync                                    from "fs";
+      import { minify }                                     from 'terser';
+      import CleanCSS                                       from 'clean-css';
+      import { promisify }                                  from 'util';
+      import { gzip }                                       from 'zlib';      
 
-      import  app                                      from "../app.js"
-      import  Chirp                                    from "../utils/chirp.js"
-      import  FileWatcher                              from "../utils/filewatcher.js"
-      import  Router                                   from "../utils/router.js"
-      import  { Route, FileWatcherObject, ParseData }  from "../utils/.interfaces.js"
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Local Imports
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      import  app                                           from "../app.js"
+      import  Chirp                                         from "../utils/chirp.js"
+      import  FileWatcher                                   from "../utils/filewatcher.js"
+      import  Router                                        from "../utils/router.js"
+      import  { Route, FileWatcherObject, ParseData }       from "../utils/.interfaces.js"
  
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -68,7 +76,6 @@
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
-                        console.log('RELOADING MAESTRO');
                         var css = "";
                         var js  = "";
                         this.list = {};
@@ -77,10 +84,24 @@
                         }
                         var orderCSS = app("config", "maestro").order.css;
                         var orderJS  = app("config", "maestro").order.js;
-                        for (const item of orderCSS) if (this.list[item] !== undefined) css = css + "\n" + this.list[item];                        
-                        for (const item of orderJS)  if (this.list[item] !== undefined) js  = js  + "\n" + this.list[item];
+                        const cleanCSS = new CleanCSS({});
+                        for (const item of orderCSS) { 
+                              if (this.list[item] !== undefined) {
+                                    const output = cleanCSS.minify(this.list[item]);
+                                    if (output.styles) {
+                                        css += "\n" + output.styles;
+                                    }                                    
+                              }
+                        }
+                        for (const item of orderJS)  {
+                              const result = await minify(this.list[item]);
+                              if (result.code) js += "\n" + result.code;
+                        }
+                        const gzipPromise = promisify(gzip);
+                        const compressedCss = await gzipPromise(css);
+                        const compressedJs  = await gzipPromise(js);
                         app('maestro', 'css', css); 
-                        app('maestro', 'js',  js);
+                        app('maestro', 'js',  compressedJs);
                         app.recache(true);
                   };                                              
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

@@ -60,8 +60,6 @@
                         contentType = 'application/json';
                         data        = JSON.stringify(data);
                   }
-                  console.log(options);
-                  console.log(contentType);
                   return this.response.respond(status, data, contentType, options);
             }
 

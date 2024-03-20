@@ -21,6 +21,7 @@
                         case 'debug'    : this.echo(message, 'DBUG', 'fgGreen');    break;
                         case 'success'  : this.echo(message, '   ►', 'fgBlue');     break;
                         case 'timer'    : this.echo(message, '   ∞', 'fgCyan');     break;
+                        case 'question' : this.question(message); break;
                         case 'head'     : this.head(message); break;
                         case 'break'    : 
                               this.head(message, 'bgRed');
@@ -56,6 +57,23 @@
                   console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(width) + this.color('reset'));
                   console.log('');
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Head
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+            question(message : string | string[], color : string = 'bgYellow') {
+                  const width = 120;
+                  console.log('');
+                  console.log(this.color(color) + this.color('fgBlack') + ' '.padEnd(width) + this.color('reset'));
+                  const lines = (typeof(message) == 'string')  ? [message] : message;
+                  for (const line of lines) {
+                        const indent = '  ' + line + ' '.padEnd(width - line.length - 2);
+                        console.log(this.color(color) + this.color('fgBlack') + indent + this.color('reset'));
+                  }
+                  console.log(this.color(color) + this.color('fgWhite') + ' '.padEnd(width) + this.color('reset'));
+                  console.log('');
+            }                             
                                     
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Color

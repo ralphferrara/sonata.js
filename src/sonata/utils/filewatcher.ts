@@ -33,7 +33,7 @@
             public fileMatch        : string | null;
             public extMatch         : string | null;
             public watch            : boolean;
-            public callback         : Function;
+            public callback         : (structure: FileWatcherObject[]) => void | Promise<void>;
             private scanning        : boolean;
             public resizeImage      : number | null = null;
 
@@ -156,9 +156,12 @@
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Callback
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            public handleCallback():void { 
-                  this.callback(this.list);
+            
+            public async handleCallback(): Promise<void> {
+                  const callbackResult = this.callback(this.list);
+                  if (callbackResult instanceof Promise) {
+                      await callbackResult; // Wait for the promise to resolve if the callback is async
+                  }
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
