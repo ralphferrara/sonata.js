@@ -1,6 +1,6 @@
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-//|| SCM :: Abstract 
-//|| Mysql :: Table Logins
+//|| SCM :: Abstract
+//|| Mysql :: Table Blogs
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -8,50 +8,50 @@
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
         import { Kysely, MysqlDialect } from 'kysely';
-
-        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-        //|| Interface
-        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-        import TableLogins from "./.interface.logins";
-        import db from "../connection";
+        import TableBlogs               from "./.interface.blogs";
+        import db                       from "../connection";
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Abstract Class
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        export default class AbstractLogins {
+        export default class AbstractBlogs {
         
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                //|| Email Exists
+                //|| Add a new Blog 
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-                static async checkLoginExistsByEmail(loginEmail: string): Promise<boolean> {
-                        const result = await db
-                                .selectFrom('logins')
-                                .select('id_login') 
-                                .where('login_email', '=', loginEmail)
-                                .executeTakeFirst();
-                        return result !== undefined;
+                
+                static async addBlog(blogData: TableBlogs): Promise<number> {
+                        const [newBlogId] = await db
+                                .insertInto('blogs')
+                                .values(blogData)
+                                .returning('id_blog')
+                                .execute();
+                        return newBlogId;
                 }
 
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                //|| Phone # Exists
+                //|| Fetch the Top Blog Posts
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async checkLoginExistsByPhone(loginPhone: string): Promise<boolean> {
+                static async fetchTopPublicBlogs(): Promise<TableBlogs[]> {
                         const result = await db
-                                .selectFrom('logins')
-                                .select('id_login') 
-                                .where('login_phone', '=', loginPhone)
-                                .executeTakeFirst();
-                        return result !== undefined;
+                        .selectFrom('blogs')
+                        .innerJoin('slugs', 'slugs.fid_area', 'blogs.id_blog')
+                        .select([
+                            'blogs.id_blog',
+                            'blogs.blog_title',
+                            'blogs.fid_media_profile',
+                            'blogs.blog_timestamp',
+                            'slugs.slug_slug'
+                        ])
+                        .where('slugs.slug_area', '=', 'BL')
+                        .where('blogs.blog_area', '=', 'SW')
+                        .execute();                    
+                        return result;
                 }
 
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                 //|| EOC
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
         }
-
-                
-        

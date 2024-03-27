@@ -1,16 +1,15 @@
-
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
 //|| SCM :: Abstract 
-//|| Mysql :: Table Logins
+//|| Kysely Database Connection
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Depends
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        import { Kysely, MysqlDialect } from 'kysely'
-        import * as mysql from 'mysql2'
-        import {TrueDatabase} from "./database"
+        import { Kysely, MysqlDialect }                 from 'kysely'
+        import * as mysql                               from 'mysql2'
+        import {TrueDatabase}                           from "./database"
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Import
@@ -21,15 +20,22 @@
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Import
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        console.log({
+                host            : app("config", "databases").main.host,
+                user            : app("config", "databases").main.username,
+                password        : app("config", "databases").main.password,
+                database        : app("config", "databases").main.database
+        });
         
         const db = new Kysely<TrueDatabase>({
                 dialect         : new MysqlDialect({
-                        pool: mysql.createPool({
-                                host: '127.0.0.1',
-                                user: 'root',
-                                password: 'example',
-                                database: 'true_next',
-                              }),
+                        pool    : mysql.createPool({
+                                host            : app("config", "databases").main.host,
+                                user            : app("config", "databases").main.username,
+                                password        : app("config", "databases").main.password,
+                                database        : app("config", "databases").main.database
+                        }),
                 }),
         })
         

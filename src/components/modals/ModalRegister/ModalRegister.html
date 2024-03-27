@@ -1,8 +1,5 @@
 <section class="content register" id="modalRegister">
-        <div class="sm-hidden w-50 h-fill bg-image-cover" style="background-image: url(/public/img/home.main.jpg);">
-              test
-        </div>
-        <div class="sm:w-100 w-50 h-fill flex-center">
+        <div class="">
               <div class="border-box form">
                     <form action="/auth/register" method="post" id="registerEmail">
                           <h2>[[Register with Email address]]</h2>
@@ -11,23 +8,23 @@
                                 <label for="registerEmail"></label>
                                 <input name="email" type="email" class="form-control" id="registerEmail" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
                           </div>
-                          <button  class="icon" /><i class="fas fa-envelope"></i><span>[[Register]]</span></button>
+                          <button  class="icon" /><i class="fas fa-envelope"></i><span>[[REGISTER]]</span></button>
                     </form>
                     <div class="divide"><b>or</b></div>
 
                     <button class="icon social google">
-                          <i class="fab fa-google"></i>
-                          <span>[[Continue with <b>Google</b>]]</span>
+                          <i><FontAwesomeIcon icon="faGoogle" /></i>
+                          <span>[[CONTINUE_WITH]] <b>Google</b></span>
                     </button>
 
                     <button class="icon social twitter">
-                          <i class="fab fa-twitter"></i>
-                          <span>[[Continue with <b>Twitter</b>]]</span>
+                        <i><FontAwesomeIcon icon="faTwitter" /></i>
+                          <span>[[CONTINUE_WITH]] <b>Twitter</b></span>
                     </button>     
 
                     <button class="icon social apple">
-                          <i class="fab fa-apple"></i>
-                          <span>[[Continue with <b>Apple</b>]]</span>
+                        <i><FontAwesomeIcon icon="faApple" /></i>
+                          <span>[[CONTINUE_WITH]] <b>Apple</b></span>
                     </button>                              
 
               </div>

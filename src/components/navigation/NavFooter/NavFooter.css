@@ -3,38 +3,122 @@
 //|| Nav :: Footer
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Main
-      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-        footer {
-                width           : 100%;
-                border          : 1px solid red;
-                padding         : 0 20px;
-                background      : var(--nav-color-footer-bg);     
-                color           : #FFF;     
-
-        }
-
-        footer nav { 
-                display         : flex;
-                justify-content : space-between;
-                align-items     : center;
-                padding         : 1rem 0;
-                font-size       : 90%; 
-        }
-
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Main
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        footer ul.runner {
-                display         : flex;
-                justify-content : space-between;
-                align-items     : center;                
-                padding         : 1rem 0;
-                font-size       : 80%; 
-                color           : rgba(255,255,255,0.5);
-                text-align      : center;
-                width           : 100%;                
-        }{
+        footer {
+        background-color: #343a40; /* Dark background for the footer */
+        color: #ffffff; /* Light text color for contrast */
+        padding: 2rem 0; /* Top and bottom padding */
+        font-family: Arial, sans-serif; /* Example font */
+        }
+
+        footer nav.overview {
+        display: flex;
+        justify-content: space-around; /* Evenly space the sections */
+        flex-wrap: wrap; /* Allow wrapping for responsiveness */
+        max-width: 1200px; /* Maximum width to contain the flex items */
+        margin: 0 auto; /* Center the nav */
+        padding: 0 20px; /* Padding on sides */
+        }
+
+        footer nav.overview > section {
+        margin: 1rem; /* Spacing around sections */
+        flex-basis: 20%; /* Base width of each section */
+        min-width: 180px; /* Minimum width for responsiveness */
+        }
+
+        footer nav.overview > section h5 {
+        margin-bottom: 1rem; /* Space below section headers */
+        color: #ffc107; /* Highlight color for headers */
+        text-transform: uppercase; /* Stylistic choice for headers */
+        }
+
+        footer nav.overview ul.link-list {
+        list-style: none; /* Remove default list styling */
+        padding: 0; /* Remove default padding */
+        margin: 0; /* Remove default margin */
+        }
+
+        footer nav.overview ul.link-list li {
+        margin: 0.5rem 0; /* Margin between list items */
+        }
+
+        footer nav.overview ul.link-list li a {
+        color: #ffffff; /* Match text color to footer */
+        text-decoration: none; /* Remove underline */
+        transition: color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        footer nav.overview ul.link-list li a:hover {
+        color: #ffc107; /* Highlight color when hovered */
+        }
+
+        footer nav.overview ul.link-list li a svg {
+                width                   : 20px;
+                height                  : auto; 
+                vertical-align          : middle;
+                margin-right            : 8px;
+                fill                    : currentColor;
+        }
+
+        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+        //|| Footer Address
+        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        footer nav.overview section.address address {
+                line-height             : 2;
+                font-size               : 0.8em;
+        }
+
+
+        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+        //|| Footer Blog Posts
+        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        footer nav.overview section.blog li {
+                display                 : grid;
+                grid-template-columns   : 58px 1fr; /* Two columns */
+                padding                 : 10px 0;
+        }
+
+        footer nav.overview section.blog li a.footerBlogImg img {
+                border-radius           : 50%;
+        }
+
+        footer nav.overview section.blog li a.footerBlogText {
+                display                 : block;
+                width                   : 100%;
+                margin                  : 0;  
+        }
+
+        footer nav.overview section.blog li a.footerBlogText b {
+                font-weight             : bold;
+                display                 : block;
+                width                   : 100%;
+                font-size               : 0.8em;
+                margin                  : 10px 0 0 0;
+        }
+
+        footer nav.overview section.blog li a.footerBlogText small {
+                font-weight             : normal;
+                color                   : #CCC;
+                display                 : block;
+                width                   : 100%;
+                margin                  : 0;
+                font-size               : 0.7em;
+                padding-left            : 2px;
+                padding                 : 5px 0;
+        }
+
+        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+        //|| Footer Disclaimer
+        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+        footer.disclaimer {
+                background              : rgba(0,0,0,0.9);
+                text-align              : center;
+                font-size               : 0.8em;
+                color                   : #CCC;  
+        }

@@ -1,0 +1,26 @@
+section.content.register {
+        max-width       : 40%;
+        border          : 1px solid #CCC;
+}
+
+section.modal.register div.content {
+        display         : block;
+        height      : 40%;
+        width       : 40%;
+        top         : 50%;
+        left        : 50%;
+        margin      : -10% auto auto -20%;
+        min-height  : 325px;
+  }
+
+  section.modal.register div.content h2 {
+        margin      : 20px 0 20px 0;
+  }
+
+  div.form-group input.verificationCode {
+        font-size      : 200%;
+        letter-spacing : 50px;
+        text-align     : center;            
+        border-radius  : 0;
+  }
+

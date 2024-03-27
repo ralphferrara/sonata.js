@@ -1,104 +1,41 @@
 <footer>
         <nav class="overview desktop table">
-                <section class="company"><a href="/" class="brand logo"></a>
-                        <ul class="spread">
-                                <li class="address">
-                                        <address>
-                                                <p>SocialCo Media, LLC</p>
-                                                <p>13026 N Cave Creek Rd</p>
-                                                <p>Suite 203</p>
-                                                <p>Phoenix, AZ USA</p>
-                                                <p>+1-602-456-2533</p>
-                                        </address>
-                                </li>
-                                <li class="contact-us"><a title="Contact Us" href="/contact/" class="button">Contact
-                                                Us</a><a style="margin-top:5px;" title="Report a bug" rel="noopener"
-                                                target="_blank" class="button"
-                                                href="http://bugs.socialco.media/create/o4t078gwe34roaseg/"><i
-                                                        class="fa fa-bug" style="padding: 0 3px;"></i> Report a Bug</a>
-                                </li>
+                <section class="address">
+                        <h5>Our Company</h5>
+                        <address>
+                                {{COMPANY_NAME}}<br>
+                                {{COMPANY_ADDRESS}}<br>
+                                {{COMPANY_CITY}} {{COMPANY_STATE}} {{COMPANY_ZIP}} {{COMPANY_COUNTRY}}<br>
+                                {{COMPANY_PHONE}}<br>
+                                {{COMPANY_EMAIL}}<br>
+                        </address>
+                </section>
+                <section class="blog">
+                        <h5>Latest Blog Posts</h5>
+                        <ul>
+                                {{BLOGLINKS}}
                         </ul>
                 </section>
-                <section class="blog"><span class="headline">
-                                <h5>Latest Blog Posts</h5>
-                        </span>
-                        <li><a href="/blog/forums-site-content-deletion/" class="img" title="Site content update."><img
-                                                src="https://cloud.truenudists.com/media/5/6/3/5632842c6ea5c57f54c82b013ebfba98b850a208.jpg"
-                                                alt="Cover for Site content update."></a><a
-                                        href="/blog/forums-site-content-deletion/" class="post"
-                                        title="Site content update.">Site content update.<small>December 12, 
-                                                2023</small></a></li>
-                        <li><a href="/blog/ournakedstory-podcast/" class="img"
-                                        title="We were on a Podcast!"><img
-                                                src="https://cloud.truenudists.com/media/9/7/2/9720feef8faa475eee829d160f1c0b869ecbcefb.jpg"
-                                                alt="Cover for We were on the Our Naked Story Podcast!"></a><a
-                                        href="/blog/ournakedstory-podcast/" class="post"
-                                        title="We were on the Our Naked Story Podcast!">We were on a
-                                        Podcast!<small>December 07, 2023</small></a></li>
-                        <li><a href="/blog/youtube-censorship-nudism-nudity/" class="img"
-                                        title="Youtube Shut us down again!"><img
-                                                src="https://cloud.truenudists.com/media/3/7/1/371c64d554b1de8d55032c95a89b8e79e758f0e1.jpg"
-                                                alt="Cover for Youtube Shut us down again!"></a><a
-                                        href="/blog/youtube-censorship-nudism-nudity/" class="post"
-                                        title="Youtube Shut us down again!">Youtube Shut us down again!<small>November
-                                                22, 2023</small></a></li><i style="font-size:8pt;color:#999">as of
-                                03/20/2024 8:18:36</i>
-                </section>
-                <section class="links"><span class="headline">
-                                <h5>Browsing the Site</h5>
-                        </span>
+                <section class="links">
+                        <h5>Browsing the Site</h5>
                         <ul class="link-list">
-                                <li><a title="Sitewide Feed" href="/feed/">Feed</a></li>
-                                <li><a title="Search over over 550k Burners" href="/search/">Search Profiles</a></li>
-                                <li><a title="Browse local Burners" href="/browse/">Browse local burners</a></li>
-                                <li><a title="Nudist Video Chat" href="/chat/">Video Chat Room</a></li>
-                                <li><a title="Nudist Forum" href="/forum/">Discussion Forum</a></li>
-                                <li><a title="Nudist Pics/Videos" href="/gallery/">Picture/Video Gallery</a></li>
-                                <li><a title="Worldwide Burner Groups" href="/groups/">Groups</a></li>
-                                <li><a title="Worldwide Burner Locations" href="/locations/">Beaches and Resorts</a>
-                                </li>
-                                <li><a title="Worldwide Nudist Events" href="/events/">Local Events</a></li>
-                                <li><a title="Join our affiliate program" href="https://affiliates.socialco.media"
-                                                target="_blank" rel="noopener">Become an Affiliate</a></li>
-                                <li class="members block"><a title="My Feed - Members" href="/members/">Members Area</a>
-                                </li>
-                                <li class="public block"><a title="Create a free accoun" href="/signup/">Create an
-                                                Account</a></li>
-                                <li class="public block"><a title="Login to your account" href="/login/">Login to your
-                                                members</a></li>
+                                {{MAINLINKS}}
                         </ul>
                 </section>
-                <section class="links company"><span class="headline">
-                                <h5>Company Info</h5>
+                <section class="links company">
+                        <h5>Company Info</h5>
                         </span> 
                         <ul class="link-list">
-                                <li><a title="About Us" href="/about/">About Us</a></li>
-                                <li><a title="Contact Us" href="/contact/">Contact Us</a></li>
-                                <li><a title="Our Blog" href="/blog/">Our Blog</a></li>
-                                <li><a title="Terms of Service" href="/legal/terms-of-use/">Terms of Service</a></li>
-                                <li><a title="Our return policy" href="/legal/return-policy/">Return/Refund Policy</a>
-                                </li>
-                                <li><a title="Our privacy policy" href="/legal/privacy-policy/">Privacy Policy</a></li>
-                                <li><a title="File a copyright complaint" href="/legal/copyright/">Copyright
-                                                Complaints</a></li>
-                                <li><a title="Report a Bug" rel="noopener" target="_blank"
-                                                href="http://bugs.scmmesh.com/create/o4t078gwe34roaseg/">Report a
-                                                Bug/Issue</a></li>
-                                <li class="button"><button title="Payment Wizard"
-                                                onclick="window.location.href='/help/payments/';">Having Payment
-                                                Issues?</button></li>
+                                {{COMPANYLINKS}}
                         </ul>
                         <section></section>
                 </section>
         </nav>
+</footer>
+<footer class="disclaimer">
         <ul class="runner">
                 <li class="copyright desktop cell">
-                        <p>2007 - 2024 © All Rights Reserved. SocialCo Media, LLC. - <a href="/legal/terms-of-use/">"All
-                                        models featured on this website are 18 years of age or older as required by 18
-                                        U.S.C. § 2257.</a></p>
-                        <p>True Nudists is for genuine burners, if you are seeking sexual content please use <a
-                                        target="_blank" href="https://www.trueswingers.com"
-                                        title="Visit True Swingers">trueswingers.com</a>.</p>
+                        2007 - {{{YEAR}}} © {{COMPANY_NAME}}
                 </li>
                 <li class="social facebook"><a target="_blank" rel="noopener publisher"
                                 href="https://www.facebook.com/pages/truenudistscom/184557604923252" title="Facebook"><i

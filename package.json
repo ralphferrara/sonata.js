@@ -38,6 +38,7 @@
       },
       "dependencies": {
             "@fortawesome/fontawesome-svg-core": "^6.5.1",
+            "@fortawesome/free-brands-svg-icons": "^6.5.1",
             "@fortawesome/free-solid-svg-icons": "^6.5.1",
             "@sendgrid/mail": "^7.4.6",
             "@types/mongodb": "^4.0.7",
@@ -45,6 +46,7 @@
             "clean-css": "^5.3.3",
             "crypto": "latest",
             "fs": "^0.0.1-security",
+            "kysely": "^0.27.3",
             "mysql2": "^latest",
             "sendgrid": "^5.2.3",
             "terser": "^5.29.2",

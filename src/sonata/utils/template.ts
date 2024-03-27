@@ -13,6 +13,7 @@
       import  Components                    from '../modules/router.components.js';
       import  Views                         from '../modules/router.views.js';
       import { ParseData, ComponentData }   from '../utils/.interfaces.js';
+      import  Lang                          from '../utils/lang.js';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -127,20 +128,46 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.html = dom.window.document.documentElement.outerHTML;              
             }
+
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Constructor
+            //|| Replace Markers
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             replace() {
-                  let updatedHtml = this.html;
+                  let updatedHTML = this.html;
                   for (const marker in this.markers) {
                         if (this.markers.hasOwnProperty(marker)) {
                               const markerValue = this.markers[marker];
                               const markerRegex = new RegExp(`{{${marker}}}`, 'g');
-                              updatedHtml = updatedHtml.replace(markerRegex, markerValue);
+                              updatedHTML = updatedHTML.replace(markerRegex, markerValue);
                         }
                   }
-                  this.html = updatedHtml;
+                  this.html = updatedHTML;
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Replace Markers
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            dynamic() {
+                  let updatedHTML   = this.html;
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Dates
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  updatedHTML       = updatedHTML.replace(/{{{YEAR}}}/g, new Date().getFullYear().toString());
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Dynamic Config File
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  const dynamicMarkers = app('config', 'dynamic');
+                  for (const marker in dynamicMarkers) {
+                        if (dynamicMarkers.hasOwnProperty(marker)) {
+                              const markerValue = dynamicMarkers[marker];
+                              const markerRegex = new RegExp(`{{${marker}}}`, 'g');
+                              updatedHTML = updatedHTML.replace(markerRegex, markerValue);
+                        }
+                  }
+
+                  this.html         = updatedHTML;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -155,6 +182,8 @@
                   await this.load();
                   await this.components();
                   await this.replace();        
+                  await this.dynamic();
+                  this.html = await Lang.parse(this.html, 'en');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Return Page Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
