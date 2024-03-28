@@ -50,34 +50,42 @@
             //|| Parse
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static parse(html:string, lang:string) {
-                  var markers      : { [key: string]: string } = {};
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Load the Original Language file
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-                  markers = {};
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Find all instances
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const regex = /\[\[([\s\S]*?)\]\]/g;
-                  const matches = [];
+            static parse(html: string, lang: string): string {
+                  const regex = /\[\[(C:)?([\w]+)\]\]/g;
+                  let str     = app.str(html);                  
                   let match;
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Write the Original Language
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   while ((match = regex.exec(html)) !== null) {
-                        if (markers[match[1]] === undefined) markers[match[1]] = match[1];
+                      const isCapitalized = Boolean(match[1]); // Check if it's a capitalized marker
+                      const key           = match[2];
+                      let replacementText = this.routeTranslation(key, lang);          
+                      replacementText     = (isCapitalized) ? app.str(replacementText).capitalize().toString() : replacementText;
+                      const marker        = (isCapitalized) ? `[[C:${key}]]` : `[[${key}]]`;
+                      str                 = str.replaceAll(marker, replacementText);
                   }
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Clear
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  for (var key in markers) {
-                        console.log('Replacing : ' + key + ' with ' + markers[key]);
-                        html = html.replace('[[' + key + ']]', markers[key]);
-                  }
-                  return html;
-            }            
+                  return str.toString();
+              }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Route Translation
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static routeTranslation(key:string, lang:string) {                                    
+                  if (app.lang.list[key] === undefined) return '!!' + key + '!!';
+                  if (lang === app('config', 'languages').root) return app.lang.list[key].rootValue;
+                  if (app.lang.list[key].locale[lang] === undefined) return '!!!' + key + '!!!';
+                  return app.lang.list[key].locale[lang];
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Route Error
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            routeError(key:string, lang:string) {                                    
+                  if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';
+                  if (lang === app('config', 'languages').root) return app.lang.list['ERROR_' + key].rootValue;
+                  if (app.lang.list['ERROR_' + key].locale[lang] === undefined) return '!!!' + key + '!!!';
+                  return app.lang.list['ERROR_' + key].locale[lang];
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init
@@ -107,7 +115,9 @@
                                     var keyName = item.relative.replace(app('config', 'languages').path + '/', '');
                                     if (item.contents === null) return null; // Continue in async
                                     if (keyName.startsWith('blurb')) {
-                                          await this.add('blurb', app.path(keyName).base().toUpperCase(), item.contents.toString());
+                                          await this.add('blurb', 'BLURB_' + app.path(keyName).base().toUpperCase(), item.contents.toString());
+                                    } else if (keyName.startsWith('errors')) {
+                                          await this.add('error', 'ERROR_' + app.path(keyName).base().toUpperCase(), item.contents.toString());
                                     } else {
                                           try {
                                                 var fileJSON = JSON.parse(item.contents.toString());

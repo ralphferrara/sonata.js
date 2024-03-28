@@ -1,32 +1,37 @@
 <section class="content register" id="modalRegister">
-        <div class="">
-              <div class="border-box form">
-                    <form action="/auth/register" method="post" id="registerEmail">
-                          <h2>[[Register with Email address]]</h2>
-                          <input type="hidden" name="registerType" value="email" />
-                          <div class="form-group" data-validation="email" data-error="[[Please enter a valid email address]]" data-label="[[Email address]]">
-                                <label for="registerEmail"></label>
-                                <input name="email" type="email" class="form-control" id="registerEmail" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
-                          </div>
-                          <button  class="icon" /><i class="fas fa-envelope"></i><span>[[REGISTER]]</span></button>
-                    </form>
-                    <div class="divide"><b>or</b></div>
+      <div class="">
+            <div class="border-box form">
+                  <form action="/auth/register" method="post" id="registerEmail">
+                        <h2>[[REGISTER_WITH_EMAIL_ADDRESS]]</h2>
+                        <input type="hidden" name="registerType" value="email" />
+                        <div class="form-group" data-validation="email"
+                              data-error="[[Please enter a valid email address]]" data-label="[[Email address]]">
+                              <label for="registerEmail"></label>
+                              <input name="email" type="email" class="form-control" id="registerEmail"
+                                    aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
+                        </div>
+                        <button class="icon" />
+                              <i><FontAwesomeIcon icon="faChevronRight" /></i>
+                              <span>[[C:REGISTER]]</span>
+                        </button>
+                  </form>
+                  <div class="divide"><b>[[OR]]</b></div>
 
-                    <button class="icon social google">
-                          <i><FontAwesomeIcon icon="faGoogle" /></i>
-                          <span>[[CONTINUE_WITH]] <b>Google</b></span>
-                    </button>
+                  <button class="icon social google">
+                        <i><FontAwesomeIcon icon="faGoogle" /></i>
+                        <span>[[C:CONTINUE_WITH]] <b>Google</b></span>
+                  </button>
 
-                    <button class="icon social twitter">
+                  <button class="icon social twitter">
                         <i><FontAwesomeIcon icon="faTwitter" /></i>
-                          <span>[[CONTINUE_WITH]] <b>Twitter</b></span>
-                    </button>     
+                        <span>[[C:CONTINUE_WITH]] <b>Twitter</b></span>
+                  </button>
 
-                    <button class="icon social apple">
+                  <button class="icon social apple">
                         <i><FontAwesomeIcon icon="faApple" /></i>
-                          <span>[[CONTINUE_WITH]] <b>Apple</b></span>
-                    </button>                              
+                        <span>[[C:CONTINUE_WITH]] <b>Apple</b></span>
+                  </button>
 
-              </div>
-        </div>                   
-  </section>
+            </div>
+      </div>
+</section>

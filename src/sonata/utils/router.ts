@@ -9,6 +9,7 @@
 
       import  app                               from "../app.js"
       import  Assets                            from "../modules/router.assets.js"
+      import  Endpoints                         from "../modules/router.endpoints.js"
       import  Maestro                           from "../modules/router.maestro.js"
       import  Pages                             from "../modules/router.pages.js"
       import  Chirp                             from "./chirp.js"
@@ -71,6 +72,21 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the Route
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (typeof(chirp) === "undefined") {
+                        console.log("BAD CHIRP : ");
+                        console.log(chirp);
+                        return;
+                  }
+                  if (typeof(chirp.request) === "undefined") {
+                        console.log("BAD CHIRP REQUEST: ");
+                        console.log(chirp);
+                        return;
+                  }
+                  if (typeof(chirp.request.url) === "undefined") {
+                        console.log("BAD CHIRP URL: ");
+                        console.log(chirp.request);
+                        return;
+                  }
                   var url = this.routeFix(chirp.request.url);
                   app.log("Checking Main Router : " + url, "info");
                   var myRoute = app("routes", url);
@@ -85,11 +101,11 @@
                   //|| Route by Type
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   switch(myRoute.type) { 
-                        case "asset"      : return Assets.route(myRoute, chirp); break;
-                        case "maestro"    : return Maestro.route(myRoute, chirp); break;
+                        case "asset"        : return Assets.route(myRoute, chirp); break;
+                        case "maestro"      : return Maestro.route(myRoute, chirp); break;
                         //case "component"  : return Components.route(myRoute, chirp); break;
-                        case "page"       : return Pages.route(myRoute, chirp); break;
-                        //case "endpoint"   : return Endpoints.route(myRoute, chirp); break;
+                        case "page"         : return Pages.route(myRoute, chirp); break;
+                        case "endpoint"     : return Endpoints.route(myRoute, chirp); break;
                         //case "socket"     : return Sockets.route(myRoute, chirp); break;
                         //case "internal"   : return Internals.route(myRoute, chirp); break;
                   }

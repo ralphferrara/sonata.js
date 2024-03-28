@@ -1,7 +1,7 @@
 {
-        "WELCOME_HOME_PAGE"     : "Welcome to the Home Page",
-        "WELCOME_BACK"          : "Welcome Back",
-        "EMAIL_OR_PHONE"        : "Email or Phone",
-        "CONTINUE_WITH"         : "Continue with"
-
+        "WELCOME_HOME_PAGE"                     : "Welcome to the Home Page",
+        "WELCOME_BACK"                          : "Welcome Back",
+        "EMAIL_OR_PHONE"                        : "Email or Phone",
+        "CONTINUE_WITH"                         : "Continue with",
+        "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address"
 }

@@ -1,5 +1,22 @@
 {
+        "ABOUT"    : "about",
+        "ACCOUNT"  : "account",
+        "ACTIVITY" : "activity",
+        "BLOG"     : "blog",
+        "BLOGS"    : "blogs",
+        "CALENDAR" : "calendar",
+        "CHAT"     : "chat",
+        "EVENTS"   : "events",
+        "FEED"     : "feed",
+        "FORUM"    : "forum",
+        "GALLERY"  : "gallery",
+        "GROUPS"   : "groups",
+        "HOME"     : "home",
+        "LOGOUT"   : "logout",
+        "LOCATIONS": "locations",
         "LOGIN"    : "login",
+        "OR"       : "or",
+        "REGISTER" : "register",
         "SIGNUP"   : "signup",
-        "REGISTER" : "register"
+        "SEARCH"   : "search"
 }

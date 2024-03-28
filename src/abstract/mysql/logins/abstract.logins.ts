@@ -13,8 +13,7 @@
         //|| Interface
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        import TableLogins from "./.interface.logins";
-        import db from "../connection";
+        import app                     from "../../../sonata/app.js";
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Abstract Class
@@ -27,6 +26,7 @@
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
                 static async checkLoginExistsByEmail(loginEmail: string): Promise<boolean> {
+                        const db = await app.db('main').kysely();
                         const result = await db
                                 .selectFrom('logins')
                                 .select('id_login') 

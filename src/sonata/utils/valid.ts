@@ -14,7 +14,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       valid.phone = (value: string | undefined): boolean => {
-            if (value === undefined) return false;
+            if (value === undefined || value === null) return false;
             if (value.length < 9) return false;
             const phoneRegex = /^(?:\+\d{1,3}|0\d{1,3}|00\d{1,2})?(?:\s?\(\d+\))?(?:[-\/\s.]|\d)+$/;
             if (value !== undefined && phoneRegex.test(value)) return true;

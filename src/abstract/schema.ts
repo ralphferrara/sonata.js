@@ -7,14 +7,14 @@
         //|| Tables
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        import TableLogins      from "./logins/.interface.logins";
-        import TableBlogs       from "./blogs/.interface.blogs";
+        import TableLogins      from "./mysql/logins/.interface.logins";
+        import TableBlogs       from "./mysql/blogs/.interface.blogs";
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Main True Database
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-        export interface TrueDatabase {
+        export interface Schema {
                 logins          : TableLogins;
                 blogs           : TableBlogs;
         }

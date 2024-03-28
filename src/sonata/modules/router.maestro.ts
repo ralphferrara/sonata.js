@@ -94,6 +94,8 @@
                               }
                         }
                         for (const item of orderJS)  {
+                              if (this.list[item] === undefined) continue;
+                              console.log("MINIFY -> " + typeof(this.list[item]) + " -> " + this.list[item].length);
                               const result = await minify(this.list[item]);
                               if (result.code) js += "\n" + result.code;
                         }
