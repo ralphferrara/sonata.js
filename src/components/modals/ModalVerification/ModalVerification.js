@@ -1,4 +1,4 @@
-$.init('AuthVerification', class { 
+$.init('ModalVerification', class { 
         modal(data) {
               $.modal('modalVerification','verification',{'csrf' : true});
               var keys = Object.keys(data);

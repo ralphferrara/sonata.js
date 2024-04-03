@@ -59,7 +59,7 @@
                   //|| Generate the Function
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   var parseData = await route.object.execute(chirp);
-                  return chirp.respond(200, parseData.html);
+                  //return chirp.respond(200, parseData.html);
             }
 
 

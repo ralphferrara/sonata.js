@@ -41,7 +41,7 @@
             //|| Process Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            native(request: http.IncomingMessage, body: string | undefined) {
+            async native(request: http.IncomingMessage, body: string | undefined) {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process URL
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -55,15 +55,19 @@
                   this.lang         = app("config", "languages").root;
                   this.hostname     = request.headers.host;
                   this.protocol     = (request.url?.startsWith('https://')) ? 'https' : 'http';
+                  this.params       = {};
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Body
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   try { 
-                        if (this.method == 'GET') { 
+                        if (this.method === 'GET') { 
                               this.params = Object.fromEntries(parsedUrl.searchParams.entries());
-                        } else {
-                              if (body === undefined) this.params = {}; else this.params = JSON.parse(body);
-                        }
+                          } else {
+                              const contentType = request.headers['content-type'];
+                              if (body) { 
+                                    if (contentType === 'application/x-www-form-urlencoded') this.params = Object.fromEntries(new URLSearchParams(body).entries()); else this.params = JSON.parse(body);                                  
+                              }                            
+                          }
                   } catch(e) { 
                         this.params = {};
                   }
@@ -93,10 +97,6 @@
                         const preferredLanguage = request.headers['accept-language'].split(',').map(lang => lang.split(';')[0]).find(lang => availableLang.includes(lang));
                         this.lang =  preferredLanguage || this.lang;
                   }
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Return the Request Object
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  return this;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

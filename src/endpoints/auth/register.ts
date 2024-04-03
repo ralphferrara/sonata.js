@@ -9,9 +9,8 @@
 
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
-      import ChirpError             from "../../sonata/utils/chirp.error.js"; 
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js"; 
-      import ValidateLogins         from "../../utils/validate/logins.js";
+      import AbstractLogins         from "../../abstract/logins/logins.exist.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -25,7 +24,6 @@
 
             public name       : string;
             public database   : string;
-            public chirp      : null | Chirp;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -33,7 +31,6 @@
 
             constructor() {
                   this.name         = this.constructor.name;
-                  this.chirp        = null;
                   this.database     = 'main';
             }
 
@@ -43,89 +40,89 @@
 
             async execute(chirp : Chirp): Promise<void> {
                   app.log('AuthRegister : execute()', 'info');
+                  console.log("Execute: ", chirp.request.params);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Process Here
+                  //|| List the Steps
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  try {
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Check if Email or Phone is Valid
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        this.chirp = await ValidateLogins.validateEmailOrPhone(chirp);
-                        if (this.chirp instanceof ChirpError) return;
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Check if Email or Phone already Exists
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        this.chirp = await ValidateLogins.validateExists(chirp);
-                        if (this.chirp instanceof ChirpError) return;
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Check if Email or Phone already Exists
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        await this.verification();
-                        await this.send();
-                        return this.respond();
+                  chirp.step(this.validate);
+                  chirp.step(this.verify);
+                  chirp.step(this.respond);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Process Here
+                  //|| Start
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  } catch (error) {                        
-                         app.log(this.name + ' Failed:' + error, 'error');                        
-                         console.log(error);
+                  return chirp.next();
+            }         
+            
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Validate
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async validate(chirp : Chirp): Promise<void> { 
+                  app.log('AuthRegister : validate()', 'info');
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Basic
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (chirp === null) return chirp.error(500, 'CHP000');
+                  chirp.data('registerType', null);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Register Email
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (app.valid.email(chirp.data('emailOrPhone'))) {
+                        chirp.data('registerType', 'email');
+                        chirp.data('email', chirp.data('emailOrPhone'));
+                        if (await AbstractLogins.existsEmail(chirp.data('email')) === true) return chirp.error(400, 'VEM001');
                   }
-            }            
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Register Email
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (app.valid.phone(chirp.data('emailOrPhone'))) {
+                        chirp.data('registerType', 'phone');
+                        chirp.data('phone', chirp.data('emailOrPhone'));
+                        if (await AbstractLogins.existsPhone(chirp.data('phone')) === true) return chirp.error(400, 'VPH001');
+                  }
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Invalid Email AND Phone
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (chirp.data('registerType') === null) return chirp.error(400, 'VEP001');
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Validation Passed
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  return chirp.next();
+            }                 
        
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Verify
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            async verification(): Promise<void> { 
-                  app.log('AuthRegister : verification()', 'info');
-                  return new Promise(async (resolve, reject) => {
-                        if (this.chirp === null) throw new Error('EAuthRegister[EUD:1] : Chirp is null');
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Generate the Code
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        let result = TwoFactor.generate((this.chirp.data('registerType') == 'phone') ? this.chirp.data('phone') : this.chirp.data('email'));
-                        this.chirp.data('token',       result.token);
-                        this.chirp.data('code',        result.code);
-                        console.log('VERIFICATION CODE: ' + result.code);
-                        if (typeof(result.code) == 'number') resolve(); else reject( { 'errors' : 'EAuthVerify[E001] : Could not generate a verification code. Please try again later.' });
-                  });                  
+            async verify(chirp : Chirp): Promise<void> { 
+                  app.log('AuthRegister : verify()', 'info');
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Generate the Code
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  let result = TwoFactor.generate((chirp.data('registerType') == 'phone') ? chirp.data('phone') : chirp.data('email'));
+                  chirp.data('token',       result.token);
+                  chirp.data('code',        result.code);
+                  console.log('VERIFICATION CODE: ' + result.code);
+                  if (chirp.data('registerType') === 'email') {
+                        //app.senders.get('email').send(chirp.data('email'), 'Verification Code', 'Your verification code is: ' + chirp.data('verification'));
+                  } else { 
+                        //app.senders.get('email').send(chirp.data('phone'), 'Your verification code is: ' + chirp.data('verification'));
+                  }                                               
+                  return chirp.next();
             }            
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Send Verification Code
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-            
-            async send(): Promise<void> {
-                  app.log('AuthRegister : send()', 'info');                  
-                  return new Promise(async (resolve, reject) => {
-                        if (this.chirp === null) throw new Error('EAuthRegister[EUD:1] : Chirp is null')
-                        try { 
-                              const method = (this.chirp.data('registerType') === 'email') ? 'email' : 'sms';
-                              if (method == 'email') { 
-                                    //app.senders.get('email').send(this.chirp.data('email'), 'Verification Code', 'Your verification code is: ' + chirp.data('verification'));
-                              } else { 
-                                    //app.senders.get('email').send(this.chirp.data('phone'), 'Your verification code is: ' + this.chirp.data('verification'));
-                              }                              
-                              resolve();
-                        } catch(error) { 
-                              console.log(error);
-                              reject({ 'errors' : 'EAuthRegister[E005] : Could not send verification code. Please try again later.' });
-                        }
-                  });
-            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Respond with all the valid data
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
 
-            respond(): void {
-                  if (this.chirp === null) throw new Error('EAuthRegister[EUD:1] : Chirp is null')
+            async respond(chirp : Chirp): Promise<void> {
                   var respData = {
-                        token          : this.chirp.data('token'),
-                        registerType   : this.chirp.data('registerType')
+                        token          : chirp.data('token'),
+                        registerType   : chirp.data('registerType')
                   };
-                  this.chirp.respond(200, respData);
+                  return chirp.respond(200, respData);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

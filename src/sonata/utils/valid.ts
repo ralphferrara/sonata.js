@@ -27,6 +27,7 @@
 
       valid.email = (value: string | undefined): boolean => {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            console.log("TEST" + value  + '-->' + emailRegex.test(value));
             if (value !== undefined && emailRegex.test(value)) return true;
             return false;
       }

@@ -26,7 +26,6 @@
       //|| Chirp
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import ChirpError                         from './chirp.error.js';
       import ChirpRequest                       from './chirp.request.js';
       import ChirpResponse                      from './chirp.response.js';
 
@@ -42,15 +41,40 @@
 
             public request      : ChirpRequest;
             public response     : ChirpResponse;
-            public errors       : Array<ChirpError> = [];
+            public errors       : Array<string> = [];
+            public responded    : boolean;
+            private steps       : Array<Function> = [];
+            private currentStep : number;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             constructor(request : ChirpRequest, response : ChirpResponse) {
-                  this.request  = request;
-                  this.response = response;
+                  this.request      = request;
+                  this.response     = response;
+                  this.responded    = false;
+                  this.steps        = [];
+                  this.currentStep  = -1;
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Steps
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            step(step : Function):void {
+                  this.steps.push(step);
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Next
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async next() : Promise<void> {
+                  this.currentStep++;
+                  if (this.currentStep >= this.steps.length) return this.respond(501, {'error' : 'Not Implemented'});
+                  if (typeof(this.steps[this.currentStep]) === 'function') await this.steps[this.currentStep](this); else console.log("Invalid Step", this.steps);
+                  return;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -70,6 +94,8 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             respond(status: ChirpStatusCodes, data:any, options?:ChirpOptions) : any {                  
+                  if (this.responded) return;
+                  this.responded  = true;
                   var contentType = (typeof(options) !== 'undefined' && typeof(options.contentType) !== 'undefined') ? options.contentType : app.path(this.request.url).header();
                   if (typeof(data) == 'object') {
                         contentType = 'application/json';
@@ -82,11 +108,14 @@
             //|| Error
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            error(status: ChirpStatusCodes, errorCode:string, mayContinue?:boolean, options?:ChirpOptions) : Error {                                                      
-                  this.errors.push(new ChirpError(errorCode));
+            error(status: ChirpStatusCodes, errorCode:string, mayContinue?:boolean, options?:ChirpOptions) : void {
+                  this.errors.push(errorCode);
                   var errorMessage = app.lang.routeError(errorCode, this.request.lang);
-                  if (mayContinue !== false) return this.respond(status, {'message' : errorMessage}, options);
-                  return new ChirpError(errorCode);
+                  if (mayContinue !== false) return this.respond(status, {'error' : {
+                        'code'    : errorCode,
+                        'message' : errorMessage
+                  }}, options);
+                  return;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -94,8 +123,10 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             file(status: ChirpStatusCodes, data:any, options?:ChirpOptions) : any {                  
-                  var contentType = app.path(this.request.url).header();
-                  return this.respond(status, data, options);
+                  if (this.responded) return;
+                  this.responded  = true;
+                  var contentType = (typeof(options) !== 'undefined' && typeof(options.contentType) !== 'undefined') ? options.contentType : app.path(this.request.url).header();
+                  return this.response.respond(status, data, contentType, options);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

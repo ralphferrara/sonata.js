@@ -1,10 +1,9 @@
-
-$.init('NavPublic', class {
+$.init('ModalRegister', class {
 
       init() {
-            console.log('Loaded NavPublic');
+            console.log("Loaded AuthRegister");
       }
-      
+
       onError(data) {
             console.log('AUTH REGISTER ERROR');
             console.log(data);
@@ -16,7 +15,7 @@ $.init('NavPublic', class {
             console.log(data);
             $('snackbar').show('Your account has been created. Please check your email/phone for a verification code.');
             $('#modalRegister').hide();
-            $('AuthVerification').modal(data);
+            $('ModalVerification').modal(data);
       };
 
 });

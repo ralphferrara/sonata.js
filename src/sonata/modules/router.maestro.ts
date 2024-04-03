@@ -52,8 +52,8 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Sonata Internal Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  Router.register("/maestro/css",          "GET", () => {},     "maestro");
-                  Router.register("/maestro/js",           "GET", () => {},     "maestro");
+                  Router.register("/maestro.css",          "GET", () => {},     "maestro");
+                  Router.register("/maestro.js",           "GET", () => {},     "maestro");
                   Router.register("/maestro/config/",      "GET", () => {},     "maestro");
                   Router.register("/maestro/cachekey/",    "GET", () => {},     "maestro");
                   Router.register("/maestro/csrf/",        "GET", () => {},     "maestro");                               
@@ -95,13 +95,16 @@
                         }
                         for (const item of orderJS)  {
                               if (this.list[item] === undefined) continue;
-                              console.log("MINIFY -> " + typeof(this.list[item]) + " -> " + this.list[item].length);
+                              // console.log("MINIFY -> " + typeof(this.list[item]) + " -> " + this.list[item].length);
+                              // console.log(this.list[item]);
                               const result = await minify(this.list[item]);
                               if (result.code) js += "\n" + result.code;
                         }
                         const gzipPromise = promisify(gzip);
-                        const compressedCss = await gzipPromise(css);
-                        const compressedJs  = await gzipPromise(js);
+                        //const compressedCss = await gzipPromise(css);
+                        //const compressedJs  = await gzipPromise(js);
+                        const compressedCss     = css;
+                        const compressedJs      = js;
                         app('maestro', 'css', css); 
                         app('maestro', 'js',  compressedJs);
                         app.recache(true);
@@ -120,10 +123,10 @@
 
             static route(route:Route, chirp:Chirp): ParseData {   
                   switch(chirp.request.url) {
-                        case '/maestro/cachekey' : return chirp.respond(200, {"key" : app.recache()}, { 'contentType' : 'text/html' });                  
+                        case '/maestro/cachekey' : return chirp.respond(200, {"key" : app.recache()}, { 'contentType' : 'application/json' });                  
                         case '/maestro/config'   : return this.configuration(chirp);
                   }
-                  const parsed = app("maestro", chirp.request.url.replace('/maestro/', ''));                  
+                  const parsed = app("maestro", chirp.request.url.replace('/maestro.', ''));                  
                   if (parsed === undefined) return chirp.respond(404, "text/html", "404 Not Found");
                   return chirp.respond(200, parsed, { 'contentType' : app.path(chirp.request.url).header() });                  
             }

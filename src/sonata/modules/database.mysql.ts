@@ -7,15 +7,14 @@
       //|| 3rd 
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { DatabaseWrapper, DatabaseConfig, Recordset}  from "./.interfaces.js";
+      import { DatabaseWrapper, DatabaseConfig}             from "./.interfaces.js";
       import mysql                                          from "mysql2/promise";
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Kysely
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { Kysely, MysqlDialect }                       from 'kysely'
-      import { Schema }                                     from "../../abstract/schema" 
+      import Recordset                                      from "../utils/recordset";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| App
@@ -167,8 +166,27 @@
 
             kysely(): Kysely<Schema> {
                   if (!this.client || this.status !== 'OK') throw new Error('Kysely : Database connection is not established or not in a ready state.');
+                  const host                   = this.config.host;
+                  const user                   = this.config.username;
+                  const password               = this.config.password;
+                  const database               = this.config.database;
+                  const charset                = this.config.charset;
                   return new Kysely<Schema>({
-                      dialect: new MysqlDialect({ pool: this.client, }),
+                      dialect: new MysqlDialect({ 
+                        pool: mysql.createPool({
+                              host: host,
+                              user: user,
+                              password: password,
+                              database: database,
+                              charset: charset,
+                            })                        
+                      }),
+                      log: (entry) => {
+                        if (entry.level === 'query') {
+                          console.log('SQL Query:', entry.query.sql);
+                          console.log('Parameters:', entry.query.parameters);
+                        }
+                      }                      
                   });
             }            
 
@@ -177,15 +195,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async query(sql:string, values:[]): Promise<any> {
-                  var result:Recordset = {
-                        query       : sql,
-                        rows        : {},
-                        error       : {}, 
-                        insert      : 0,
-                        affected    : 0,
-                        count       : 0,
-                        status      : "WAIT"
-                  }
+                  var result = new Recordset(sql, values);
                   try {
                         let connection = await this.client.getConnection();
                         let [rows, fields] = await connection.execute(sql, values);

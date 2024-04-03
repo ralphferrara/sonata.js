@@ -1,7 +1,6 @@
 {
-        "VGEN01" : "Request was missing required information",
-        "VGEN02" : "Missing Data",
-        "VGEN03" : "Penis",
-        "VGEN04" : "Here we Go",
-        "VGEN06" : "Here we Go"
+      "CHP000"  : "Chirp invalid or null",
+      "VEP001"  : "Request was not an email address or phone number",
+      "VEM001"  : "Email already exists in our system",
+      "VPH001"  : "Phone already exists in our system",
 }

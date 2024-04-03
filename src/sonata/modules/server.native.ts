@@ -81,12 +81,17 @@
                   var port = app('config', 'servers').http.port;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Setting up non-https server
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.http = await http.createServer({ }, (request, response) => { 
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  this.http = await http.createServer({ }, async (request, response) => { 
                         let requestBody = '';
                         request.on('data', (chunk) => { requestBody += chunk; });                      
-                        request.on('end', () => {
-                              app.route(new Chirp(new ChirpRequest().native(request, requestBody), new ChirpResponse().native(response)));
+                        request.on('end', async () => {
+                              const chirpRequest      = await new ChirpRequest();
+                              await chirpRequest.native(request, requestBody);
+                              const chirpResponse     = await new ChirpResponse();
+                              await chirpResponse.native(response);
+                              const chirp             = new Chirp(chirpRequest, chirpResponse);
+                              app.route(chirp);                              
                         });
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
