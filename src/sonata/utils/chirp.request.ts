@@ -86,7 +86,8 @@
                   if (request.headers['cookie']) {
                         request.headers['cookie'].split(';').forEach((cookie) => {
                         const [name, value] = cookie.trim().split('=');
-                        this.cookies[name] = decodeURIComponent(value);
+                        this.cookies[name || 'defaultName'] = decodeURIComponent(value || "");
+                        
                     });
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -141,7 +142,7 @@
                   if (request.headers['cookie']) {
                         request.headers['cookie'].split(';').forEach((cookie) => {
                               const [name, value] = cookie.trim().split('=');
-                              this.cookies[name] = decodeURIComponent(value);
+                              this.cookies[name || 'defaultName'] = decodeURIComponent(value || "");
                     });
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

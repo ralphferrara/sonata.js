@@ -1,4 +1,4 @@
-$.init('ModalRegister', class {
+$.init('AuthRegister', class {
 
       init() {
             console.log("Loaded AuthRegister");
@@ -15,7 +15,7 @@ $.init('ModalRegister', class {
             console.log(data);
             $('snackbar').show('Your account has been created. Please check your email/phone for a verification code.');
             $('#modalRegister').hide();
-            $('ModalVerification').modal(data);
+            $('AuthVerification').modal(data);
       };
 
 });

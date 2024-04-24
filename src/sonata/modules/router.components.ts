@@ -80,8 +80,8 @@
                                           path        : item.relative, 
                                           params      : {},
                                           html        : typeof(parseHTML) == 'string'     ? parseHTML : '',
-                                          css         : typeof(parseCSS) == 'string'      ? parseCSS : '',
-                                          js          : typeof(parseJS) == 'string'       ? parseJS : '',
+                                          css         : typeof(parseCSS)  == 'string'     ? parseCSS : '',
+                                          js          : typeof(parseJS)   == 'string'     ? parseJS : '',
                                     };
                                     app.log('Component Found: ' + baseName, 'info');
                                     if (componentData !== undefined && componentData !== null) app('components', baseName, componentData);
@@ -108,7 +108,7 @@
                   //|| Try Importing 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   try {
-                        const module = await import(fileURL.href);
+                        const module = await require(fileURL.href);
                         if (module.default && typeof module.default.init === 'function') {
                               let initParsed = module.default.init(parsed);
                               return initParsed;

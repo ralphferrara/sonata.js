@@ -21,7 +21,7 @@
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
                 public query       : {};
-                public rows        : {};
+                public rows        : any[];
                 public affected    : number;
                 public insert      : number;
                 public count       : number;
@@ -35,7 +35,7 @@
 
                 constructor(sql : string, params : any[]) {
                         this.query      = {};
-                        this.rows       = {};
+                        this.rows       = [];
                         this.affected   = 0;
                         this.insert     = 0;
                         this.count      = 0;

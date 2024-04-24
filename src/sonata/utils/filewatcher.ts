@@ -70,7 +70,13 @@
                   if (this.remainDirs.length === 0) return this.handleCallback();
                   const thisPath = this.remainDirs[0];
                   this.remainDirs.shift();
-                  const files = await fs.readdir(path.join(process.cwd(), thisPath));
+                  if (typeof thisPath !== 'undefined') {
+                  } else {
+                        console.error("FileWatcher::scan: thisPath is undefined.");
+                        return;
+                  }                    
+                  const fullPath = path.join(process.cwd(), thisPath);
+                  const files = await fs.readdir(fullPath);
                   await Promise.all(
                         files.map(async (item) => {
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

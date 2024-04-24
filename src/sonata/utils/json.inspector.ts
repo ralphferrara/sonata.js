@@ -42,19 +42,22 @@ export default class JSONInspector {
 
       private async processor(structure :any, parents:any[], root = false): Promise<void> {
             const vkeys = Object.keys(structure);
-            vkeys.forEach((key) => {            
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Are we doing a type check?
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  var cleanName = this.cleanExpressions(key);                        
-                  if (this.isMatch(key) !== false) return this.matchCheck(key, parents, structure[key]);            
-                  if (typeof structure[key] === 'object') {   
-                        if (key.startsWith('!') && typeof this.getActualData(key, parents) === 'undefined') return true;
-                        this.promises.unshift(this.processor(structure[key], parents.concat(key)));                        
-                  } else { 
-                        this.validate(key, structure[key], this.getActualData(key, parents), parents);
-                  }
+            vkeys.forEach((key) => {
+                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                //|| Are we doing a type check?
+                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                var cleanName = this.cleanExpressions(key);
+                if (this.isMatch(key) !== false) return this.matchCheck(key, parents, structure[key]);
+                if (typeof structure[key] === 'object') {
+                    if (key.startsWith('!') && typeof this.getActualData(key, parents) === 'undefined') return undefined;
+                    this.promises.unshift(this.processor(structure[key], parents.concat(key)));
+                } else {
+                    this.validate(key, structure[key], this.getActualData(key, parents), parents);
+                }
+                return undefined;
             });
+            // Add a return statement at the end of the function
+            return undefined;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -200,7 +203,8 @@ export default class JSONInspector {
             var actualKeys    = Object.keys(actualItems);
             for(key in actualKeys) {
                   var sectionKey   = actualKeys[key];
-                  if (actualItems[sectionKey][match.term] === match.value) {
+                  if (sectionKey === undefined) return console.error('JSON.inspector : sectionKey is undefined');
+                  if (match.term && actualItems[sectionKey][match.term] && actualItems[sectionKey][match.term] === match.value) {
                         this.matchFields(actualItems[sectionKey], fields, parents);
                   }
             }
@@ -213,8 +217,8 @@ export default class JSONInspector {
       private matchFields(items: Record<string, any>, fields: Record<string, any>, parents : any[]): void {
             var fieldKeys = Object.keys(fields);
             for(let key in fieldKeys) {
-                  let cleanName = this.cleanExpressions(fieldKeys[key]);
-                  this.validate(fieldKeys[key], fields[fieldKeys[key]], (typeof(fields[fieldKeys[key]])=== 'undefined') ? undefined : items[cleanName], parents);
+                  let cleanName = this.cleanExpressions(fieldKeys[key] || '');
+                  this.validate(fieldKeys[key], fields[fieldKeys[key] || ''], (typeof(fields[fieldKeys[key] || ''])=== 'undefined') ? undefined : items[cleanName], parents);
             }
       }
 
@@ -222,7 +226,7 @@ export default class JSONInspector {
       //|| Is match a :type[match] request? If so, return the term and value. Otherwise, return false.
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      private isMatch(matchKey:string):{term:string,value:string} | false { 
+      private isMatch(matchKey:string):{term:string | undefined,value:string | undefined} | false { 
             const regex = /:(\w+)\[([^\]]+)\]/;
             const match = matchKey.match(regex);                  
             if (match) {
@@ -241,9 +245,10 @@ export default class JSONInspector {
       private getParentItems(parents:string[]): Record<string, any> {
             var actualData = this.actual;
             for(var i=0; i<parents.length; i++) {
-                  let keyName = this.cleanExpressions(parents[i]);
-                  if (typeof(actualData[keyName]) === 'undefined') return {};
-                  actualData = actualData[keyName];
+                  if (parents[i] !== undefined) {
+                        let keyName = this.cleanExpressions(parents[i]!);
+                        actualData = actualData[keyName];
+                  }
             }
             return actualData;
       }
@@ -257,9 +262,11 @@ export default class JSONInspector {
             if (parents.length == 0) return this.actual[cleanName];
             var actualData = this.actual;
             for(var i=0; i<parents.length; i++) {
-                  let keyName = this.cleanExpressions(parents[i]);
-                  if (typeof(actualData[keyName]) === 'undefined') return {};
-                  actualData = actualData[keyName];
+                  if (parents[i] !== undefined) {
+                        let keyName = this.cleanExpressions(parents[i]!);
+                        if (typeof(actualData[keyName]) === 'undefined') return {};
+                        actualData = actualData[keyName];
+                  }
             }
             return actualData[cleanName];
       }                              

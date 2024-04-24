@@ -18,5 +18,6 @@
         "OR"       : "or",
         "REGISTER" : "register",
         "SIGNUP"   : "signup",
-        "SEARCH"   : "search"
+        "SEARCH"   : "search",
+        "VERIFY"   : "verify"
 }

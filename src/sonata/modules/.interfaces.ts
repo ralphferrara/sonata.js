@@ -91,10 +91,20 @@
       export interface TwoFactorCode {
             token        : string;
             code         : number;
-            data         : string;
-            created      : Date;
-            expires      : Date;
-            completed    : boolean;
-            attempts     : number;
+            data?        : string;
+            created?     : Date;
+            expires?     : Date;
+            completed?   : boolean;
+            attempts?    : number;
+      }   
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| TokenCode
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      export interface TwoFactorResponse {
+            status       : boolean;
+            errors       : string;
+            verified?    : boolean;
       }   
 

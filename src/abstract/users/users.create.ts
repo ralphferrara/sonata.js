@@ -1,6 +1,6 @@
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
 //|| SCM :: Utils :: Validation
-//|| Validate Logins
+//|| User Create
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -14,17 +14,17 @@
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class AbstractLoginsExists {
+      export default class AbstractUsersCreate {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Check if Email Exists in Database
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async existsEmail(email : string) : Promise<boolean> {
-                  app.log('AbstractLoginsExists : existsEmail()', 'info');
+            static async usernameExists(username : string) : Promise<boolean> {
+                  app.log('AbstractUsersCreate : usernameExists()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.exists.email.sql");
-                        const results = await app.db("main").query(sql, [ email ]) as Recordset;
+                        const sql     = app.query("sql/users/users.exists.sql");
+                        const results = await app.db("main").query(sql, [ username ]) as Recordset;
                         if (results.count > 0) return resolve(true); else return resolve(false);
                   });
             }
@@ -33,12 +33,13 @@
             //|| Check if PhoneExists in Database
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async existsPhone(phone : string) : Promise<boolean> {
-                  app.log('AbstractLoginsExists : existsPhone()', 'info');
+            static async createUsers(username : string) : Promise<number | null> {
+                  app.log('AbstractUsersCreate : createUsers()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.exists.phone.sql");
-                        const results = await app.db("main").query(sql, [ phone ]) as Recordset;
-                        if (results.count > 0) return resolve(true); else return resolve(false);
+                        const sql     = app.query("sql/users/users.create.sql");
+                        const results = await app.db("main").query(sql, [ username ]) as Recordset;
+                        if (typeof results.insert === "number" ) return resolve(results.insert);
+                        return resolve(null);
                   });
             }
 

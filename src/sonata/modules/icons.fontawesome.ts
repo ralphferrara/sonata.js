@@ -37,7 +37,7 @@
                 static icon(iconName: string): string {
                         const formattedIconName = iconName.startsWith('fa') ? iconName.charAt(2).toUpperCase() + iconName.slice(3) : iconName.charAt(0).toUpperCase() + iconName.slice(1);
                         const iconKey = `fa${formattedIconName}` as keyof typeof solidIcons & keyof typeof brandIcons;                
-                        const iconDef: IconDefinition | undefined = solidIcons[iconKey] || brandIcons[iconKey];                
+                        const iconDef: IconDefinition | undefined = (solidIcons[iconKey] as IconDefinition) || (brandIcons[iconKey] as IconDefinition);
                         if (!iconDef) {
                             console.error(`Icon ${iconName} not found. Transformed key: ${iconKey}`);
                             return '';
@@ -49,7 +49,7 @@
                 //|| Process HTML String
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async parseHTML(htmlString: string): string {
+                static async parseHTML(htmlString: string): Promise<string> {
                         const dom                       = new JSDOM(htmlString);
                         const document                  = dom.window.document;                
                         const fontAwesomeIconElements   = document.querySelectorAll('fontawesomeicon');

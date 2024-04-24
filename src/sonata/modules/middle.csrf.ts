@@ -56,10 +56,10 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
             verify(chirp: Chirp): boolean {
-                  var myToken = chirp.request.headers.csrf;
-                  const storedToken = this.list[myToken];                  
+                  var myToken = chirp.request.headers['csrf'];
+                  const storedToken = myToken !== undefined ? this.list[myToken] : undefined;
                   if (storedToken && storedToken.ip === chirp.request.ip && storedToken.host === chirp.request.hostname) {
-                        delete this.list[myToken];
+                        if (myToken !== undefined) delete this.list[myToken];
                         return true;
                   }
                   app.log("CSRF MisMatch!", "error");

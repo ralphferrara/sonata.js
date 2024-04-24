@@ -97,7 +97,7 @@
                               if (this.list[item] === undefined) continue;
                               // console.log("MINIFY -> " + typeof(this.list[item]) + " -> " + this.list[item].length);
                               // console.log(this.list[item]);
-                              const result = await minify(this.list[item]);
+                              const result = await minify(this.list[item] || "");
                               if (result.code) js += "\n" + result.code;
                         }
                         const gzipPromise = promisify(gzip);
@@ -116,7 +116,6 @@
                   return;
             }
 
-
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -127,7 +126,7 @@
                         case '/maestro/config'   : return this.configuration(chirp);
                   }
                   const parsed = app("maestro", chirp.request.url.replace('/maestro.', ''));                  
-                  if (parsed === undefined) return chirp.respond(404, "text/html", "404 Not Found");
+                  if (parsed === undefined) return chirp.respond(404, "404 Not Found");
                   return chirp.respond(200, parsed, { 'contentType' : app.path(chirp.request.url).header() });                  
             }
 

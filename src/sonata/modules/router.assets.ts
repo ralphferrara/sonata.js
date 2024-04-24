@@ -71,7 +71,7 @@
                   return;
             }
 
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
@@ -80,7 +80,11 @@
                   const file = app("assets", chirp.request.url);
                   if (file === "[NOCACHE]") {
                         var contents = await app.path(realPath).read();
-                        if (contents === undefined) return chirp.respond(404, "File not Found ["+chirp.request.url +"] ", {});
+                        if (contents === undefined) {
+                              return chirp.respond(404, "File not Found [" + chirp.request.url + "] ", {
+                                  contentType: "text/plain"
+                              });
+                        }
                         return chirp.respond(200, contents, { "contentType" : app.path(chirp.request.url).header() });                  
                   }
                   return chirp.file(200, file, { "contentType" : app.path(chirp.request.url).header() });                  

@@ -1,6 +1,21 @@
 {
       "CHP000"  : "Chirp invalid or null",
       "VEP001"  : "Request was not an email address or phone number",
-      "VEM001"  : "Email already exists in our system",
+
+      "VEM001"  : "Email already exists in our system",      
       "VPH001"  : "Phone already exists in our system",
+      "VUS001"  : "Username already exists in our system",
+      "VUS002"  : "Username could not be generated",
+      "VUS003"  : "User record could not be inserted",
+      "VUS004"  : "Login record could not be inserted - Email",
+      "VUS005"  : "Login record could not be inserted - Phone",
+
+      "TWE001"  : "Invalid Code",
+      "TWE002"  : "Invalid Token",
+      "TWE003"  : "Entry not found",
+      "TWE004"  : "Too many attempts",
+      "TWE005"  : "Code already used",
+      "TWE006"  : "Code expired",
+      "TWE007"  : "Code Verified",
+      "TWE008"  : "Unknown Error"
 }

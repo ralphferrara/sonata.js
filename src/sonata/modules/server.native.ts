@@ -137,7 +137,11 @@
                         let requestBody = '';
                         request.on('data', (chunk) => { requestBody += chunk; });                      
                         request.on('end', () => {
-                              var chirp = new Chirp(new ChirpRequest().native(request, requestBody), new ChirpResponse().native(response));                        
+                              var cReq = new ChirpRequest()
+                              cReq.native(request, requestBody);
+                              var cRes = new ChirpResponse();
+                              cRes.native(response);
+                              var chirp = new Chirp(cReq, cRes);                        
                         });
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

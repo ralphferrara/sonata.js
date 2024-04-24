@@ -10,7 +10,7 @@
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js"; 
-      import AbstractLogins         from "../../abstract/logins/logins.exist.js";
+      import AbstractLoginsCreate   from "../../abstract/logins/logins.create.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -40,7 +40,6 @@
 
             async execute(chirp : Chirp): Promise<void> {
                   app.log('AuthRegister : execute()', 'info');
-                  console.log("Execute: ", chirp.request.params);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| List the Steps
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -63,7 +62,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Basic
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (chirp === null) return chirp.error(500, 'CHP000');
+                  if (chirp === null) return console.log('Chirp is NULL!!! - CHP000');
                   chirp.data('registerType', null);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Register Email
@@ -71,7 +70,6 @@
                   if (app.valid.email(chirp.data('emailOrPhone'))) {
                         chirp.data('registerType', 'email');
                         chirp.data('email', chirp.data('emailOrPhone'));
-                        if (await AbstractLogins.existsEmail(chirp.data('email')) === true) return chirp.error(400, 'VEM001');
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Register Email
@@ -79,7 +77,6 @@
                   if (app.valid.phone(chirp.data('emailOrPhone'))) {
                         chirp.data('registerType', 'phone');
                         chirp.data('phone', chirp.data('emailOrPhone'));
-                        if (await AbstractLogins.existsPhone(chirp.data('phone')) === true) return chirp.error(400, 'VPH001');
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Invalid Email AND Phone

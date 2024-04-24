@@ -27,7 +27,6 @@
 
       valid.email = (value: string | undefined): boolean => {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            console.log("TEST" + value  + '-->' + emailRegex.test(value));
             if (value !== undefined && emailRegex.test(value)) return true;
             return false;
       }
@@ -64,6 +63,15 @@
 
       valid.blank = (value: string | undefined): boolean => {
             if (value !== undefined && value.trim()) return true;                  
+            return false;
+      }
+      
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Length
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      valid.minLength = (value: string | undefined, min: number): boolean => {
+            if (value !== undefined && value.trim().length >= min) return true;                  
             return false;
       }
 

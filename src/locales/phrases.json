@@ -3,6 +3,8 @@
         "WELCOME_BACK"                          : "Welcome Back",
         "EMAIL_OR_PHONE"                        : "Email or Phone",
         "EMAIL_ADDRESS"                         : "Email Address",
+        "ENTER_VERIFICATION_CODE"               : "Enter Verification Code",        
         "CONTINUE_WITH"                         : "Continue with",
-        "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address"
+        "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
+        "VERIFICATION_CODE"                     : "Verification Code"
 }

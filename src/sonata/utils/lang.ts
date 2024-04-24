@@ -55,12 +55,13 @@
                   let str     = app.str(html);                  
                   let match;
                   while ((match = regex.exec(html)) !== null) {
-                      const isCapitalized = Boolean(match[1]); // Check if it's a capitalized marker
-                      const key           = match[2];
-                      let replacementText = this.routeTranslation(key, lang);          
-                      replacementText     = (isCapitalized) ? app.str(replacementText).capitalize().toString() : replacementText;
-                      const marker        = (isCapitalized) ? `[[C:${key}]]` : `[[${key}]]`;
-                      str                 = str.replaceAll(marker, replacementText);
+                      const isCapitalized             = Boolean(match[1]); // Check if it's a capitalized marker
+                      const key                       = match[2];
+                      let replacementText             = this.routeTranslation(key, lang);          
+                      let replacementTextOrDefault    = replacementText || '';
+                      replacementTextOrDefault        = (isCapitalized) ? app.str(replacementTextOrDefault).capitalize().toString() : replacementTextOrDefault;
+                      const marker                    = (isCapitalized) ? `[[C:${key}]]` : `[[${key}]]`;
+                      str                             = str.replaceAll(marker, replacementTextOrDefault);
                   }
                   return str.toString();
               }
@@ -69,23 +70,39 @@
             //|| Route Translation
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static routeTranslation(key:string, lang:string) {                                    
-                  if (app.lang.list[key] === undefined) return '!!' + key + '!!';
-                  if (lang === app('config', 'languages').root) return app.lang.list[key].rootValue;
-                  if (app.lang.list[key].locale[lang] === undefined) return '!!!' + key + '!!!';
-                  return app.lang.list[key].locale[lang];
-            }
+            static routeTranslation(key: string, lang: string) {
+                  if (!app || typeof app.lang !== "object" || typeof app.lang.list !== "object" || typeof app.lang.list[key] !== "object") {
+                      return '!! INVALID LANG LIST - ' + key + '!!';
+                  }
+              
+                  const langList = app.lang.list[key] as { rootValue?: string, locale?: Record<string, string> };
+                  if (langList === undefined || langList.rootValue === undefined || typeof langList.rootValue !== "string") {
+                      return '!!' + key + '!!';
+                  }
+              
+                  if (lang === app('config', 'languages').root) {
+                      return langList.rootValue;
+                  }
+              
+                  if (langList.locale && langList.locale[lang] === undefined) {
+                      return '!!!' + key + '!!!';
+                  }
+              
+                  return (langList.locale && langList.locale[lang]) || '!!' + key + '!!';
 
+              }
+              
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route Error
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            routeError(key:string, lang:string) {                                    
-                  if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';
-                  if (lang === app('config', 'languages').root) return app.lang.list['ERROR_' + key].rootValue;
-                  if (app.lang.list['ERROR_' + key].locale[lang] === undefined) return '!!!' + key + '!!!';
-                  return app.lang.list['ERROR_' + key].locale[lang];
-            }
+            routeError(key: string, lang: string) {
+                  if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';                                
+                  const errorLang = app.lang.list['ERROR_' + key];
+                  if (lang === app('config', 'languages').root && errorLang !== undefined) return errorLang.rootValue || '';
+                  if (errorLang && errorLang.locale && errorLang.locale[lang] === undefined) return '!!!' + key + '!!!';
+                  return (errorLang) ? errorLang.locale[lang] : '';
+            }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init
@@ -131,7 +148,8 @@
                                                 console.log(e);
                                           }
                                     }
-                              }
+                                    return;
+                              } else return;
                         }));
                         await this.loadCache();
                   };
@@ -221,12 +239,13 @@
                         if (this.list.hasOwnProperty(key)) {
                               const item = this.list[key];
                               for (const lang of app("config", "languages").available) {
-                                    if (item.locale[lang] === undefined || item.locale[lang] === null) {
+                                    if (!item || item.locale[lang] === undefined || item.locale[lang] === null) {
                                           if (this.pending[lang] === undefined) this.pending[lang] = {};
                                           let pendingEntity: LanguageEntityPending = {
-                                                rootValue: item.rootValue,
+                                                rootValue: (item) ? item.rootValue : '',
                                                 value: null
                                           };
+                                          if (!key || this.pending === undefined || typeof(this.pending[lang]) !== "object" || typeof(this.pending[lang][key]) !== "object") continue;
                                           this.pending[lang][key] = pendingEntity;
                                           this.pendingCount++;
                                     }

@@ -26,7 +26,7 @@
                 //|| Init
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async init(parsed: ComponentData) : ComponentData {
+                static async init(parsed: ComponentData) : Promise<ComponentData> {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Main
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -51,12 +51,11 @@
                         try { 
                                 const blogs     = await app.db("main").query(app.query("sql/blogs/public.blogs.footer.sql"));
                                 const navBlogs  = blogs.toArray().map(blog => {
-                                        const options        = { year: 'numeric', month: 'long', day: 'numeric' };
                                         let myDate           = new Date(blog.blog_timestamp);
-                                        myDate               = myDate.toLocaleDateString('en-US', options);
+                                        let strDate          = myDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                                         let myBlog      = `<li>`;
                                         myBlog          += `<a class="footerBlogImg" href="/blog/${blog.slug_slug}" title="${blog.blog_title}"><img src="https://cloud.truenudists.com/media/3/7/1/371c64d554b1de8d55032c95a89b8e79e758f0e1.jpg" alt="${blog.blog_title}"></a>`;
-                                        myBlog          += `<a class="footerBlogText" href="/blog/${blog.slug_slug}" title="${blog.blog_title}"><b>${blog.blog_title}</b><small>${myDate}</small></a>`;
+                                        myBlog          += `<a class="footerBlogText" href="/blog/${blog.slug_slug}" title="${blog.blog_title}"><b>${blog.blog_title}</b><small>${strDate}</small></a>`;
                                         myBlog          += "</li>";
                                         return myBlog;
                                 }).join("\r\n");

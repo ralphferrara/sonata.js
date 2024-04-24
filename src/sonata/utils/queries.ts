@@ -9,7 +9,7 @@
 
         import  app                                                               from '../app.js'
         import  FileWatcher                                                       from './filewatcher.js'
-        import  { FileWatcherObject }                                             from './filewatcher.js'
+        import  { FileWatcherObject }                                             from './.interfaces.js'
 
         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
         //|| Class

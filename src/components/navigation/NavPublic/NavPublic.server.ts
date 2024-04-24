@@ -26,7 +26,7 @@
                 //|| Init
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async init(parsed: ComponentData) : ComponentData {
+                static async init(parsed: ComponentData) : Promise<ComponentData> {
                         const navLinks = app("config", "links").main;
                         const navHTML = await navLinks.map(link => {
                                 let myFont = FontAwesome.icon(link.icon);

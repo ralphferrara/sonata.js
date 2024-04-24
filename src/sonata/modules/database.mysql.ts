@@ -14,7 +14,7 @@
       //|| Kysely
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import Recordset                                      from "../utils/recordset";
+      import Recordset                                      from "../utils/recordset.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| App
@@ -128,7 +128,7 @@
                         let [rows]            = await connection.execute("SELECT @@global.time_zone AS myTimeZone;");
                         if (typeof(rows[0]) == "undefined" || typeof(rows[0].myTimeZone) == "undefined") {
                               app.log("TIMEZONE-CHECK::EMPTY RECORDSET", "warn");
-                              return;
+                              return false;
                         }
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| If it"s not UTC
@@ -142,9 +142,10 @@
                                     await connection.execute("SET time_zone = '+00:00';");
                                     app.log("Time Zone is set to " + rows[0].myTimeZone, "info");                                    
                               } catch(err) { 
-                                    app.log("SET TIMEZONE::FAILED", "info");
+                              app.log("SET TIMEZONE::FAILED", "info");
                                     return true;
                               };
+                              return false;
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| It is UTC
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
@@ -153,43 +154,14 @@
                         //|| Next
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
                         connection.release();
-                        return true;
+                        return false;
                   } catch(err) { 
                         app.log("MYSQL::TIMEZONE-CHECK::FAILED", "warn");
+                        return false;
                   }
 
             }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Query
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            kysely(): Kysely<Schema> {
-                  if (!this.client || this.status !== 'OK') throw new Error('Kysely : Database connection is not established or not in a ready state.');
-                  const host                   = this.config.host;
-                  const user                   = this.config.username;
-                  const password               = this.config.password;
-                  const database               = this.config.database;
-                  const charset                = this.config.charset;
-                  return new Kysely<Schema>({
-                      dialect: new MysqlDialect({ 
-                        pool: mysql.createPool({
-                              host: host,
-                              user: user,
-                              password: password,
-                              database: database,
-                              charset: charset,
-                            })                        
-                      }),
-                      log: (entry) => {
-                        if (entry.level === 'query') {
-                          console.log('SQL Query:', entry.query.sql);
-                          console.log('Parameters:', entry.query.parameters);
-                        }
-                      }                      
-                  });
-            }            
-
+            
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Query
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -208,6 +180,7 @@
                   } catch (error) {
                         console.log(error);
                         app.log("MySQL Query Error:", "break");
+                        console.log(error);
                         result.status = "ERROR";
                         result.error  = error;
                   }

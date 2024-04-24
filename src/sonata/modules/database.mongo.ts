@@ -3,10 +3,11 @@
 //|| Database Wrapper for MYSQL Database
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { DatabaseWrapper, DatabaseConfig, Recordset}   from "./.interfaces.js";
-      import { MongoClient }                                 from "mongodb";
+      import { DatabaseWrapper, DatabaseConfig}             from "./.interfaces.js";
+      import { RecordsetInterface }                         from "../utils/.interfaces.js";
+      import { MongoClient }                                from "mongodb";
 
-      import  app                                     from "../app.js"
+      import  app                                           from "../app.js"
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class

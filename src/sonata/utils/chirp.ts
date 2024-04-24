@@ -63,6 +63,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             step(step : Function):void {
+                  console.log("Adding Step", step);
                   this.steps.push(step);
             }
 
@@ -73,7 +74,11 @@
             async next() : Promise<void> {
                   this.currentStep++;
                   if (this.currentStep >= this.steps.length) return this.respond(501, {'error' : 'Not Implemented'});
-                  if (typeof(this.steps[this.currentStep]) === 'function') await this.steps[this.currentStep](this); else console.log("Invalid Step", this.steps);
+                  if (typeof this.steps[this.currentStep] === 'function') {
+                        await (this.steps[this.currentStep] || (() => { app.log("Chirp :: Next :: Current step is undefined", 'error'); }))(this);
+                  } else {
+                        console.log("Invalid Step", this.currentStep, this.steps);
+                  }
                   return;
             }
 
@@ -108,8 +113,9 @@
             //|| Error
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            error(status: ChirpStatusCodes, errorCode:string, mayContinue?:boolean, options?:ChirpOptions) : void {
+            error(status: ChirpStatusCodes, errorCode:string, mayContinue?:boolean, options?:ChirpOptions) : any {
                   this.errors.push(errorCode);
+                  app.log("Chirp : error() : " + errorCode, 'error');
                   var errorMessage = app.lang.routeError(errorCode, this.request.lang);
                   if (mayContinue !== false) return this.respond(status, {'error' : {
                         'code'    : errorCode,

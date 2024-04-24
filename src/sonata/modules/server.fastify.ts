@@ -86,7 +86,9 @@
                   //|| Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), new ChirpResponse().fastify(response));
+                        var cr = new ChirpResponse();
+                        await cr.fastify(response);
+                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Listening
@@ -129,7 +131,9 @@
                   //|| Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), new ChirpResponse().fastify(response));
+                        var cr = new ChirpResponse();
+                        cr.fastify(response);
+                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Listening
@@ -176,7 +180,9 @@
                   //|| Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), new ChirpResponse().fastify(response));
+                        var cr = new ChirpResponse();
+                        cr.fastify(response);
+                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Test the Fastify Server
