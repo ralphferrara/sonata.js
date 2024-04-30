@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+      <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="author" content="Your Name">
+
+            <!-- Open Graph meta tags for social sharing -->
+            <meta property="og:title" content="Your Website Title">
+            <meta property="og:description" content="Your website description here">
+            <meta property="og:image" content="path/to/your/image.jpg">
+            <meta property="og:url" content="https://www.yourwebsite.com">
+            <meta property="og:type" content="website">
+
+            <!-- Twitter Card meta tags for social sharing -->
+            <meta name="twitter:card" content="summary_large_image">
+            <meta name="twitter:title" content="Your Website Title">
+            <meta name="twitter:description" content="Your website description here">
+            <meta name="twitter:image" content="path/to/your/image.jpg">
+
+            <!-- Title/Description/Keywords -->
+            <title>Members Area</title>
+            <meta name="description" content="Your website description here">
+            <meta name="keywords" content="your, keywords, here">
+
+            <!-- Stylesheets -->
+            <link rel="stylesheet" href="/maestro.css">
+            <link rel="stylesheet" href="/members/profile/complete.css">
+
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0&display=swap" rel="stylesheet">
+      </head>
+      <body>
+            <style>
+                  main {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        height: calc(100vh - var(--nav-height));
+                        font-family: 'Noto Sans', sans-serif;
+                  }
+            </style>
+            <component src="NavMembers" id="navMembers"></component>
+            <main>
+                  {{SUBPAGE}}
+            </main>
+
+            <script src="/maestro.js"></script>
+            <script src="/members/profile/complete/index.js"></script>
+      </body>
+</html>

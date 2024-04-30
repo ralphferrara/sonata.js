@@ -1,22 +1,17 @@
 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
 //|| Maestro.js :: Core Classes
 //|| Views Class 
-//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-      import { promises as fs }                       from 'fs';
-      import path                                     from 'path';
-      import { URL }                                  from 'url';
-      import { JSDOM }                                from 'jsdom';
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  app                                     from '../app.js'
-      import  Chirp                                   from '../utils/chirp.js'
-      import  FileWatcher                             from '../utils/filewatcher.js'
-      import  { FileWatcherObject, ComponentData }    from '../utils/.interfaces.js'
-      import { FontAwesome }                          from "./icons.fontawesome.js";         
+      import app                                     from '../app.js'
+      import FileWatcher                             from '../utils/filewatcher.js'
+      import { FileWatcherObject, ComponentData }    from '../utils/.interfaces.js'
+      import { FontAwesome }                         from "./icons.fontawesome.js";
+      import AppDefinedComponents                    from "../../components.js";
   
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -28,7 +23,6 @@
             //|| Var    
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            private list         : { [key: string]: ComponentData } = {};
             private watcher      : FileWatcher | null;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -36,9 +30,21 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   
             constructor() { 
-                  this.list         = {};
                   this.watcher      = null;
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Register a Component Function
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async register(componentName : string, parserFunction: (parsed: ComponentData) => Promise<ComponentData>) {
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Clean the Path
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  app.log("Component.register(" + componentName + ")");
+                  if (typeof(app("components", componentName)) === "undefined")           return app.log("Component parser could not be registered. Component not found: " + componentName, 'break');
+                  app("components", componentName).parser = parserFunction;
+            }               
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init
@@ -56,7 +62,6 @@
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
-                        this.list = {};
                         for (const item of structure) {
                               if (item.isFile === false) {
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -87,9 +92,19 @@
                                     if (componentData !== undefined && componentData !== null) app('components', baseName, componentData);
                               }
                         }
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| User Supplied Components
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        setTimeout(() => {new AppDefinedComponents();}, 1000);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Componetns
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                        
                         app.recache(true);
                         return;
                   };      
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Init Watcher
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   await this.watcher.init();
                   return;
             }
@@ -100,28 +115,15 @@
 
             static async initializeComponent(componentName: string, parsed: ComponentData): Promise<ComponentData> {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Make the Path
+                  //|| See if we have a component registered in "../../components.ts"
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const filePath    = path.resolve(parsed.path, `${componentName}.server.ts`);
-                  const fileURL     = new URL(`file://${filePath}`);
+                  if (typeof(app("components", componentName)) === "undefined")           return parsed;
+                  if (typeof(app("components", componentName).parser) !== "function")     return parsed;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Try Importing 
+                  //|| Run the Parser
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  try {
-                        const module = await require(fileURL.href);
-                        if (module.default && typeof module.default.init === 'function') {
-                              let initParsed = module.default.init(parsed);
-                              return initParsed;
-                        }
-                  } catch (error) {
-                        app.log("Server Side Component Code does not exist: " + componentName, 'info');
-                        console.log(error);
-                        return parsed;
-                  }                        
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Is it the default?
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  return parsed;
+                  app.log("Component.initializeComponent(" + componentName + ")");
+                  return await app("components", componentName).parser(parsed);
             }
               
 
@@ -129,13 +131,23 @@
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async route(key:string): Promise<ComponentData> {   
-                  let parsed  = app('components', key);  
-                  parsed      = await this.initializeComponent(key, parsed);                
+            static async route(key: string, attributes?: Record<string, string>): Promise<ComponentData> {
+                  let parsed = app('components', key);
+                  if (parsed === undefined) {
+                        app.log('Component not found: ' + key, 'break');
+                        return { path: '', params: {}, html: '', css: '', js: '' };
+                  }
+                  parsed      = await this.initializeComponent(key, parsed);
                   parsed.html = await FontAwesome.parseHTML(parsed.html);
-                  if (parsed === undefined) app.log('Component not found: ' + key, 'break');
-                  return parsed;                  
+                  if (attributes && Object.keys(attributes).length > 0) {
+                        for (const [key, value] of Object.entries(attributes)) {
+                              const placeholder = `{{${key.toUpperCase()}}}`;
+                              parsed.html = parsed.html.replace(new RegExp(placeholder, 'g'), value);
+                        }
+                  }              
+                  return parsed;
             }
+              
 
 
 

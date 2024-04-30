@@ -16,42 +16,44 @@
 
         export default class Recordset implements RecordsetInterface {
 
-                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                //|| Var
-                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Var
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                public query       : {};
-                public rows        : any[];
-                public affected    : number;
-                public insert      : number;
-                public count       : number;
-                public error       : any;
-                public status      : string;
-                public toArray     : Function;
-                
-                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                //|| Constructor
-                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            public query       : {};
+            public rows        : any[];
+            public fields      : any[];
+            public affected    : number;
+            public insert      : number;
+            public count       : number;
+            public error       : any;
+            public status      : string;
+            public toArray     : Function;
 
-                constructor(sql : string, params : any[]) {
-                        this.query      = {};
-                        this.rows       = [];
-                        this.affected   = 0;
-                        this.insert     = 0;
-                        this.count      = 0;
-                        this.error      = null;
-                        this.status     = "NA";
-                        this.toArray    = () => {
-                                const result: any[] = [];
-                                for (const key in this.rows) {
-                                        if (this.rows.hasOwnProperty(key)) {
-                                                result.push(this.rows[key]);
-                                        }
-                                }
-                                return result;
-                        }
-                        return this;
-                }
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Constructor
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            constructor(sql : string, params : any[]) {
+                  this.query      = {};
+                  this.rows       = [];
+                  this.fields     = [];
+                  this.affected   = 0;
+                  this.insert     = 0;
+                  this.count      = 0;
+                  this.error      = null;
+                  this.status     = "NA";
+                  this.toArray    = () => {
+                              const result: any[] = [];
+                              for (const key in this.rows) {
+                                    if (this.rows.hasOwnProperty(key)) {
+                                          result.push(this.rows[key]);
+                                    }
+                              }
+                              return result;
+                  }
+                  return this;
+            }
 
         };
         

@@ -1,0 +1,40 @@
+
+<section class="ModalLogin" id="modalLogin">
+
+      <div class="border-box form">     
+
+            <form action="/auth/login" method="post" id="registerEmail">
+                  <h2>[[LOGIN_WITH_EMAIL_ADDRESS]]</h2>
+                  <div class="form-group" data-validation="email"
+                        data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
+                        <label for="registerEmail"></label>
+                        <input name="emailOrPhone" type="email" class="form-control" id="emailOrPhone" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com" />
+                  </div>
+                  <component src="FieldPassword" label="[[C:PASSWORD]]"></component>
+
+                  <button class="icon" />
+                        <i><FontAwesomeIcon icon="faChevronRight" /></i>
+                        <span>[[C:LOGIN]]</span>
+                  </button>
+            </form>
+            
+            <div class="divide"><b>[[OR]]</b></div>
+
+            <button class="icon social google">
+                  <i><FontAwesomeIcon icon="faGoogle" /></i>
+                  <span>[[C:LOGIN_WITH]] <b>Google</b></span>
+            </button>
+
+            <button class="icon social twitter">
+                  <i><FontAwesomeIcon icon="faTwitter" /></i>
+                  <span>[[C:LOGIN_WITH]] <b>Twitter</b></span>
+            </button>
+
+            <button class="icon social apple">
+                  <i><FontAwesomeIcon icon="faApple" /></i>
+                  <span>[[C:LOGIN_WITH]] <b>Apple</b></span>
+            </button>
+
+      </div>
+
+</section>

@@ -7,4 +7,4 @@
       //|| App Types
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export type appTypes = "assets" | "cache" | "data" | "config" | "databases" | "maestro" | "storages" | "senders" | "queries" | "routes" | "views" | "components";
+      export type appTypes = "assets" | "cache" | "components" | "config" | "data" | "databases" | "maestro" | "storages" | "senders" | "queries" | "routes" | "views" | "components";

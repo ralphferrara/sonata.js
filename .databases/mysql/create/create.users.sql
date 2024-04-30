@@ -7,6 +7,7 @@ CREATE TABLE `users` (
   `user_level` tinyint(4) DEFAULT 0,
   `user_username` varchar(64) NOT NULL,
   `user_gender` varchar(4) DEFAULT 'M',
+  `user_dob` datetime DEFAULT NULL,
   `user_city` varchar(64) DEFAULT NULL,
   `user_state` varchar(64) DEFAULT NULL,
   `user_postal` varchar(64) DEFAULT NULL,
@@ -35,6 +36,7 @@ CREATE TABLE `users` (
   KEY `user_level` (`user_level`),
   KEY `user_username` (`user_username`),
   KEY `user_gender` (`user_gender`),
+  KEY `user_dob` (`user_dob`),
   KEY `user_city` (`user_city`),
   KEY `user_state` (`user_state`),
   KEY `user_postal` (`user_postal`),
@@ -61,5 +63,5 @@ CREATE TABLE `users` (
   KEY `user_count_forum` (`user_count_forum`),
   KEY `user_count_forum_desc` (`user_count_forum` DESC),
   KEY `user_score` (`user_score`),
-  KEY `user_score_desc` (`user_score` DESC)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `user_score_desc` (`user_score` DESC)  
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

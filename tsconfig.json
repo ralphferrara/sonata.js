@@ -20,7 +20,7 @@
         "noImplicitReturns": true, // Report error when not all code paths in function return a value
         "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
         "noUncheckedIndexedAccess": true, // Include 'undefined' in index signature results
-        "noUnusedLocals": false, // Report errors on unused locals
+        "noUnusedLocals": true, // Report errors on unused locals
         "noUnusedParameters": false, // Report errors on unused parameters
         "useUnknownInCatchVariables": true, // Type catch clause variables as 'unknown' instead of 'any'
                 "noImplicitOverride": true, // Ensure overridden methods explicitly use the 'override' keyword

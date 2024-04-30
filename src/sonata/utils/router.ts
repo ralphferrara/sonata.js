@@ -14,6 +14,7 @@
       import  Pages                             from "../modules/router.pages.js"
       import  Chirp                             from "./chirp.js"
       import  { Route, RouteCache, RouteTypes } from "./.interfaces.js"
+      import  { PageLevel }                     from "./.interfaces.js"
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -41,7 +42,7 @@
             //|| Register a Path with a Page/Controller Obj
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static register(url: string, method : "GET" | "POST" | "SOCKET" | "INTERNAL", object : any, type : RouteTypes) {
+            static register(url: string, method : "GET" | "POST" | "SOCKET" | "INTERNAL", object : any, type : RouteTypes, level : PageLevel) : void{
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Clean the Path
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -55,6 +56,7 @@
                         type        : type,
                         name        : object.name,
                         path        : url, 
+                        level       : level,
                         method      : method,
                         object      : object
                   };            
@@ -103,11 +105,8 @@
                   switch(myRoute.type) { 
                         case "asset"        : return Assets.route(myRoute, chirp); break;
                         case "maestro"      : return Maestro.route(myRoute, chirp); break;
-                        //case "component"  : return Components.route(myRoute, chirp); break;
                         case "page"         : return Pages.route(myRoute, chirp); break;
                         case "endpoint"     : return Endpoints.route(myRoute, chirp); break;
-                        //case "socket"     : return Sockets.route(myRoute, chirp); break;
-                        //case "internal"   : return Internals.route(myRoute, chirp); break;
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Caching

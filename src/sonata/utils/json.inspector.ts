@@ -46,7 +46,6 @@ export default class JSONInspector {
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                 //|| Are we doing a type check?
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                var cleanName = this.cleanExpressions(key);
                 if (this.isMatch(key) !== false) return this.matchCheck(key, parents, structure[key]);
                 if (typeof structure[key] === 'object') {
                     if (key.startsWith('!') && typeof this.getActualData(key, parents) === 'undefined') return undefined;

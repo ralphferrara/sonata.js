@@ -1,0 +1,87 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Nav :: Members - Large Size
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Main
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      .navMembers {
+            display                 : flex;
+            justify-content         : space-around;
+            align-items             : center;
+            background-color        : #2c3e50;
+            padding                 : 0 0;
+            height                  : var(--nav-height);
+      }
+
+      .navMembersLink {
+            display                 : flex;
+            align-items             : center;
+            justify-content         : center;
+            text-align              : center;
+            height                  : 100%;
+            flex-grow               : 1;
+      }
+
+      .navMembersLink a {
+            color                   : white;
+            text-decoration         : none;
+            justify-content         : center;
+            display                 : flex;
+            align-items             : center;
+            height                  : block;
+            width                   : 100%;
+            height                  : 100%;
+            padding                 : 10px 0;
+            cursor                  : pointer;
+      }
+
+      .navMembersLink a:hover {
+            background              : rgba(255,255,255,0.3);
+      }
+
+      .navMembersLink span {
+            width                   : 20px;
+            height                  : 20px;
+            color                   : #FFF;
+      }
+      .navMembersLink span svg {
+            width                   : 100%;
+            height                  : 100%;
+      }
+
+      .navMembersLink .navMembersLink {
+            display                 : flex;
+            flex-direction          : column;
+            align-items             : center;
+            flex-grow               : 1;
+      }
+
+      .navMembersLink a.active {
+            color                   : #e74c3c;
+            font-weight             : bold;
+      }
+
+      .navMembersLink.user {
+            background              : rgba(255, 255, 255, 0.3);
+      }
+      
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Logo
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      .navMembersLink a.logoImg {
+            background-image        : url(/public/img/logo-icon.png);
+            background-repeat       : no-repeat;
+            background-size         : 40px 40px;
+            background-position     : center;
+            opacity                 : 0.8;
+      }      
+
+      .navMembersLink a.logoImg:hover {
+            background-color        : rgba(0,0,0,1);
+            opacity                 : 1;
+      }

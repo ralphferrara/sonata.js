@@ -27,7 +27,7 @@
             const hashSalt = crypto.createHash('sha256');
             const hashAll  = crypto.createHash('sha256');
             const newSalt  = hashSalt.update(salt);
-            return hashAll.update(salt + input + salt).digest('hex');
+            return hashAll.update(newSalt + input + newSalt).digest('hex');
       }      
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

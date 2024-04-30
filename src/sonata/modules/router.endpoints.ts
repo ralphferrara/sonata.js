@@ -9,7 +9,6 @@
 
       import  app                               from '../app.js'
       import  Chirp                             from '../utils/chirp.js'
-      import  Lang                              from '../utils/lang.js'
       import  { Cached, Route, ParseData }      from '../utils/.interfaces.js'
   
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -58,8 +57,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Generate the Function
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  var parseData = await route.object.execute(chirp);
-                  //return chirp.respond(200, parseData.html);
+                  return await route.object.execute(chirp);
             }
 
 

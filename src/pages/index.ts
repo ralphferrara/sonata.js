@@ -7,19 +7,17 @@
       //|| Register a Path with a Page/Controller Obj
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  app                 from "../sonata/app.js";
-      import  Chirp               from "../sonata/utils/chirp.js"; 
-      import  Pages               from "../sonata/modules/router.pages.js"; 
-      import  Template            from "../sonata/utils/template.js"; 
-      import  { ParseData }       from "../sonata/utils/.interfaces.js"; 
-      import  { page }            from "../sonata/utils/.decorators.js";
+      import  Chirp                        from "../sonata/utils/chirp.js"; 
+      import  Pages                        from "../sonata/modules/router.pages.js"; 
+      import  Template                     from "../sonata/utils/template.js"; 
+      import  { ParseData }                from "../sonata/utils/.interfaces.js"; 
+      import  { PageInterface  }           from "../sonata/utils/.interfaces.js";    
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      //@page("/");
-      export class PageHome {
+      export class PageHome implements PageInterface {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Var

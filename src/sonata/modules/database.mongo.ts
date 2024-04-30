@@ -4,7 +4,6 @@
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import { DatabaseWrapper, DatabaseConfig}             from "./.interfaces.js";
-      import { RecordsetInterface }                         from "../utils/.interfaces.js";
       import { MongoClient }                                from "mongodb";
 
       import  app                                           from "../app.js"
@@ -24,7 +23,6 @@
             public client       : any;
             public name         : string;
             public status       : string;
-            private connectCall : Function;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -36,7 +34,6 @@
                   this.connecting         = false;
                   this.config             = config;
                   this.client             = {};
-                  this.connectCall        = () => {};
                   return this;
             }
 

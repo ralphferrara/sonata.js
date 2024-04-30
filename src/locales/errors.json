@@ -10,6 +10,10 @@
       "VUS004"  : "Login record could not be inserted - Email",
       "VUS005"  : "Login record could not be inserted - Phone",
 
+      "VEM002"  : "Email address was not found",
+      "VPH002"  : "Phone number was not found",
+      "VEP002"  : "Email address or phone number did not match password",
+
       "TWE001"  : "Invalid Code",
       "TWE002"  : "Invalid Token",
       "TWE003"  : "Entry not found",

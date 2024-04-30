@@ -10,14 +10,17 @@
         "FEED"     : "feed",
         "FORUM"    : "forum",
         "GALLERY"  : "gallery",
+        "GENDER"   : "gender", 
         "GROUPS"   : "groups",
         "HOME"     : "home",
         "LOGOUT"   : "logout",
         "LOCATIONS": "locations",
         "LOGIN"    : "login",
         "OR"       : "or",
+        "PASSWORD" : "password",
         "REGISTER" : "register",
         "SIGNUP"   : "signup",
         "SEARCH"   : "search",
+        "USERNAME" : "username",
         "VERIFY"   : "verify"
 }

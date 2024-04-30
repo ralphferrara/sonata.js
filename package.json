@@ -43,6 +43,7 @@
             "@sendgrid/mail": "^7.4.6",
             "@types/mongodb": "^4.0.7",
             "@types/twilio": "^3.19.3",
+            "bcrypt": "^5.1.1",
             "clean-css": "^5.3.3",
             "crypto": "latest",
             "fs": "^0.0.1-security",

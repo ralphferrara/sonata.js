@@ -37,7 +37,6 @@
             public client       : any;
             public name         : string;
             public status       : string;
-            private connectCall : Function;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -51,7 +50,6 @@
                   this.config.collate     = this.config.collate || "utf8mb4_unicode_ci";
                   this.config.charset     = this.config.charset || "utf8mb4";
                   this.client             = {};
-                  this.connectCall        = () => {};
                   return this;
             }
 
@@ -104,7 +102,7 @@
             async setCollate() {
                   try { 
                         const connection = await this.client.getConnection();
-                        let [rows, fields] = await connection.execute("SET collation_connection = "+this.config.collate+";");
+                        await connection.execute("SET collation_connection = "+this.config.collate+";");
                         app.log("Set Collate to "+this.config.collate, "info");
                         connection.release();
                         await this.checkTZ();
@@ -174,6 +172,7 @@
                         connection.release();
                         if (!sql.trim().toLowerCase().startsWith("select")) result.affected =  rows.affectedRows;
                         if (sql.trim().toLowerCase().startsWith("insert"))  result.insert   =  rows.insertId;
+                        result.fields = fields;
                         result.rows   = rows;
                         result.count  = rows.length;
                         result.status = "OK";

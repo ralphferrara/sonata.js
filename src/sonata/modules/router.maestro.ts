@@ -7,11 +7,10 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import * as fsSync                                    from "fs";
       import { minify }                                     from 'terser';
       import CleanCSS                                       from 'clean-css';
-      import { promisify }                                  from 'util';
-      import { gzip }                                       from 'zlib';      
+      //import { promisify }                                  from 'util';
+      //import { gzip }                                       from 'zlib';      
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Local Imports
@@ -35,8 +34,6 @@
 
             private list         : { [key: string]: string } = {};
             private watcher      : FileWatcher | null;
-            private css          : string;
-            private js           : string;            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -47,16 +44,14 @@
                   //|| Constructor
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher      = null;
-                  this.css          = "";
-                  this.js           = "";     
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Sonata Internal Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  Router.register("/maestro.css",          "GET", () => {},     "maestro");
-                  Router.register("/maestro.js",           "GET", () => {},     "maestro");
-                  Router.register("/maestro/config/",      "GET", () => {},     "maestro");
-                  Router.register("/maestro/cachekey/",    "GET", () => {},     "maestro");
-                  Router.register("/maestro/csrf/",        "GET", () => {},     "maestro");                               
+                  Router.register("/maestro.css",          "GET", () => {},     "maestro", 0);
+                  Router.register("/maestro.js",           "GET", () => {},     "maestro", 0);
+                  Router.register("/maestro/config/",      "GET", () => {},     "maestro", 0);
+                  Router.register("/maestro/cachekey/",    "GET", () => {},     "maestro", 0);
+                  Router.register("/maestro/csrf/",        "GET", () => {},     "maestro", 0);                               
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -100,13 +95,13 @@
                               const result = await minify(this.list[item] || "");
                               if (result.code) js += "\n" + result.code;
                         }
-                        const gzipPromise = promisify(gzip);
-                        //const compressedCss = await gzipPromise(css);
-                        //const compressedJs  = await gzipPromise(js);
-                        const compressedCss     = css;
-                        const compressedJs      = js;
-                        app('maestro', 'css', css); 
-                        app('maestro', 'js',  compressedJs);
+                        //const gzipPromise = promisify(gzip);                        
+                        //const compressedCSS = await gzipPromise(css);
+                        //const compressedJS  = await gzipPromise(js);
+                        const compressedCSS     = css;
+                        const compressedJS      = js;
+                        app('maestro', 'css', compressedCSS); 
+                        app('maestro', 'js',  compressedJS);
                         app.recache(true);
                   };                                              
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

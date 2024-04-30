@@ -7,10 +7,7 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import parse                        from 'url';
-      import * as fs                      from 'fs';
-
-      import fastify, { FastifyInstance,FastifyReply,FastifyRequest }   from 'fastify';
+      import fastify, { FastifyReply, FastifyRequest }                  from 'fastify';
       import WebSocket                                                  from 'ws';      
 
       import { SocketConnection,ServerWrapper }                         from './.interfaces.js';
@@ -89,6 +86,7 @@
                         var cr = new ChirpResponse();
                         await cr.fastify(response);
                         var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        app.route(chirp);
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Listening
@@ -134,6 +132,7 @@
                         var cr = new ChirpResponse();
                         cr.fastify(response);
                         var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        app.route(chirp); 
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Listening
@@ -183,6 +182,7 @@
                         var cr = new ChirpResponse();
                         cr.fastify(response);
                         var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        app.route(chirp); 
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Test the Fastify Server

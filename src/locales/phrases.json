@@ -1,10 +1,13 @@
 {
-        "WELCOME_HOME_PAGE"                     : "Welcome to the Home Page",
-        "WELCOME_BACK"                          : "Welcome Back",
-        "EMAIL_OR_PHONE"                        : "Email or Phone",
-        "EMAIL_ADDRESS"                         : "Email Address",
-        "ENTER_VERIFICATION_CODE"               : "Enter Verification Code",        
-        "CONTINUE_WITH"                         : "Continue with",
-        "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
-        "VERIFICATION_CODE"                     : "Verification Code"
+"CONTINUE_WITH"                         : "Continue with",
+"DOB"                                   : "Date of Birth",        
+"EMAIL_OR_PHONE"                        : "Email or Phone",
+"EMAIL_ADDRESS"                         : "Email Address",
+"ENTER_VERIFICATION_CODE"               : "Enter Verification Code", 
+"LOGIN_WITH"                            : "Login with",       
+"LOGIN_WITH_EMAIL_ADDRESS"              : "Login with Email Address",
+"REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
+"VERIFICATION_CODE"                     : "Verification Code",
+"WELCOME_BACK"                          : "Welcome Back",
+"WELCOME_HOME_PAGE"                     : "Welcome to the Home Page"
 }

@@ -25,7 +25,6 @@
             scan() {
                   $('form').each(function() {
                         var list = $(this).find('[data-validation]');
-                        if (list.length == 0) return alert('pass');                        
                         list.each(function() {
                               if ($(this).find('input,select').attr('placeholder') != '') $(this).find('input,select').attr('placeholder', $(this).data('label'));
                               $(this).find('label').html($(this).data('label'));
@@ -43,7 +42,6 @@
             
             validate(myForm) {
                   var list = $(myForm).find('[data-validation]');
-                  if (list.length == 0) return alert('pass');                        
                   $(myForm).data('errored', false);
                   list.each(function() {
                         var val = $(this).find('input,select').val();                       

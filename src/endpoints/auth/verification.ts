@@ -10,6 +10,7 @@
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js"; 
+      import AbstractLogins         from "../../abstract/logins/logins.js";
       import AbstractLoginsCreate   from "../../abstract/logins/logins.create.js";
       import AbstractUsersCreate    from "../../abstract/users/users.create.js";
 
@@ -121,6 +122,7 @@
                               chirp.data('id_user',   userData.id_user);
                               chirp.data('username',  userData.username);
                               chirp.data('status',    userData.status);                              
+                              chirp.step(AuthVerification.makeLoginJWT);
                               chirp.step(AuthVerification.respond);
                         } else chirp.data('id_login', null);
                   }
@@ -131,6 +133,7 @@
                         chirp.step(AuthVerification.username);
                         chirp.step(AuthVerification.createUsers);
                         chirp.step(AuthVerification.createLogins);
+                        chirp.step(AuthVerification.makeLoginJWT);
                         chirp.step(AuthVerification.respond);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -194,7 +197,25 @@
                         chirp.data('id_login', result);
                   }                                    
                   return chirp.next();
-            }                        
+            }                                  
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Create JWT
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async makeLoginJWT(chirp : Chirp): Promise<void> { 
+                  app.log('AuthVerification : makeLoginJWT()', 'info');
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Get the JWT
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  let jwt = await AbstractLogins.loginJWT(chirp.data('id_login'));
+                  console.log(jwt);
+                  chirp.data('loginJWT', jwt);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Create the User Record
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  return chirp.next();
+            }             
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Respond with all the valid data
@@ -202,10 +223,11 @@
 
             static async respond(chirp : Chirp): Promise<void> {
                   var respData = {
-                        idUser          : chirp.data('id_user'),
-                        idLogin         : chirp.data('id_login'),
-                        username        : chirp.data('username'),                       
+                        action          : "user.setupProfile",
+                        loginJWT        : chirp.data('loginJWT')
                   };
+                  console.log('VERIFICATION RETURN');
+                  console.log(respData);
                   return chirp.respond(200, respData);
             }
 

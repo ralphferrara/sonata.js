@@ -34,7 +34,6 @@
             public extMatch         : string | null;
             public watch            : boolean;
             public callback         : (structure: FileWatcherObject[]) => void | Promise<void>;
-            private scanning        : boolean;
             public resizeImage      : number | null = null;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -47,7 +46,6 @@
                   this.fileMatch        = null;
                   this.extMatch         = null;
                   this.watch            = false;
-                  this.scanning         = false;
                   this.callback         = () => {};
             }
 

@@ -8,7 +8,6 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import  app                               from '../app.js'
-      import  Chirp                             from '../utils/chirp.js'
       import  FileWatcher                       from '../utils/filewatcher.js'
       import  { FileWatcherObject, ParseData }  from '../utils/.interfaces.js'
   
@@ -22,7 +21,6 @@
             //|| Var    
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            private list         : { [key: string]: ParseData } = {};
             private watcher      : FileWatcher | null;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -30,7 +28,6 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   
             constructor() { 
-                  this.list         = {};
                   this.watcher      = null;
             }
 
@@ -51,7 +48,6 @@
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
-                        this.list = {};
                         for (const item of structure) {
                               if (item.isFile === true) {                                    
                                     var keyName = item.relative.replace(app('config', 'servers').views.path + '/', '');

@@ -15,7 +15,6 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import  app                                                               from '../app.js'
-      import  Chirp                                                             from './chirp.js'
       import  FileWatcher                                                       from './filewatcher.js'
       import  { FileWatcherObject, LanguageEntity, LanguageEntityPending }      from './.interfaces.js'
       import  GoogleTranslate                                                   from "../modules/google.translate.js"
@@ -70,39 +69,27 @@
             //|| Route Translation
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static routeTranslation(key: string, lang: string) {
-                  if (!app || typeof app.lang !== "object" || typeof app.lang.list !== "object" || typeof app.lang.list[key] !== "object") {
-                      return '!! INVALID LANG LIST - ' + key + '!!';
-                  }
-              
-                  const langList = app.lang.list[key] as { rootValue?: string, locale?: Record<string, string> };
-                  if (langList === undefined || langList.rootValue === undefined || typeof langList.rootValue !== "string") {
-                      return '!!' + key + '!!';
-                  }
-              
-                  if (lang === app('config', 'languages').root) {
-                      return langList.rootValue;
-                  }
-              
-                  if (langList.locale && langList.locale[lang] === undefined) {
-                      return '!!!' + key + '!!!';
-                  }
-              
-                  return (langList.locale && langList.locale[lang]) || '!!' + key + '!!';
+            static routeTranslation(key:string, lang:string) {          
+                  if (typeof(app.lang)  !== "object")                         return '!! INVALID LANG LIST - ' + key + '!!';                          
+                  if (typeof(app.lang.list) !== "object")                     return '!! INVALID LANG LIST - ' + key + '!!';                          
+                  if (typeof(app.lang.list[key]) !== "object")                return '!!' + key + '!!';
+                  if (typeof(app.lang.list[key].rootValue) !== "string")      return '!!' + key + '!!';
+                  if (lang === app('config', 'languages').root)               return app.lang.list[key].rootValue;
+                  console.log(lang);
+                  if (app.lang.list[key].locale[lang] === undefined)          return '!!!' + key + '!!!';
+                  return app.lang.list[key].locale[lang] || '!!' + key + '!!';
+            }
 
-              }
-              
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route Error
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            routeError(key: string, lang: string) {
-                  if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';                                
-                  const errorLang = app.lang.list['ERROR_' + key];
-                  if (lang === app('config', 'languages').root && errorLang !== undefined) return errorLang.rootValue || '';
-                  if (errorLang && errorLang.locale && errorLang.locale[lang] === undefined) return '!!!' + key + '!!!';
-                  return (errorLang) ? errorLang.locale[lang] : '';
-            }            
+            routeError(key:string, lang:string) {                                    
+                  if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';
+                  if (lang === app('config', 'languages').root) return app.lang.list['ERROR_' + key].rootValue;
+                  if (app.lang.list['ERROR_' + key].locale[lang] === undefined) return '!!!' + key + '!!!';
+                  return app.lang.list['ERROR_' + key].locale[lang];
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init
@@ -148,8 +135,7 @@
                                                 console.log(e);
                                           }
                                     }
-                                    return;
-                              } else return;
+                              }
                         }));
                         await this.loadCache();
                   };
@@ -234,18 +220,16 @@
 
             async makePending() { 
                   app.log("Languages::makePending()", "info");
-                  const available = app("config", "languages").available;
                   for (const key in this.list) {
                         if (this.list.hasOwnProperty(key)) {
                               const item = this.list[key];
                               for (const lang of app("config", "languages").available) {
-                                    if (!item || item.locale[lang] === undefined || item.locale[lang] === null) {
+                                    if (item.locale[lang] === undefined || item.locale[lang] === null) {
                                           if (this.pending[lang] === undefined) this.pending[lang] = {};
                                           let pendingEntity: LanguageEntityPending = {
-                                                rootValue: (item) ? item.rootValue : '',
+                                                rootValue: item.rootValue,
                                                 value: null
                                           };
-                                          if (!key || this.pending === undefined || typeof(this.pending[lang]) !== "object" || typeof(this.pending[lang][key]) !== "object") continue;
                                           this.pending[lang][key] = pendingEntity;
                                           this.pendingCount++;
                                     }
@@ -325,10 +309,8 @@
 
             async updateTranslations() { 
                   app.log("Languages::updateTranslations()", "info");
-                  const root  = app("config", "languages").root;
                   for (const lang in this.pending) {
                         if (this.pending.hasOwnProperty(lang)) {
-                              const target = lang;
                               for (const key of Object.keys(this.pending[lang])) {
                                     if (this.pending[lang][key].value !== null) {
                                           this.addLang(lang, key, this.pending[lang][key].value);

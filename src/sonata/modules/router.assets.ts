@@ -7,9 +7,6 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import * as fs                         from "fs/promises";
-      import * as path                       from "path";
-
       import  app                            from "../app.js"
       import  Chirp                          from "../utils/chirp.js"
       import  FileWatcher                    from "../utils/filewatcher.js"
@@ -59,7 +56,7 @@
                                     var pathLocal  = app("config", "servers").assets.pathLocal;
                                     var pathPublic = app("config", "servers").assets.pathPublic;
                                     var keyName    = item.relative.replace(pathLocal, pathPublic);
-                                    Router.register(item.relative, "GET", ()=>{}, "asset");                              
+                                    Router.register(item.relative, "GET", ()=>{}, "asset", 0);                              
                                     if (item.contents !== null) app("assets", keyName, (app("config", "servers").assets.cached) ? item.contents : Buffer.from("[NOCACHE]"));
                               }
                         }

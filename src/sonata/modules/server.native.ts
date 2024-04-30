@@ -7,9 +7,6 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import parse                        from 'url';
-      import * as fs                      from 'fs';
-
       import http                         from 'http';
       import https                        from 'https';
       import WebSocket from 'ws';
@@ -142,6 +139,7 @@
                               var cRes = new ChirpResponse();
                               cRes.native(response);
                               var chirp = new Chirp(cReq, cRes);                        
+                              app.route(chirp); 
                         });
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

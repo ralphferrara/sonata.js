@@ -25,7 +25,7 @@
 
             <!-- Stylesheets -->
             <link rel="stylesheet" href="/maestro.css">
-            <link rel="stylesheet" href="/index.css">
+            <link rel="stylesheet" href="/login.css">
 
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,14 +42,13 @@
                         font-family: 'Noto Sans', sans-serif;
                   }
             </style>
-            <component name="NavPublic" id="navPublic"></component>
+            <component src="NavPublic" id="navPublic"></component>
             <main>
-                  <component name="ModalRegister" id="modalRegister"></component>
-                  <component name="ModalVerification" id="modalVerification"></component>
+                  {{SUBPAGE}}
             </main>
-            <component name="NavFooter" id="navFooter"></component>
+            <component src="NavFooter" id="navFooter"></component>
 
             <script src="/maestro.js"></script>
-            <script src="/index.js"></script>
+            <script src="/login.js"></script>
       </body>
 </html>

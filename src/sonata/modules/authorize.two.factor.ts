@@ -21,9 +21,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             private list         : { [key: string]: any } = {};
-            private timer        : NodeJS.Timeout;
-            private attempts     : number;
-            private timeout      : number;
+            // private timer        : NodeJS.Timeout;
+            // private attempts     : number;
+            // private timeout      : number;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -31,9 +31,10 @@
                   
             constructor() { 
                   this.list         = {};
-                  this.timer        = setInterval(() => { this.timerGC() } , 1000 * 60 * 6);
-                  this.attempts     = app("config", "authorizations").twoFactor.attempts;
-                  this.timeout      = app("config", "authorizations").twoFactor.expires;
+                  //this.timer        = 
+                  setInterval(() => { this.timerGC() } , 1000 * 60 * 6);
+                  //this.attempts     = app("config", "authorizations").twoFactor.attempts;
+                  //this.timeout      = app("config", "authorizations").twoFactor.expires;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
