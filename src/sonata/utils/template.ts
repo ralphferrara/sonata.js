@@ -106,16 +106,6 @@
                               const component = await Components.route(componentAttributes['src'], componentAttributes);
                               if (component === undefined) throw new Error('Component not found: ' + componentAttributes['src']);
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                              //|| Replace Markers in Component
-                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                              for (const marker in this.markers) {
-                                    if (this.markers.hasOwnProperty(marker)) {
-                                          const markerValue = this.markers[marker];
-                                          const markerRegex = new RegExp(`{{${marker}}}`, 'g');
-                                          component.html = await component.html.replace(markerRegex, markerValue);
-                                    }
-                              }
-                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                               //|| Append CSS and JS to Their Respective Accumulators
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                               this.html = await this.html.replace(componentElement.outerHTML, component.html);                              
