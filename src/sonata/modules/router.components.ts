@@ -80,7 +80,6 @@
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Create the ComponentData Obj
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                    
-                                    console.log(item.relative);
                                     const componentData: ComponentData = {
                                           path        : item.relative, 
                                           params      : {},
@@ -137,12 +136,13 @@
                         app.log('Component not found: ' + key, 'break');
                         return { path: '', params: {}, html: '', css: '', js: '' };
                   }
-                  parsed      = await this.initializeComponent(key, parsed);
-                  parsed.html = await FontAwesome.parseHTML(parsed.html);
+                  parsed                  = await this.initializeComponent(key, parsed);
+                  parsed.attributes       = attributes;
+                  parsed.html             = await FontAwesome.parseHTML(parsed.html);
                   if (attributes && Object.keys(attributes).length > 0) {
                         for (const [key, value] of Object.entries(attributes)) {
                               const placeholder = `{{${key.toUpperCase()}}}`;
-                              parsed.html = parsed.html.replace(new RegExp(placeholder, 'g'), value);
+                              parsed.html = await parsed.html.replace(new RegExp(placeholder, 'g'), value);
                         }
                   }              
                   return parsed;

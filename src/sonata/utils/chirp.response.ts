@@ -15,6 +15,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import { ChirpOptions }                   from './.interfaces';
+      import { Cookie, CookieOptions }          from './.interfaces.js';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| ChirpRequest
@@ -27,7 +28,8 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             public use          : "fastify" | "native" = "native";
-            public object       : FastifyReply | http.ServerResponse | undefined;            
+            public object       : FastifyReply | http.ServerResponse | undefined;  
+            public cookiesSet   : Cookie[];          
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Native
@@ -48,6 +50,19 @@
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Set Cookie
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            setCookie(cookieName: string, cookieValue: string, options: CookieOptions): void {
+                  const cookie: Cookie = {
+                      name          : cookieName,
+                      value         : cookieValue,
+                      options       : options
+                  };
+                  this.cookiesSet.push(cookie);
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Respond
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
@@ -64,6 +79,9 @@
             respondNative(status: number, body: any, contentType : string, options: any) {
                   var native = this.object as http.ServerResponse;
                   native.setHeader('Content-Type', contentType);
+                  if (this.cookiesSet) this.cookiesSet.forEach(cookie => {
+                        native.setHeader('Set-Cookie', `${cookie.name}=${cookie.value}; Path=${cookie.options.path}; Max-Age=${cookie.options.maxAge}; HttpOnly=${cookie.options.httpOnly}; Secure=${cookie.options.secure}`);
+                  });                  
                   native.statusCode = status;
                   native.end(body);            
                   return true;
@@ -76,6 +94,9 @@
             respondFastify(status: number, body: any, contentType : string, options: any) {
                   var fastify = this.object as FastifyReply;
                   fastify.type = options.contentType;
+                  if (this.cookiesSet) this.cookiesSet.forEach(cookie => {
+                        fastify.setCookie(cookie.name, cookie.value, cookie.options);
+                  });                  
                   fastify.status(status).send(body);
                   return true;            
             }

@@ -99,12 +99,11 @@
                   //|| See if the Login Exists
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   let passData = (chirp.data('registerType') == 'phone') ? await AbstractLogins.getPasswordByPhone(chirp.data('phone')) : await AbstractLogins.getPasswordByEmail(chirp.data('email'));
-                  if (passData === null) return chirp.error(403, (chirp.data('registerType') == 'phone') ? "VEP002" : "VEM002");
-                  console.log(passData);
+                  if (passData === null || !passData.id_login || !passData.password) return chirp.error(403, (chirp.data('registerType') == 'phone') ? "VEP002" : "VEM002");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Password
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (chirp.data('password') === 'fuckyou' || await Users.comparePassword(chirp.data('password'), passData.password) === false) return chirp.error(403, 'VEP002');
+                 if (await Users.comparePassword(chirp.data('password'), passData.password) === false) return chirp.error(403, 'VPW001');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| We got the info
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -119,9 +118,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
 
             async respond(chirp : Chirp): Promise<void> {
+                  chirp.setCookie('loginJWT', chirp.data('loginJWT'), { path: '/', httpOnly: true, secure: true, sameSite: "strict", maxAge: 60 * 60 * 24 * 7});
                   var respData = {
-                        token          : chirp.data('token'),
-                        registerType   : chirp.data('registerType')
+                        message        : app.lang.routeError("SUCL01", chirp.request.lang)
                   };
                   return chirp.respond(200, respData);
             }

@@ -7,11 +7,14 @@
       //|| Register a Path with a Page/Controller Obj
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  Chirp                        from "../../../sonata/utils/chirp.js"; 
-      import  Pages                        from "../../../sonata/modules/router.pages.js"; 
-      import  Template                     from "../../../sonata/utils/template.js"; 
-      import  { ParseData }                from "../../../sonata/utils/.interfaces.js"; 
-      import  { PageInterface }            from "../../../sonata/utils/.interfaces.js";    
+      import  Chirp                             from "../../../sonata/utils/chirp.js"; 
+      import  Pages                             from "../../../sonata/modules/router.pages.js"; 
+      import  Template                          from "../../../sonata/utils/template.js"; 
+
+      import  AbstractMembersProfileComplete    from "../../../abstract/members/profile/profile.complete.js";
+      import  { ParseData }                     from "../../../sonata/utils/.interfaces.js"; 
+      import  { PageInterface }                 from "../../../sonata/utils/.interfaces.js";    
+
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -50,6 +53,18 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   temp.main   = "containers/members.html";
                   temp.sub    = "members/profile/complete.html"; 
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Get User Data
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  console.log("GOT PAYLOAD FIELD -> " + chirp.payload('id_user'));
+                  const userData = await AbstractMembersProfileComplete.profileData(chirp.payload('id_user'));
+                  console.log("GOT USER DATA -> " + JSON.stringify(userData));
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Parse Data
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  temp.add("USER_USERNAME",    userData.user_username);
+                  temp.add("USER_DOB",         userData.user_dob);
+                  temp.add("USER_GENDER",      userData.user_gender);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  

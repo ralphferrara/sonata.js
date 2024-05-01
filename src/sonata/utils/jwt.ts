@@ -21,15 +21,15 @@
             public header     : JWTHeader;
             public payload    : {};
             public signature  : string;
-            public status     : string;
+            public status     : "invalid" | "expired" | "failed" | "valid" | "pending" | "created" | "error";
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            constructor() {
+            constructor(parseJWT? : string) {
                   const issuedAt          = Math.floor(Date.now() / 1000);
-                  const expirationTime    = issuedAt + app("config", "jwt").secret;
+                  const expirationTime    = issuedAt + app("config", "jwt").defaultExpires;
                   this.header             = {
                         alg         : 'SHA256',
                         typ         : 'JWT',
@@ -40,6 +40,7 @@
                   this.payload            = {};
                   this.status             = 'pending';                  
                   this.signature          = '';
+                  if (parseJWT !== undefined) return JWT.parse(parseJWT);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -83,7 +84,9 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Generate the JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const myJWT = new JWT();                  
+                  const myJWT = new JWT();        
+                  console.log("PARSING JWT");
+         
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get Parts
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -100,6 +103,7 @@
                         myJWT.header       = JSON.parse(Buffer.from(header, 'base64').toString());
                         myJWT.payload      = JSON.parse(Buffer.from(payload, 'base64').toString());
                   } catch (error) {
+                        console.log("ERROR PARSING JWT");
                         myJWT.payload      = {};
                         myJWT.status       = 'invalid';
                         return myJWT;
@@ -109,15 +113,17 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const secret             = app("config", "jwt").secret;
                   const signatureInput     = `${header}.${payload}`;
-                  const expectedSignature  = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64');
+                  const expectedSignature  = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64').replace(/=/g, ''); ;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Signature
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (signature !== expectedSignature) {
+                        console.log("SIGNATURE MISMATCH -> " + signature + " != " + expectedSignature);
                         myJWT.payload      = {};
                         myJWT.status       = 'failed';
                         return myJWT;
                   }
+                  myJWT.signature = signature;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check if Expired
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

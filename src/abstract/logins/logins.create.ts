@@ -52,8 +52,6 @@
                   return new Promise(async (resolve) => {
                         const sql     = app.query("sql/logins/logins.lookup.users.sql");
                         const results = await app.db("main").query(sql, [ idLogin ]) as Recordset;
-                        console.log("RESULTS");
-                        console.log(results);
                         if (results.count > 0) {
                               const userData = {
                                     "id_user"  : results.rows[0].fid_user,

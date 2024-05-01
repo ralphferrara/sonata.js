@@ -75,7 +75,6 @@
                   if (typeof(app.lang.list[key]) !== "object")                return '!!' + key + '!!';
                   if (typeof(app.lang.list[key].rootValue) !== "string")      return '!!' + key + '!!';
                   if (lang === app('config', 'languages').root)               return app.lang.list[key].rootValue;
-                  console.log(lang);
                   if (app.lang.list[key].locale[lang] === undefined)          return '!!!' + key + '!!!';
                   return app.lang.list[key].locale[lang] || '!!' + key + '!!';
             }
@@ -118,23 +117,20 @@
                               if (item.isFile === true) {
                                     var keyName = item.relative.replace(app('config', 'languages').path + '/', '');
                                     if (item.contents === null) return null; // Continue in async
-                                    if (keyName.startsWith('blurb')) {
-                                          await this.add('blurb', 'BLURB_' + app.path(keyName).base().toUpperCase(), item.contents.toString());
-                                    } else if (keyName.startsWith('errors')) {
-                                          await this.add('error', 'ERROR_' + app.path(keyName).base().toUpperCase(), item.contents.toString());
-                                    } else {
-                                          try {
-                                                var fileJSON = JSON.parse(item.contents.toString());
-                                                await Promise.all(Object.keys(fileJSON).map(async (key) => {
-                                                      if (fileJSON.hasOwnProperty(key)) {
-                                                            await this.add(app.path(keyName).base(), key, fileJSON[key]);
-                                                      }
-                                                }));
-                                          } catch (e) {
-                                                app.log('Could not parse language file : ' + item.relative, 'err');
-                                                console.log(e);
-                                          }
-                                    }
+                                    try {
+                                          var fileJSON = JSON.parse(item.contents.toString());
+                                          await Promise.all(Object.keys(fileJSON).map(async (key) => {
+                                                if (fileJSON.hasOwnProperty(key)) {
+                                                      let keyNameFull = key.toUpperCase();
+                                                      if (keyName.startsWith('blurb')) keyNameFull = "BLURB_" + keyNameFull.toUpperCase();
+                                                      if (keyName.startsWith('error')) keyNameFull = "ERROR_" + keyNameFull.toUpperCase();
+                                                      await this.add(app.path(keyName).base(), keyNameFull, fileJSON[key]);
+                                                }
+                                          }));
+                                    } catch (e) {
+                                          app.log('Could not parse language file : ' + item.relative, 'err');
+                                          console.log(e);
+                                    }                                    
                               }
                         }));
                         await this.loadCache();

@@ -11,6 +11,11 @@ $.init('AuthLogin', class {
 
       onSuccess(data) {
             console.log('AUTH LOGIN SUCCESS');
+            $('snackbar').show(data.message);
+            document.cookie = `loginJWT=${data.loginJWT}; path=/`;
+            setInterval(() => {
+                  window.location.href = '/members/profile/complete/';
+            }, 1000);
       };
 
 });

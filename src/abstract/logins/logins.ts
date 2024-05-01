@@ -10,6 +10,8 @@
       import app                      from "../../sonata/app.js";
       import Recordset                from "../../sonata/utils/recordset.js"; 
       import JWT                      from "../../sonata/utils/jwt.js";
+      import { JWTLogin }             from "../../.interfaces.jwt.js";
+
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Util Class
@@ -23,19 +25,20 @@
 
             static async getPasswordByEmail(email : string) : Promise<{ id_login : number, password : string } | null> {
                   app.log('AbstractLogins : getPasswordByEmail()', 'info');
-                  console.log('GetPasswordByEmail', email);
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const sql     = app.query("sql/logins/logins.password.email.sql");
                         const results = await app.db("main").query(sql, [ email ]) as Recordset;                        
-                        console.log(results);
                         if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) reject(null);
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Create the JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        resolve(results.rows[0].login_password);
+                        resolve({
+                              "password" : results.rows[0].login_password,
+                              "id_login" : results.rows[0].id_login
+                        });
                   });
             }
             
@@ -45,19 +48,20 @@
 
             static async getPasswordByPhone(phone : string) : Promise< { id_login : number, password : string } | null> {
                   app.log('AbstractLogins : getPasswordByPhone()', 'info');
-                  console.log('GetPasswordByEmail', phone);
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const sql     = app.query("sql/logins/logins.password.phone.sql");
                         const results = await app.db("main").query(sql, [ phone ]) as Recordset;                        
-                        console.log(results);
                         if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) reject(null);
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Create the JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        resolve(results.rows[0].login_password);
+                        resolve({
+                              "password" : results.rows[0].login_password,
+                              "id_login" : results.rows[0].id_login
+                        });
                   });
             }
             
@@ -77,17 +81,18 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Generate Payload
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        let jwtData = {};
-                        jwtData["id_login"]     = results.rows[0].id_login;
-                        jwtData["id_user"]      = results.rows[0].id_user;
-                        jwtData["user_status"]  = results.rows[0].user_status;
-                        jwtData["user_level"]   = results.rows[0].user_level;                              
+                        let jwtData: JWTLogin = {
+                              id_login          : results.rows[0].id_login,
+                              id_user           : results.rows[0].id_user,
+                              user_status       : results.rows[0].user_status,
+                              user_level        : results.rows[0].user_level,
+                              user_username     : results.rows[0].user_username
+                        };
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Create the JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const jwt               = new JWT();
                         jwt.setPayload(jwtData);
-                        jwt.setExpires(app("config", "jwt").renewJWT);
                         resolve(jwt.sign());
                   });
             }

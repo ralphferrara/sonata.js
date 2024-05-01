@@ -24,12 +24,13 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Main
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        const allGenderData = app("config", "genders");
-                        const listGenders   = Object.keys(allGenderData);
-                        const optionsGenders = await listGenders.map(gender => {
-                                 return `<option>[[C:GENDER_${gender.toUpperCase()}]]</option>`;
-                        }).join("\r\n");
-                        parsed.html = parsed.html.replace(/{{GENDERS}}/g, optionsGenders);
+                        const allGenderData = await app("config", "genders");
+                        const listGenders   = await Object.keys(allGenderData);
+                        const optionsGenders = await Promise.all(listGenders.map(async (gender) => {
+                              return '<option value="' + gender + '">[[C:GENDER_' + gender.toUpperCase() + ']]</option>';
+                        }));
+                        const optionsGendersString = await optionsGenders.join("\r\n");
+                        parsed.html = await parsed.html.replace(/{{GENDERS}}/g, optionsGendersString);
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Parsed
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
