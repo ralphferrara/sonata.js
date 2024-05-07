@@ -1,11 +1,14 @@
-<form>
-      <component id="user_avatar" src="AvatarUpload" id="avatarUpload"></component>
-
-      <component id="user_username" label="[[C:USERNAME]]" src="FieldUsername" value="{{USER_USERNAME}}"></component>
-
-      <component id="user_gender" label="[[C:GENDER]]" src="FieldGender" value="{{USER_GENDER}}"></component>
-
-      <component id="user_dob" label="[[DOB]]" src="FieldDOB" value="{{USER_DOB}}" placeholder="[[DOB]]"></component>
-      
-      <button type="submit" class="btn btn-primary">Submit</button>
-</form>      
+<div class="profileComplete">
+      <form class="formProfileComplete">
+            <component id="user_cover" src="AvatarCover" id="coverUpload" fid_media_cover="{{FID_MEDIA_COVER}}">
+                  <component id="user_avatar" src="AvatarUpload" id="avatarUpload"  fid_media_profile="{{FID_MEDIA_PROFILE}}"></component>
+            </component>      
+            <div class="formFieldsProfileComplete">
+                  <h2>[[C:FINISH_YOUR_PROFILE]]</h2>
+                  <component id="user_gender" label="[[C:GENDER]]" src="FieldGender" value="{{USER_GENDER}}"></component>
+                  <component id="user_username" label="[[C:USERNAME]]" src="FieldUsername" id_user={{ID_USER}} value="{{USER_USERNAME}}"></component>
+                  <component id="user_dob" label="[[DOB]]" src="FieldDOB" value="{{USER_DOB}}" placeholder="[[DOB]]"></component>            
+                  <component id="submit" value="[[C:UPDATE]]" src="FieldSubmit"></component>    
+            </div>                  
+      </form>      
+</div>      

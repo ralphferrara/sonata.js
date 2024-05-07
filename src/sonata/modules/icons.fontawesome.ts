@@ -56,7 +56,6 @@
                         for (const element of fontAwesomeIconElements) {
                                 const iconName = element.getAttribute('icon');
                                 if (iconName) {
-                                        console.log(iconName);
                                         const iconHtml          = await this.icon(iconName);
                                         element.outerHTML       = iconHtml;
                                 }

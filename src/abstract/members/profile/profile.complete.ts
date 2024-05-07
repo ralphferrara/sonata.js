@@ -30,6 +30,7 @@
                               const userDOB = new Date(results.rows[0].user_dob);
                               const formattedDOB = userDOB.toISOString().split('T')[0];                              
                               let respValues : MembersProfileComplete = { 
+                                    id_user           : results.rows[0].id_user,
                                     fid_media_profile : results.rows[0].fid_media_profile,
                                     fid_media_cover   : results.rows[0].fid_media_cover,
                                     user_username     : results.rows[0].user_username,

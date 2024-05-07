@@ -1,6 +1,12 @@
 
-<div class="form-group" class="FieldUsername">
+<div class="form-group FieldUsername" data-id_user="{{ID_USER}}" data-username="{{VALUE}}">
       <label for="{{ID}}">{{LABEL}}</label>
-      <input type="text" class="form-control username" id="{{ID}}" placeholder="{{LABEL}}" value="{{VALUE}}">
-      <span class="">Would you like to change your username?</span>      
+      <div class="form-wrap">
+            <input type="text" class="form-control username" id="{{ID}}" placeholder="{{LABEL}}" name="{{NAME}}" value="{{VALUE}}">
+            <i class="statusIcon ok"><FontAwesomeIcon icon="faCheckCircle" /></i>
+            <i class="statusIcon error"><FontAwesomeIcon icon="faTimesCircle" /></i>
+            <i class="statusIcon wait spinner"><FontAwesomeIcon icon="faSpinner" /></i>
+      </div>
+      <span class="status statusError">OK</span>
+      <span class="status statusWait">Checking...</span>
 </div>

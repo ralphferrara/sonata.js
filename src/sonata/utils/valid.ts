@@ -3,6 +3,8 @@
 //|| Validate some stuff
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
+      import app from "../app.js";
+
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Func
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -35,10 +37,13 @@
       //|| Username
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      valid.username = (value: string | undefined): boolean => {
+      valid.username = (value: string | undefined): string | boolean => {
             const usernameRegex = /^[a-zA-Z0-9_]+$/;
-            if (value !== undefined && usernameRegex.test(value)) return true;
-            return false;
+            if (value === null || value === undefined || value.length < 4) return "VUN000";
+            if (undefined && usernameRegex.test(value)) return "VUN001";
+            if (app("config", "moderate").banned.admin.some(word => value.includes(word))) return "VUN004";
+            if (app("config", "moderate").banned.offensive.some(word => value.includes(word))) return "VUN005";
+            return true;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

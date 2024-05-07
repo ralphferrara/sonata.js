@@ -1,4 +1,5 @@
 SELECT 
+      id_user, 
       fid_media_profile,
       fid_media_cover,
       user_username,

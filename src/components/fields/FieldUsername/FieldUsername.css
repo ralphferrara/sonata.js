@@ -1,0 +1,85 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Field :: Username
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Main
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      div.form-group.FieldUsername div.form-wrap {
+            display           : flex;
+            align-items       : center;
+            position          : relative;            
+      }
+
+      div.form-group.FieldUsername input {
+            display           : block;
+            width             : calc(100% - 60px);
+            padding           : 0.5em;
+            font-size         : 1.5em;
+            border            : 0;
+            border-radius     : 0.5em;
+      }
+
+      div.form-group.FieldUsername div.form-wrap i {
+            position          : absolute;
+            right             : 10px;
+            height            : 32px;
+            width             : 32px;            
+            cursor            : pointer;
+            border-radius     : 50%;
+            border            : 0;
+            color             : #999;
+      }      
+
+      div.form-group.FieldUsername div.form-wrap i * {
+            width             : 100%;
+            height            : 100%;      
+      }
+
+      .FieldUsername .status {
+            display           : none;
+            margin            : 10px 0 0;
+            padding           : 10px 10px;            
+            background        : rgba(0,0,0,0.05);     
+            border-radius     : 4px;      
+            font-size         : 90%; 
+            font-weight       : bold;
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Status
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      div.FieldUsername div.form-wrap i {        
+            display           : none;
+      }
+
+      div.FieldUsername .status { 
+            display           : none;
+      }
+
+      div.FieldUsername.error .statusError { 
+            display           : block;
+      }
+      
+      div.FieldUsername.wait .statusWait { 
+            display           : block;
+      }
+
+      div.FieldUsername.ok div.form-wrap i.ok {
+            color             : green;
+            display           : block;
+      }
+      
+      div.FieldUsername.wait div.form-wrap i.wait {
+            color             : #CCC;
+            display           : block;
+      }
+
+      div.FieldUsername.error div.form-wrap i.error {
+            color             : red;
+            display           : block;
+      }
+

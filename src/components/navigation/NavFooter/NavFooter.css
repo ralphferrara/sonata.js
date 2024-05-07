@@ -8,10 +8,10 @@
         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
         footer {
-        background-color: #343a40; /* Dark background for the footer */
-        color: #ffffff; /* Light text color for contrast */
-        padding: 2rem 0; /* Top and bottom padding */
-        font-family: Arial, sans-serif; /* Example font */
+            background-color: #343a40; /* Dark background for the footer */
+            color: #ffffff; /* Light text color for contrast */
+            padding: 2rem 0; /* Top and bottom padding */
+            font-family: Arial, sans-serif; /* Example font */
         }
 
         footer nav.overview {

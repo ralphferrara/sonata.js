@@ -85,8 +85,6 @@
                   //|| Generate the JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const myJWT = new JWT();        
-                  console.log("PARSING JWT");
-         
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get Parts
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -103,7 +101,6 @@
                         myJWT.header       = JSON.parse(Buffer.from(header, 'base64').toString());
                         myJWT.payload      = JSON.parse(Buffer.from(payload, 'base64').toString());
                   } catch (error) {
-                        console.log("ERROR PARSING JWT");
                         myJWT.payload      = {};
                         myJWT.status       = 'invalid';
                         return myJWT;

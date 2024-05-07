@@ -10,6 +10,7 @@
       import  Chirp                             from "../../../sonata/utils/chirp.js"; 
       import  Pages                             from "../../../sonata/modules/router.pages.js"; 
       import  Template                          from "../../../sonata/utils/template.js"; 
+      import Media                              from "../../../classes/media.js";
 
       import  AbstractMembersProfileComplete    from "../../../abstract/members/profile/profile.complete.js";
       import  { ParseData }                     from "../../../sonata/utils/.interfaces.js"; 
@@ -43,7 +44,6 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async execute(chirp:Chirp) : Promise<ParseData> {
-                  console.log("Generating Home Page");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Init
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -56,15 +56,18 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get User Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  console.log("GOT PAYLOAD FIELD -> " + chirp.payload('id_user'));
                   const userData = await AbstractMembersProfileComplete.profileData(chirp.payload('id_user'));
-                  console.log("GOT USER DATA -> " + JSON.stringify(userData));
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  temp.add("USER_USERNAME",    userData.user_username);
-                  temp.add("USER_DOB",         userData.user_dob);
-                  temp.add("USER_GENDER",      userData.user_gender);
+                  temp.add("ID_USER",           userData.id_user.toString());
+                  temp.add("FID_MEDIA_COVER",   userData.fid_media_cover.toString());
+                  temp.add("FID_MEDIA_PROFILE", userData.fid_media_profile.toString());
+                  temp.add("IMAGE_PROFILE",     Media.cdn("image", userData.fid_media_profile, 100));
+                  temp.add("IMAGE_COVER",       Media.cdn("image", userData.fid_media_cover, 1000));
+                  temp.add("USER_USERNAME",     userData.user_username);
+                  temp.add("USER_DOB",          userData.user_dob);
+                  temp.add("USER_GENDER",       userData.user_gender);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  

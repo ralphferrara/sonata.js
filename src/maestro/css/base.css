@@ -80,3 +80,16 @@
             background : var(--color-bg-highlight);
             color      : var(--color-font-highlight);
       }
+
+      @keyframes spin {
+            from {
+                  transform: rotate(0deg);
+            }
+            to {
+                  transform: rotate(360deg);
+            }
+      }
+
+      .spinner {
+            animation: spin 2s linear infinite;
+      }      

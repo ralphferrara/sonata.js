@@ -8,6 +8,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface MembersProfileComplete {
+            id_user            : number;
             user_username      : string;
             user_gender        : string;
             user_dob           : string;

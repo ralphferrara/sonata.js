@@ -1,0 +1,39 @@
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Field :: DOB
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      .FieldDOB {
+            display                 : flex;
+            flex-direction          : column;
+      }
+
+      .FieldDOB > label {
+            width                   : 100%;
+            margin-bottom           : 10px;
+      }
+
+      .FieldDOB-selects-container {
+            display                 : flex;
+            flex-direction          : row;
+            justify-content         : space-between;
+            width                   : 100%;
+      }
+
+      .FieldDOB-selects-container > select.form-control {
+            flex                    : 1;
+            margin                  : 0 5px;
+      }
+
+      .FieldDOB-selects-container > select:first-child {
+            margin-left             : 0;
+      }
+
+      .FieldDOB-selects-container > select:last-child {
+            margin-right            : 0;
+      }
+
+      .FieldDOB .FieldDOBDate {
+            display                 : none;
+      }
+

@@ -52,7 +52,6 @@
                                 await Promise.all(structure.map(async (item) => {
                                         if (!item.isFile) return;
                                         const parsedPath = item.relative.replace(app("config", "queries").path, '').replace(/^\/+/, '');
-                                        console.log(parsedPath);                                        
                                         app("queries", parsedPath, item.contents.toString());
                                 }));
                         };

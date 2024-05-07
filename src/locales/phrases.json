@@ -3,11 +3,13 @@
 "DOB"                                   : "Date of Birth",        
 "EMAIL_OR_PHONE"                        : "Email or Phone",
 "EMAIL_ADDRESS"                         : "Email Address",
+"FINISH_YOUR_PROFILE"                   : "Finish Your Profile",   
 "ENTER_VERIFICATION_CODE"               : "Enter Verification Code", 
 "LOGIN_WITH"                            : "Login with",       
 "LOGIN_WITH_EMAIL_ADDRESS"              : "Login with Email Address",
 "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
 "VERIFICATION_CODE"                     : "Verification Code",
 "WELCOME_BACK"                          : "Welcome Back",
-"WELCOME_HOME_PAGE"                     : "Welcome to the Home Page"
+"WELCOME_HOME_PAGE"                     : "Welcome to the Home Page",
+"UPLOAD_COVER"                          : "Upload Cover"
 }
