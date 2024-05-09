@@ -89,6 +89,7 @@
                         console.log(chirp.request);
                         return;
                   }
+                  console.log("Checking Main Router : " + chirp.request.url);
                   var url = this.routeFix(chirp.request.url);
                   app.log("Checking Main Router : " + url, "info");
                   var myRoute = app("routes", url);

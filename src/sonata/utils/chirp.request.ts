@@ -8,6 +8,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import { FastifyRequest }                 from 'fastify';
+      import { RequestData }                    from '../modules/.interfaces.js';
       import http                               from 'http';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -28,11 +29,13 @@
 
             public body         : any = {};
             public cookies      : Record<string, string> = {};
+            public files        : Record<string, any> = {};
             public headers      : Record<string, string> = {};
             public hostname     : string | undefined = undefined;
             public ip           : string | undefined = '';
             public method       : "POST" | "GET" | "PUT" | "OPTIONS" | "SOCKET" = "GET";
             public params       : Record<string, string> = {};
+            public post         : Record<string, string> = {};
             public protocol     : "http" | "https" = "http";
             public lang         : string = 'en';
             public url          : string = '';
@@ -41,55 +44,21 @@
             //|| Process Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            async native(request: http.IncomingMessage, body: string | undefined) {
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Process URL
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const parsedUrl = new URL((request.url) ? request.url : '/', `http://${request.headers.host}`);
-                  this.url = parsedUrl.pathname;
+            async native(request: http.IncomingMessage, parsedRequest : RequestData) {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process Others
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.method       = this.parseMethod(request.method);
-                  this.ip           = request.connection.remoteAddress;
+                  this.url          = parsedRequest.url;
+                  this.method       = parsedRequest.method;
+                  this.cookies      = parsedRequest.cookies;
+                  this.ip           = parsedRequest.ip;
+                  this.headers      = parsedRequest.headers;
+                  this.files        = parsedRequest.files;
                   this.lang         = app("config", "languages").root;
                   this.hostname     = request.headers.host;
                   this.protocol     = (request.url?.startsWith('https://')) ? 'https' : 'http';
-                  this.params       = {};
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Body
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  try { 
-                        if (this.method === 'GET') { 
-                              this.params = Object.fromEntries(parsedUrl.searchParams.entries());
-                          } else {
-                              const contentType = request.headers['content-type'];
-                              if (body) { 
-                                    if (contentType === 'application/x-www-form-urlencoded') this.params = Object.fromEntries(new URLSearchParams(body).entries()); else this.params = JSON.parse(body);                                  
-                              }                            
-                          }
-                  } catch(e) { 
-                        this.params = {};
-                  }
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Headers
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  this.headers = Object.keys(request.headers).reduce((acc, key) => {
-                        if (typeof request.headers[key] === 'string') {
-                          acc[key] = request.headers[key] as string;
-                        }
-                        return acc;
-                  }, {} as Record<string, string>);
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Cookies
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (request.headers['cookie']) {
-                        request.headers['cookie'].split(';').forEach((cookie) => {
-                        const [name, value] = cookie.trim().split('=');
-                        this.cookies[name || 'defaultName'] = decodeURIComponent(value || "");
-                        
-                    });
-                  }
+                  this.params       = parsedRequest.params;
+                  this.post         = parsedRequest.post;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Language
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  

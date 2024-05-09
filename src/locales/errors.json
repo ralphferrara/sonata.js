@@ -27,5 +27,9 @@
 "TWE008"  : "Unknown Error",
 "JWTEXP"  : "Login token has expired. Please re-login",
 "JWTLVL"  : "This area is not accessible to your level of access",
-"SUCL01"  : "Login was successful. Redirecting..."
+"SUCL01"  : "Login was successful. Redirecting...",
+"UPL001"  : "No files uploaded",
+"UPL002"  : "File size too large",
+"UPL003"  : "File type not allowed",
+"UPL004"  : "File could not be uploaded"
 }

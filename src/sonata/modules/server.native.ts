@@ -15,6 +15,8 @@
       import Chirp                                      from '../utils/chirp.js';
       import ChirpRequest                               from '../utils/chirp.request.js';
       import ChirpResponse                              from '../utils/chirp.response.js';
+      import { MultipartParser }                        from './middle.multipart.js';
+
       
       import  app                         from '../app.js'
 
@@ -75,33 +77,49 @@
 
             async setupHTTP(): Promise<void> {
                   app.log('Setting up HTTP', 'info');
-                  var port = app('config', 'servers').http.port;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Setting up non-https server
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  this.http = await http.createServer({ }, async (request, response) => { 
-                        let requestBody = '';
-                        request.on('data', (chunk) => { requestBody += chunk; });                      
-                        request.on('end', async () => {
-                              const chirpRequest      = await new ChirpRequest();
-                              await chirpRequest.native(request, requestBody);
-                              const chirpResponse     = await new ChirpResponse();
-                              await chirpResponse.native(response);
-                              const chirp             = new Chirp(chirpRequest, chirpResponse);
-                              app.route(chirp);                              
-                        });
+                  //|| Create HTTP Server
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  this.http = http.createServer(async (request, response) => {
+                        try {
+                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                              //|| Parse all the Parts
+                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                              const parser            = new MultipartParser(request.headers['content-type']);
+                              parser.parseRequest(request).then(parsedData => {
+                                    console.log(parsedData);
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Create the Request Object
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                                    const chirpRequest      = new ChirpRequest();
+                                    chirpRequest.native(request, parsedData); // Modify this method to handle parsedData properly
+                                    chirpRequest.files      = parsedData.files; // Attach parsed files
+                                    const chirpResponse     = new ChirpResponse();
+                                    chirpResponse.native(response);
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Create the Main Chirp
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                                    const chirp = new Chirp(chirpRequest, chirpResponse);
+                                    app.route(chirp);
+                              });
+                        } catch (error) {
+                              console.error('Error processing request data:', error);
+                              response.writeHead(500, {'Content-Type': 'text/plain'});
+                              response.end("Internal Server Error: Unable to process request data");
+                        }
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Listening
+                  //|| Create HTTP Server
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  const port = app('config', 'servers').http.port;
                   await new Promise<void>((resolve, reject) => {
-                        this.http.listen(port,  async() => { 
+                        this.http.listen(port, async () => { 
                               app.log('HTTP is listening on port ' + port, 'info');
                               resolve();
                         });      
                   });
-                  return;
             }
+
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Setup HTTPS
@@ -109,7 +127,6 @@
 
             async setupSSL(): Promise<void> {
                   app.log('Setting up HTTPS', 'info');
-                  var port = app('config', 'servers').https.port;
                   var ssl  = app('config', 'servers').https.ssl;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Setting up non-https server
@@ -131,20 +148,36 @@
                         cert: certificate,
                         ca: caFile
                   }, (request, response) => { 
-                        let requestBody = '';
-                        request.on('data', (chunk) => { requestBody += chunk; });                      
-                        request.on('end', () => {
-                              var cReq = new ChirpRequest()
-                              cReq.native(request, requestBody);
-                              var cRes = new ChirpResponse();
-                              cRes.native(response);
-                              var chirp = new Chirp(cReq, cRes);                        
-                              app.route(chirp); 
-                        });
+                        try {
+                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                              //|| Parse all the Parts
+                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                              const parser            = new MultipartParser(request.headers['content-type']);
+                              parser.parseRequest(request).then(parsedData => {
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Create the Request Object
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                                    const chirpRequest      = new ChirpRequest();
+                                    chirpRequest.native(request, parsedData); // Modify this method to handle parsedData properly
+                                    chirpRequest.files      = parsedData.files; // Attach parsed files
+                                    const chirpResponse     = new ChirpResponse();
+                                    chirpResponse.native(response);
+                                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                                    //|| Create the Main Chirp
+                                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                                    const chirp = new Chirp(chirpRequest, chirpResponse);
+                                    app.route(chirp);
+                              });
+                        } catch (error) {
+                              console.error('Error processing request data:', error);
+                              response.writeHead(500, {'Content-Type': 'text/plain'});
+                              response.end("Internal Server Error: Unable to process request data");
+                        }
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Listening
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  var port = app('config', 'servers').https.port;                  
                   await new Promise<void>((resolve, reject) => {
                         this.https.listen(port,  async() => { 
                               app.log('HTTP is listening on port ' + port, 'info');

@@ -19,7 +19,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Set The Request Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  var route        = url;
+                  var route        = new URL(url, window.location.origin).pathname;  // Strips query string and uses only the pathname
                   var data         = data;
                   var obj          = null;
                   var method       = 'POST';
@@ -27,7 +27,7 @@
                   //|| Handle Options
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   if (typeof(options) == 'object') { 
-                        method      = (typeof(options.method) !== 'undefined') ? options.method : $.data('config').routes[url].method;  
+                        method      = (typeof(options.method) !== 'undefined') ? options.method : $.data('config').routes[route].method;  
                         obj         = (typeof(options.obj)    !== 'undefined') ? options.obj    : null;
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -38,8 +38,8 @@
                         //|| Check for Route
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                         var routes = $.data('config').routes;
-                        if (typeof(routes[url]) == 'undefined') return $('snackbar').show("Configuration Error: Route not found ["+url+"]");
-                        var name         = $.data('config').routes[url].name;
+                        if (typeof(routes[route]) == 'undefined') return $('snackbar').show("Configuration Error: Route not found ["+route+"]");
+                        var name         = $.data('config').routes[route].name;
                         if (typeof($._data.requires[name]) === 'undefined') return $('snackbar').show("Configuration Error: Route Object not found ["+name+"]");
                         var obj          = $._data.requires[name];
                   }
@@ -47,12 +47,19 @@
                   //|| Get processing / Old browser support
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   var xhr = new XMLHttpRequest();
-                  xhr.open(method, route, true);
-                  xhr.setRequestHeader('Content-Type', 'application/json');
+                  xhr.open(method, url, true);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Handle Form Data
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                  if (data instanceof FormData) {                        
+                        xhr.setRequestHeader('Accept', 'application/json');
+                  } else {
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        data = JSON.stringify(data); 
+                  }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Headers
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  xhr.setRequestHeader('Content-Type', 'application/json');
                   if ($('meta[name="csrf-token"]').length > 0) xhr.setRequestHeader('CSRF-Token',  $('meta[name="csrf-token"]').attr('content'));
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Success
@@ -81,7 +88,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Send
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  return xhr.send(JSON.stringify(data));
+                  return xhr.send(data);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -108,15 +115,12 @@
             
             handleForm(myForm) { 
                   var route  = $(myForm).attr('action');
-                  var postData = {};
-                  $(myForm).find('input,select').each(function() {
-                        postData[$(this).attr('name')] = $(this).val();
-                  });
+                  var postData = new FormData(myForm);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Disable Form
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  $(myForm).find('input,select,button').each(function() {
-                        $(this).attr('disabled', true);
+                  $(myForm).find('input,select,button').each(function() {                        
+                        //$(this).attr('disabled', true);
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get Route

@@ -29,7 +29,7 @@
 
             public use          : "fastify" | "native" = "native";
             public object       : FastifyReply | http.ServerResponse | undefined;  
-            public cookiesSet   : Cookie[];          
+            public cookiesSet   : Cookie[] = [];          
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Native
@@ -63,6 +63,15 @@
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Redirect the User
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            redirect(statusCode = 301 | 302, newURL : string): void {
+                  this.respond(statusCode, newURL, 'text/html', { contentType : 'text/plain'});
+                  return;
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Respond
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
@@ -76,14 +85,27 @@
             //|| Native
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            respondNative(status: number, body: any, contentType : string, options: any) {
+            respondNative(status: number, body: any, contentType: string, options: any) {
                   var native = this.object as http.ServerResponse;
                   native.setHeader('Content-Type', contentType);
-                  if (this.cookiesSet) this.cookiesSet.forEach(cookie => {
-                        native.setHeader('Set-Cookie', `${cookie.name}=${cookie.value}; Path=${cookie.options.path}; Max-Age=${cookie.options.maxAge}; HttpOnly=${cookie.options.httpOnly}; Secure=${cookie.options.secure}`);
-                  });                  
-                  native.statusCode = status;
-                  native.end(body);            
+                  if (options && options.headers) {
+                        Object.keys(options.headers).forEach(key => {
+                        native.setHeader(key, options.headers[key]);
+                  });
+                  }
+                  if (this.cookiesSet) {
+                        this.cookiesSet.forEach(cookie => {
+                              native.setHeader('Set-Cookie', `${cookie.name}=${cookie.value}; Path=${cookie.options.path}; Max-Age=${cookie.options.maxAge}; HttpOnly=${cookie.options.httpOnly}; Secure=${cookie.options.secure}`);
+                        });
+                  }
+                  if (status === 301 || status === 302) {
+                        native.setHeader('Location', body);
+                        native.statusCode = status;
+                        native.end();
+                  } else {
+                        native.statusCode = status;
+                        native.end(body);
+                  }
                   return true;
             }
 
@@ -97,7 +119,11 @@
                   if (this.cookiesSet) this.cookiesSet.forEach(cookie => {
                         fastify.setCookie(cookie.name, cookie.value, cookie.options);
                   });                  
-                  fastify.status(status).send(body);
+                  if (status === 301 || status === 302) {
+                        fastify.redirect(status, body);
+                  } else {
+                        fastify.status(status).send(body);
+                  }
                   return true;            
             }
 

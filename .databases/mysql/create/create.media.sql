@@ -16,6 +16,8 @@ CREATE TABLE `media` (
   `media_dimension_y` VARCHAR(45) NULL DEFAULT NULL,
   `media_count_views` INT NULL DEFAULT 0,
   `media_count_downloads` INT NULL DEFAULT 0,
+  `media_exif` TEXT NULL DEFAULT NULL,
+
   PRIMARY KEY (`id_media`),
   UNIQUE INDEX `id_media_UNIQUE` (`id_media` ASC) VISIBLE,
   INDEX `fid_user` (`fid_user` ASC),

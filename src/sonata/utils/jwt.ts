@@ -86,6 +86,15 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const myJWT = new JWT();        
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Check the Signature
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (jwt === undefined || jwt === null || jwt === '') {
+                        console.log("EMPTY JWT");
+                        myJWT.payload      = {};
+                        myJWT.status       = 'failed';
+                        return myJWT;
+                  }                  
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get Parts
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const parts = jwt.split('.');
@@ -97,9 +106,11 @@
                   //|| DeSerialize
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const [header, payload, signature] = parts;
+                  let cleanSignature = signature.replace(/=/g, '');
                   try {                         
                         myJWT.header       = JSON.parse(Buffer.from(header, 'base64').toString());
                         myJWT.payload      = JSON.parse(Buffer.from(payload, 'base64').toString());
+                         
                   } catch (error) {
                         myJWT.payload      = {};
                         myJWT.status       = 'invalid';
@@ -110,12 +121,12 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const secret             = app("config", "jwt").secret;
                   const signatureInput     = `${header}.${payload}`;
-                  const expectedSignature  = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64').replace(/=/g, ''); ;
+                  const expectedSignature  = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64').replace(/=/g, '');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Signature
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (signature !== expectedSignature) {
-                        console.log("SIGNATURE MISMATCH -> " + signature + " != " + expectedSignature);
+                  if (cleanSignature !== expectedSignature) {
+                        console.log("SIGNATURE MISMATCH -> " + cleanSignature + " != " + expectedSignature);
                         myJWT.payload      = {};
                         myJWT.status       = 'failed';
                         return myJWT;
