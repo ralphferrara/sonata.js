@@ -7,7 +7,7 @@
       //|| Dependencies
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import cluster                            from 'cluster';
+      //import cluster                            from 'cluster';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Utils
@@ -28,23 +28,32 @@
       //|| Database
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  DatabaseMySQL                       from "./modules/database.mysql.js";
-      import  DatabaseMongo                       from "./modules/database.mongo.js";
-      import  Queries                             from "./utils/queries.js";
+      import { DatabaseConfig }                 from "./utils/.interfaces.js";
+      import  DatabaseMySQL                     from "./modules/database.mysql.js";
+      import  DatabaseMongo                     from "./modules/database.mongo.js";
+      import  Queries                           from "./utils/queries.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Database
+      //|| Queues
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  StorageRedis                        from "./modules/storage.redis.js";
-      import  StorageLocal                        from "./modules/storage.local.js";
+      import { QueueConfig }                    from "./utils/.interfaces.js";
+      import QueueRabbitMQ                      from "./modules/queue.rabbitmq.js";
+      import AppDefinedQueues                   from "../queues.js";
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Storage Systems
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
+
+      import  StorageRedis                      from "./modules/storage.redis.js";
+      import  StorageLocal                      from "./modules/storage.local.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Senders
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  SenderTwilio                       from "./modules/sender.twilio.js";
-      import  SenderSendGrid                     from "./modules/sender.sendgrid.js";
+      import  SenderTwilio                      from "./modules/sender.twilio.js";
+      import  SenderSendGrid                    from "./modules/sender.sendgrid.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Router
@@ -152,6 +161,10 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   await this.servers();
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Queues
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  await this.queues();                  
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Senders
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   await this.senders();
@@ -162,26 +175,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  await this.routes();
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Cluster
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                   if (app("config", "app").cluster.use === true) { 
-                         if (cluster.isMaster) {
-                               app.log(`Master ${process.pid} is running`, 'info');
-                         }
-                  }
-                  //             for (let i = 0; i < app("config", "app").cluster.instances; i++) {
-                  //                 cluster.fork();
-                  //             }                          
-                  //             cluster.on('exit', (worker, code, signal) => {
-                  //                 console.log(`Worker ${worker.process.pid} died`);
-                  //                 console.log('Forking a new worker');
-                  //                 cluster.fork();
-                  //             });
-                  //       }                         
-                  // }
-                                    
+                  await this.routes();                                    
             }
 
 
@@ -208,8 +202,13 @@
                                     const data = JSON.parse(item.contents.toString("utf-8"));
                                     await app("config", key, data);
                               } catch (e) {
-                                    console.log(e);
+                                    console.log('');
+                                    console.log('');
                                     console.error("Error parsing file: " + item.absolute);
+                                    console.log('');
+                                    console.log('');
+                                    console.log(e);
+                                    process.exit();
                               }
                         }
                         app.recache(true);
@@ -274,7 +273,7 @@
                   //|| Loop through config databases
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   for (let database in app("config", "databases")) {                        
-                        let dbConfig = app("config", "databases")[database];
+                        let dbConfig:DatabaseConfig = app("config", "databases")[database];
                         switch(dbConfig.type) {
                               case "mysql" : app.db(database, new DatabaseMySQL(database, dbConfig)); break;
                               case "mongo" : app.db(database, new DatabaseMongo(database, dbConfig)); break;
@@ -289,6 +288,30 @@
                   const queries = new Queries();
                   await queries.init();
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Loads the Queues [databases.json]
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async queues():Promise<any> {       
+                  app.log("Setting  up and connecting to queues.", "head");           
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Options
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  if (app("config", "queueChannels") === undefined) return app.log("No queue channel configuration found in the config directory. No queues configured.", "warn");
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Loop through config databases
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  for (let channel in app("config", "queueChannels")) {                        
+                        let channelConfig:QueueConfig = app("config", "queueChannels")[channel];
+                        switch(channelConfig.type) {
+                              case "rabbitMQ" : app.channel(channel, new QueueRabbitMQ(channel, channelConfig)); break;
+                              default: app.log("INVALID QUEUE CHANNEL TYPE ["+channelConfig.type+"] specified in the config file. No queue channels configured.", "break"); break; 
+                        }
+                        await app.channel(channel).connect();
+                  }
+                  return new AppDefinedQueues();     
+            }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Loads the HTTP/S Servers and Websocket Servers [servers.json]
@@ -328,6 +351,7 @@
                         switch(sender) {
                               case "twilio"  : app.sender(sender, new SenderTwilio(sendConfig)); break;
                               case "sendgrid": app.sender(sender, new SenderSendGrid(sendConfig)); break;
+                              case "IGNORE"  : break;
                               default: app.log("INVALID SENDER TYPE ["+app("config", "servers").use+"] specified in the config file. No sender configured.", "break"); break; 
                         }
                   }

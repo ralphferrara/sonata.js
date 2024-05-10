@@ -37,12 +37,14 @@
             public static config      : { [key: string]: any } = {};
             public static assets      : { [key: string]: any } = {};
             public static cache       : { [key: string]: any } = {};
+            public static channels    : { [key: string]: any } = {};
             public static data        : { [key: string]: any } = {};
             public static databases   : { [key: string]: any } = {};
             public static queries     : { [key: string]: any } = {};
             public static routes      : { [key: string]: any } = {};
             public static senders     : { [key: string]: any } = {};
             public static storages    : { [key: string]: any } = {};
+            public static queues      : { [key: string]: any } = {};
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Router
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -143,7 +145,9 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
       app.db      = (name:string, value?:any) => { return app("databases", name, value); };    
-      app.query   = (name:string, value?:any) => { return app("queries", name, value); };
+      app.channel = (name:string, value?:any) => { return app("channels",  name, value); };    
+      app.queue   = (name:string, value?:any) => { return app("queues",    name, value); };    
+      app.query   = (name:string, value?:any) => { return app("queries",   name, value); };
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Call a Sender Wrapper

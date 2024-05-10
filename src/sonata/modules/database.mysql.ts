@@ -7,7 +7,8 @@
       //|| 3rd 
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { DatabaseWrapper, DatabaseConfig}             from "./.interfaces.js";
+      import { DatabaseWrapper }                            from "./.interfaces.js";
+      import { DatabaseConfig }                             from "../utils/.interfaces.js";
       import mysql                                          from "mysql2/promise";
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

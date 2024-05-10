@@ -10,7 +10,8 @@
       import  Chirp                        from "../../../sonata/utils/chirp.js"; 
       import  Pages                        from "../../../sonata/modules/router.pages.js"; 
       import  Template                     from "../../../sonata/utils/template.js"; 
-      import  { ParseData, PageInterface } from "../../../sonata/utils/.interfaces.js"; 
+      import  { ParseData      }           from "../../../sonata/utils/.interfaces.js"; 
+      import  { PageInterface }            from "../../../sonata/modules/.interfaces.js";    
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
