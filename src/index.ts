@@ -9,7 +9,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import app              from "./sonata/app.js"; 
-      import Queue            from "./sonata/utils/queue.js";
+      //import Queue            from "./sonata/utils/queue.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| App
@@ -17,6 +17,6 @@
 
       app.init("config/", async () => {
             app.log("I am a meat popsicle. Initialized.", "success");                      
-            Queue.send("mediaImage", "BLAH", "string", { "size" : "large" });
+        //    Queue.send("mediaImage", "BLAH", "string", { "size" : "large" });
       });
       

@@ -8,6 +8,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import app                        from "../../../sonata/app.js";
+      import Chirp                      from "../../../sonata/utils/chirp.js";
       import  { ComponentData }         from "../../../sonata/utils/.interfaces.js"
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -26,7 +27,7 @@
                 //|| Init
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async init(parsed: ComponentData) : Promise<ComponentData> {
+                static async init(chirp : Chirp, parsed: ComponentData) : Promise<ComponentData> {
                         const navLinks = app("config", "links").main;
                         const navHTML = await navLinks.map(link => {
                                 let myFont = FontAwesome.icon(link.icon);

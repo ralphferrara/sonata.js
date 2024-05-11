@@ -149,7 +149,7 @@
             static async consume(data : string) : Promise<QueueItem | null> {            
                   let queueItem = null;
                   try { 
-                        queueItem = await JSON.parse(data);
+                        queueItem = await JSON.parse(data) as QueueItem;
                   } catch (error) {
                         app.log("Queue.consume : Failed to parse message : " + data, "error");
                         return queueItem;

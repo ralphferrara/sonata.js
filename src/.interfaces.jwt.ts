@@ -20,7 +20,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface JWTUpload {
-            id_user         : number;
-            fid_area        : number;
-            media_area      : string;
+            id_user           : number;
+            fid_area          : number;
+            media_area        : string;
       }      

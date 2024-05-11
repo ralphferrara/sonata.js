@@ -8,6 +8,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import app                        from "../../../sonata/app.js";
+      import Media                      from "../../../sonata/utils/media.js";
       import Chirp                      from "../../../sonata/utils/chirp.js";
       import  { ComponentData }         from "../../../sonata/utils/.interfaces.js"
 
@@ -15,37 +16,40 @@
       //|| FontAwesome
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { FontAwesome }             from "../../../sonata/modules/icons.fontawesome.js";   
+      //import { FontAwesome }             from "../../../sonata/modules/icons.fontawesome.js";   
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| MainMenu
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
      
-        export default class NavMembers {
+        export default class TestUpload {
 
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                 //|| Init
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-                static async init(chirp : Chirp, parsed: ComponentData) : Promise<ComponentData> {
+                static async init(chirp: Chirp, parsed: ComponentData) : Promise<ComponentData> {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Main Links
+                        //|| Check We Have the Fields
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        const navLinks = app("config", "links").main;
-                        const navHTML = await navLinks.map(link => {
-                                let myFont = FontAwesome.icon(link.icon);
-                                return `<div class="navMembersLink"><a href="${link.href}" title="${link.title}"><span>${myFont}</span></a></div>`; 
-                        }).join("\r\n"); 
-                        parsed.html = parsed.html.replace(/{{LINKS}}/g, navHTML);
+                        if (!parsed.attributes.hasOwnProperty("data-area") || !parsed.attributes.hasOwnProperty("data-fidarea")) {
+                              parsed.html = "<h2>Error : Component is Attributes</h2>" + parsed.html;
+                              return parsed;
+                        }                        
+                        if (isNaN(+parsed.attributes["data-fidarea"])) {
+                              parsed.html = "<h2>Error : Upload is Missing FIDAREA</h2>" + parsed.html;
+                              return parsed;
+                        }
+                        if (app("config", "areas").hasOwnProperty(parsed.attributes["data-area"]) === false) {
+                              parsed.html = "<h2>Error : INVALID AREA</h2>" + parsed.html;
+                              return parsed;
+                        }
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Main Links
+                        //|| Add the Upload JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        const navMembers = app("config", "links").members;
-                        const navMemHTML = await navMembers.map(link => {
-                                let myFont = FontAwesome.icon(link.icon);
-                                return `<div class="navMembersLink user"><a onclick="${link.onclick}" title="${link.title}"><span>${myFont}</span></a></div>`; 
-                        }).join("\r\n"); 
-                        parsed.html = parsed.html.replace(/{{USERLINKS}}/g, navMemHTML);
+                        let jwt           = await Media.uploadJWT(chirp.user("id_user"), parsed.attributes["data-area"], parseInt(parsed.attributes["data-fidarea"]));
+                        console.log(jwt);
+                        parsed.html       = parsed.html.replace(/\{\{UPLOADJWT\}\}/g, jwt);                  
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Return
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
