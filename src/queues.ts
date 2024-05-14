@@ -14,7 +14,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import { ConsumerMediaImage }            from "./consumers/media/image.js";
-
+      import { ConsumerMediaVideo }            from "./consumers/media/video.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Define all Routes
@@ -31,6 +31,7 @@
                   //|| Media
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Queue.register("mediaImage",        "main",    "mediaImage",        new ConsumerMediaImage(),  1);
+                  Queue.register("mediaVideo",        "main",    "mediaVideo",        new ConsumerMediaVideo(),  1);
 
             }
 

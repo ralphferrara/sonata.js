@@ -10,6 +10,8 @@
       import { FastifyRequest }                 from 'fastify';
       import { RequestData }                    from '../modules/.interfaces.js';
       import http                               from 'http';
+      import { UploadFile }                     from "../modules/.interfaces.js";
+
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| App
@@ -29,7 +31,7 @@
 
             public body         : any = {};
             public cookies      : Record<string, string> = {};
-            public files        : Record<string, any> = {};
+            public files        : UploadFile[];
             public headers      : Record<string, string> = {};
             public hostname     : string | undefined = undefined;
             public ip           : string | undefined = '';

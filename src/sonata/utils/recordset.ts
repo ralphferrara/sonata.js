@@ -28,6 +28,7 @@
             public count       : number;
             public error       : any;
             public status      : string;
+            public sql         : Function;
             public toArray     : Function;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -43,6 +44,12 @@
                   this.count      = 0;
                   this.error      = null;
                   this.status     = "NA";
+                  this.sql        = () => {
+                                          return sql.replace(/\?/g, function (match) {
+                                                const value = params.shift();
+                                                return typeof value === 'string' ? `'${value.replace(/'/g, "''")}'` : value;
+                                          });
+                                    };
                   this.toArray    = () => {
                               const result: any[] = [];
                               for (const key in this.rows) {

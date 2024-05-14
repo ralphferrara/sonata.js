@@ -34,10 +34,11 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       class global {
-            public static config      : { [key: string]: any } = {};
             public static assets      : { [key: string]: any } = {};
+            public static config      : { [key: string]: any } = {};
             public static cache       : { [key: string]: any } = {};
             public static channels    : { [key: string]: any } = {};
+            public static clouds      : { [key: string]: any } = {};            
             public static data        : { [key: string]: any } = {};
             public static databases   : { [key: string]: any } = {};
             public static queries     : { [key: string]: any } = {};
@@ -138,7 +139,13 @@
       //|| Call a Storage Wrapper
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      app.store   = (name:string, value?:any) => { return app("storages", name, value); };          
+      app.store   = (name:string, value?:any) => { return app("storages", name, value); };       
+      
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Call a Storage Wrapper
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
+
+      app.cloud   = (name:string, value?:any) => { return app("clouds", name, value); };          
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Call a Database Wrapper

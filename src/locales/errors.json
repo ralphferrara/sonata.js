@@ -1,22 +1,30 @@
 {
-"CHP000"  : "Chirp invalid or null",      
+"CHP000"  : "Chirp invalid or null",    
+"CHP002"  : "Payload too large",  
+
 "VEP001"  : "Request was not an email address or phone number",
+
 "VEM001"  : "Email already exists in our system",      
+"VEM002"  : "Email address was not found",
+
 "VPH001"  : "Phone already exists in our system",      
+"VPH002"  : "Phone number was not found",
+
 "VUS001"  : "Username already exists in our system",
 "VUS002"  : "Username could not be generated",
 "VUS003"  : "User record could not be inserted",
 "VUS004"  : "Login record could not be inserted - Email",
 "VUS005"  : "Login record could not be inserted - Phone",
+
 "VUN000"  : "Username too short",
 "VUN001"  : "Username invalid, no special characters or spaces allowed",
 "VUN002"  : "User ID was not found",
 "VUN003"  : "Username already in use",
 "VUN004"  : "Username contains a word that is not allowed",
 "VUN005"  : "Username contains an offensive word",            
-"VEM002"  : "Email address was not found",
-"VPH002"  : "Phone number was not found",
+
 "VPW001"  : "Pasword mismatch",
+
 "TWE001"  : "Invalid Code",
 "TWE002"  : "Invalid Token",
 "TWE003"  : "Entry not found",
@@ -25,11 +33,16 @@
 "TWE006"  : "Code expired",
 "TWE007"  : "Code Verified",
 "TWE008"  : "Unknown Error",
+
 "JWTEXP"  : "Login token has expired. Please re-login",
 "JWTLVL"  : "This area is not accessible to your level of access",
+
 "SUCL01"  : "Login was successful. Redirecting...",
-"UPL001"  : "No files uploaded",
-"UPL002"  : "File size too large",
-"UPL003"  : "File type not allowed",
-"UPL004"  : "File could not be uploaded"
+"UPL000"  : "Upload Token missing",
+"UPL001"  : "Upload Token mismatch or expired. Please refresh the page",
+"UPL002"  : "No files uploaded",
+"UPL003"  : "File size too large",
+"UPL004"  : "File type not allowed",
+"UPL005"  : "File could not be uploaded",
+"UPLOOK"  : "File uploaded successfully"
 }

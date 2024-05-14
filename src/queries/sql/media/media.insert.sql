@@ -1,0 +1,1 @@
+INSERT INTO media (fid_user, fid_area, media_area, media_status) VALUES (?, ?, ?, "PROC");

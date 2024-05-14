@@ -21,6 +21,7 @@
 
       import ChirpRequest                       from './chirp.request.js';      
       import ChirpResponse                      from './chirp.response.js';
+      import ChirpUser                          from './chirp.user.js';
       import JWT                                from './jwt.js';
       import Users                              from '../../classes/users.js';
 
@@ -38,8 +39,9 @@
             //|| Var
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public request      : ChirpRequest;
+            public request      : ChirpRequest;            
             public response     : ChirpResponse;
+            public user         : ChirpUser;
             public errors       : Array<string> = [];
             public responded    : boolean;
             public jwtFields    : {};
@@ -54,10 +56,20 @@
             constructor(request : ChirpRequest, response : ChirpResponse) {
                   this.request      = request;
                   this.response     = response;
+                  this.user         = new ChirpUser();
                   this.responded    = false;
                   this.steps        = [];
                   this.jwtFields    = {};
                   this.currentStep  = -1;
+                  
+            }
+            
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Check Authorization
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async auth() {
+                  await this.user.verify(this.cookie('loginJWT'));                  
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -159,8 +171,13 @@
             test() {
                   console.log("Chirp :: Test() :: Request :: Files");
                   console.log("Has Files : " + this.hasFiles());
-                  console.log("Chirp :: Test() :: Request :: Post");
+                  console.log("File Count :  " + Object.keys(this.request.files).length);
+                  console.log("Chirp :: Test() :: Request :: Get");
                   console.log(this.request.params);                  
+                  console.log("Chirp :: Test() :: Request :: Post");
+                  console.log(this.request.post);                  
+                  console.log("Chirp :: Test() :: Request :: Cookies");
+                  console.log(this.request.cookies);                  
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -182,15 +199,6 @@
                   if (this.jwtFields[fieldName]) return this.jwtFields[fieldName];
                   return null;
             }            
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| User
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            user(fieldName: string) : any | null {                  
-                  if (this.jwtFields[fieldName]) return this.jwtFields[fieldName];
-                  return null;
-            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Check Authorization

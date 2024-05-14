@@ -28,11 +28,11 @@
                 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
                 static async translate(texts: string | string[], fromLanguage: string, toLanguage: string): Promise<string> {
-                        if (!app("config", "google") || !app("config", "google").private_key) return app.log("Google Translation API not configured", "break");
+                        if (!app("config", "cloud") || !app("config", "cloud").google.private) return app.log("Google Cloud not configured", "break");
                         const textArray = Array.isArray(texts) ? texts : [texts];
                         return new Promise<string>(async (resolve, reject) => {
                                 try {
-                                        const apiKey = app("config", "google").private_key;
+                                        const apiKey = app("config", "cloud").google.private;
                                         const url: string = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&source=${fromLanguage}&target=${toLanguage}&${textArray.map(text => `q=${encodeURIComponent(text)}`).join('&')}`;
                                         const response = await new Promise<string>((resolve, reject) => {
                                                 https.get(url, (resp) => {

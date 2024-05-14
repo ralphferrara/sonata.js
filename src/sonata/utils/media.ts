@@ -24,15 +24,15 @@
             //|| Check if Email Exists in Database
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async uploadJWT(id_user : number, media_area: string, fid_area : number) : Promise<string> {
+            static async uploadJWT(idUser : number, mediaArea: string, fidArea : number) : Promise<string> {
                   app.log('Media : uploadJWT()', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Generate Payload
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   let jwtData: JWTUpload = {
-                        id_user           : id_user,
-                        fid_area          : fid_area,
-                        media_area        : media_area,
+                        idUser           : idUser,
+                        fidArea          : fidArea,
+                        mediaArea        : mediaArea,
                   };                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Generate JWT
@@ -46,12 +46,12 @@
             //|| Generate the Filename
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static filename(type : "video" | "image", id : number | null, size : number) : string {
+            static filename(type : "video" | "image", id : number | null, size : number, original = false) : string {
                   app.log('Media : filename()', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Missing File
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let format = app("config", "media").format;
+                  let format = (original) ? app("config", "media").originalFormat : app("config", "media").format;
                   if (id < 1 || id == null) {
                         format = (type == "video") ? app("config", "media").missingV : app("config", "media").missingP;
                         format = format.replace("{{EXT}}", (type == "video") ? "mp4" : "webp");
@@ -85,7 +85,7 @@
             //|| Detect Type
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
-            async detectType( buffer : Buffer ) : Promise<'image' | 'video' | null> {                  
+            static async detectType( buffer : Buffer ) : Promise<'image' | 'video' | null> {                  
                   try {
                         const result = await fileTypeFromBuffer(buffer);
                         if (!result)                          return null;                     

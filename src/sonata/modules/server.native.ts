@@ -86,7 +86,7 @@
                               //|| Parse all the Parts
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                               const parser            = new MultipartParser(request.headers['content-type']);
-                              parser.parseRequest(request).then(parsedData => {
+                              parser.parseRequest(request, response).then(async parsedData => {
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Create the Request Object
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -99,7 +99,8 @@
                                     //|| Create the Main Chirp
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                                     const chirp = new Chirp(chirpRequest, chirpResponse);
-                                    app.route(chirp);
+                                    await chirp.auth();
+                                    await app.route(chirp);
                               });
                         } catch (error) {
                               console.error('Error processing request data:', error);
@@ -152,7 +153,7 @@
                               //|| Parse all the Parts
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                               const parser            = new MultipartParser(request.headers['content-type']);
-                              parser.parseRequest(request).then(parsedData => {
+                              parser.parseRequest(request, response).then(async parsedData => {
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Create the Request Object
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -165,7 +166,8 @@
                                     //|| Create the Main Chirp
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                                     const chirp = new Chirp(chirpRequest, chirpResponse);
-                                    app.route(chirp);
+                                    await chirp.auth();
+                                    await app.route(chirp);
                               });
                         } catch (error) {
                               console.error('Error processing request data:', error);

@@ -109,7 +109,7 @@
                               break;
                         case "object": break;
                         case "buffer":
-                              body = body.toString();                              
+                              options.contentType = 'application/octet-stream';
                               break;
                         case "number":
                               body = body.toString();
@@ -157,6 +157,14 @@
                   if (app.queue(queueItem.queue) === undefined) {
                         app.log("Queue.consume : Queue not found : " + queueItem.queue, "error");
                         return queueItem;
+                  }
+                  switch(queueItem.type) {
+                        case "buffer":
+                              queueItem.body = Buffer.from(queueItem.body);
+                              break;
+                        case "number":
+                              queueItem.body = parseInt(queueItem.body);
+                              break;
                   }
                   await app.queue(queueItem.queue).consumer.execute(queueItem);
                   return queueItem;

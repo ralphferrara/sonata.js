@@ -7,10 +7,12 @@
       //|| Import
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
+      import app                                                        from '../app.js';
       import { parse as parseUrl, UrlWithParsedQuery }                  from 'url';
       import { parse as parseQueryString }                              from 'querystring';
       import { parse as parseCookie }                                   from 'cookie';
       import { RequestData }                                            from './.interfaces.js';
+      import { UploadFile }                                             from "./.interfaces.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -23,6 +25,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             private boundary: string | null = null;
+            private maximumFileSize: number = 1024 * 1024 * 100; // 100MB
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
@@ -40,7 +43,7 @@
             //|| Parse Request
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
-            public async parseRequest(request: any): Promise<RequestData> {
+            public async parseRequest(request: any, response : any): Promise<RequestData> {
                   const ip = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
                   const urlDetails: UrlWithParsedQuery = parseUrl(request.url, true);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -65,7 +68,7 @@
                         cookies           : parseCookie(request.headers.cookie || ''),
                         params            : params,
                         post              : {},
-                        files             : {}
+                        files             : []
                   };
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check if we're doing a multipart form data request
@@ -73,21 +76,35 @@
                   if (this.boundary && request.headers['content-type']?.includes('multipart/form-data')) {
                         return new Promise((resolve, reject) => {
                               let requestBody = Buffer.alloc(0);
+                              let size = 0;                              
                               request.on('data', (chunk: Buffer) => {
+                                    size += chunk.length;
                                     requestBody = Buffer.concat([requestBody, chunk]);
+                                    if (size > this.maximumFileSize) {
+                                          response.writeHead(413, { 'Content-Type': 'text/plain' });
+                                          response.end(app.lang.routeError("CHP002", "en"));    
+                                          reject(new Error("File too large"));
+                                    }
                               });
                               request.on('end', () => {
-                                    const parts = this.splitBufferByBoundary(requestBody, `--${this.boundary}`);
+                                    const parts                                     = this.splitBufferByBoundary(requestBody, `--${this.boundary}`);
+
                                     parts.forEach(part => {
                                           const parsedPart = this.parsePart(part);
                                           if (parsedPart.filename) {
-                                                result.files[parsedPart.name] = parsedPart.content.toString();
+                                              const file: UploadFile = {
+                                                  name: parsedPart.filename,
+                                                  type: parsedPart.contentType,
+                                                  size: parsedPart.content.length,
+                                                  data: parsedPart.content
+                                              };
+                                              result.files.push(file);
                                           } else {
-                                                result.post[parsedPart.name] = parsedPart.value;
+                                              result.post[parsedPart.name] = parsedPart.value;
                                           }
-                                    });
-                                    resolve(result);
-                              });
+                                      });                      
+                                      resolve(result);
+                        });
                         });
                   } else if (request.headers['content-type']?.includes('application/json')) {
                         return new Promise((resolve, reject) => {

@@ -26,7 +26,7 @@
             media_orientation?      : string;
             media_count_views?      : number;
             media_count_downloads?  : number;
-            media_exif?             : string;
+            media_meta?             : string;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

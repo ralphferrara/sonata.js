@@ -169,7 +169,8 @@
                   var result = new Recordset(sql, values);
                   try {
                         let connection = await this.client.getConnection();
-                        let [rows, fields] = await connection.execute(sql, values);
+                        const myQuery = await connection.execute(sql, values);
+                        const [rows, fields] = myQuery;
                         connection.release();
                         if (!sql.trim().toLowerCase().startsWith("select")) result.affected =  rows.affectedRows;
                         if (sql.trim().toLowerCase().startsWith("insert"))  result.insert   =  rows.insertId;
