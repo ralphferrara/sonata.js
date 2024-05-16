@@ -11,6 +11,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import { FileWatcherObject }                          from './.interfaces.js';
+      import app                                            from '../app.js';
       import * as fs                                        from 'fs/promises';
       import * as fsSync                                    from 'fs';
       import * as path                                      from 'path';
@@ -56,6 +57,8 @@
             async init(): Promise<void> {
                   this.remainDirs   = [this.dir];
                   this.list         = [];
+                  if (app.isProduction) this.watch = false;
+                  if (!app.isProduction) console.log("FileWatcher::init: Scanning directory: " + this.dir);
                   await this.scan();
                   return;
             }

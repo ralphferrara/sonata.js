@@ -23,5 +23,18 @@
 "SEARCH"   : "search",
 "UPDATE"   : "update",
 "USERNAME" : "username",
-"VERIFY"   : "verify"
+"VERIFY"   : "verify",
+"MONTH_JAN": "January",
+"MONTH_FEB": "February",
+"MONTH_MAR": "March",
+"MONTH_APR": "April",
+"MONTH_MAY": "May",
+"MONTH_JUN": "June",
+"MONTH_JUL": "July",
+"MONTH_AUG": "August",
+"MONTH_SEP": "September",
+"MONTH_OCT": "October",
+"MONTH_NOV": "November",
+"MONTH_DEC": "December"
+
 }

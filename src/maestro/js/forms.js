@@ -32,6 +32,7 @@
                   });
                   $('form').off('submit').on('submit', function(e) {
                         e.preventDefault();
+                        $(this).addClass('submitted');
                         return $('forms').validate(this);
                   });
             }
@@ -59,7 +60,9 @@
                               default: $('forms').error(this); break;                                                            
                         }
                   });
-                  if ($(myForm).data('errored') == true) return $('snackbar').error('Please correct the errors in the form.');
+                  if ($(myForm).data('errored') == true) {
+                        return $('snackbar').error('Please correct the errors in the form.');
+                  }
                   return $('chirp').handleForm(myForm);
             }
 

@@ -3,28 +3,37 @@ version: '3.8'
 services:
   main:
     image: mariadb:latest
-    container_name: sonata_mysql
+    container_name: sonata_maria
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: truenext
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: sonata_next
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      sonata_network:
+        ipv4_address: 172.20.0.2
 
   redis:
     image: redis:latest
     container_name: sonata_redis
     ports:
       - "6379:6379"
+    networks:
+      sonata_network:
+        ipv4_address: 172.20.0.3
 
   mongodb:
     image: mongo:latest
-    container_name: sonata_mongodb
+    container_name: sonata_mongo
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    networks:
+      sonata_network:
+        ipv4_address: 172.20.0.4
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -33,15 +42,39 @@ services:
       - "5672:5672"    # RabbitMQ server
       - "15672:15672"  # Management console
     environment:
-      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      sonata_network:
+        ipv4_address: 172.20.0.5
+
+  node_server:
+    build: .
+    container_name: sonata_node
+    ports:
+      - "80:80"
+    volumes:
+      - D:/Active Projects/sonata.js:/app
+      - node_modules:/app/node_modules
+    networks:
+      sonata_network:
+        ipv4_address: 172.20.0.6
 
 volumes:
   mariadb_data:
     driver: local
   mongodb_data:
     driver: local
-  rabbitmq_data:    # Define volume for RabbitMQ data persistence
+  rabbitmq_data:
     driver: local
+  node_modules:
+    driver: local
+
+networks:
+  sonata_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24

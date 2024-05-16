@@ -1,9 +1,9 @@
-ALTER TABLE `likes`
-ADD CONSTRAINT `fk_likes_fid_user`
+ALTER TABLE `reactions`
+ADD CONSTRAINT `fk_reactions_fid_user`
 FOREIGN KEY (`fid_user`)
 REFERENCES `users` (`id_user`)
 ON DELETE CASCADE,
-ADD CONSTRAINT `fk_likes_fid_recipient`
+ADD CONSTRAINT `fk_reactions_fid_recipient`
 FOREIGN KEY (`fid_recipient`)
 REFERENCES `users` (`id_user`)
 ON DELETE CASCADE;

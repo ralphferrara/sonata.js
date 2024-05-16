@@ -37,7 +37,7 @@
             echo(message : string | string[], level : string, color : string) {
                   const lines = (typeof(message) == 'string')  ? [message] : message;
                   for (const line of lines) {
-                        console.log(this.color(color) + '['+level.toUpperCase()+'] - ' + new Date().toLocaleTimeString() + ' - ' + line + this.color('reset'));
+                        console.log(this.color(color) + '['+level.toUpperCase()+'] - ' + new Date().toLocaleTimeString() + ' - ' + line + this.color('reset') + ' [PID:' + process.pid + ']');
                   }
             }
 

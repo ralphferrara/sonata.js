@@ -46,17 +46,43 @@
             //|| Generate the Filename
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static filename(type : "video" | "image", id : number | null, size : number, original = false) : string {
+            static filename(type : "video" | "image" | "preview" | "screenshot" | "originalVideo" | "originalImage", id : number | null, size? : number) : string {
                   app.log('Media : filename()', 'info');
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Get Format
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  let format  = app("config", "media").format;
+                  let path    = app("config", "media").dirMedia;
+                  let ext     = "webp";
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Missing File
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let format = (original) ? app("config", "media").originalFormat : app("config", "media").format;
+                  switch(type) { 
+                        case "video"           : ext = "mp4"; break;
+                        case "image"           : ext = "webp"; break;
+                        case "preview"         : ext = "webp"; break; 
+                        case "screenshot"      : ext = "gif"; break;
+                        case "originalVideo"   : 
+                              ext   = "mp4"; 
+                              path  = app("config", "media").dirOriginal;
+                              break;
+                        case "originalImage"   : 
+                              ext   = "webp"; 
+                              path  = app("config", "media").dirOriginal;
+                              break;
+
+                  }
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Hash
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (id < 1 || id == null) {
-                        format = (type == "video") ? app("config", "media").missingV : app("config", "media").missingP;
-                        format = format.replace("{{EXT}}", (type == "video") ? "mp4" : "webp");
-                        format = format.replace("{{SIZE}}", size.toString());
-                        return format
+                        switch(type) { 
+                              case "video"           : format = app("config", "media").missingV; break;
+                              case "image"           : format = app("config", "media").missingI; break;
+                              case "preview"         : format = app("config", "media").missingP; break;
+                              case "screenshot"      : format = app("config", "media").missingS; break;
+                              case "originalVideo"   : format = app("config", "media").missingO; break;
+                        }      
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Hash
@@ -68,8 +94,8 @@
                   format = format.replace("{{ID}}",   id.toString());
                   format = format.replace("{{SIZE}}", size.toString());
                   format = format.replace("{{HASH}}", hashId);
-                  format = format.replace("{{EXT}}", (type == "video") ? "mp4" : "webp");
-                  return format;
+                  format = format.replace("{{EXT}}",  ext);
+                  return path + "/" + format;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

@@ -142,7 +142,8 @@
                         //|| TODO : Figure out how to pass all the media data (fid_user, fid_area, media_area, etc)l
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         console.log('Added to Queue ' + queue + typeof(uploadFile.data), umi);
-                        await Queue.send(queue, uploadFile.data, "buffer", umi);
+                        console.log("QUEUE -> " + chirp.site);
+                        await Queue.send(queue, uploadFile.data, "buffer", umi, chirp.site);
                   }
                   chirp.data('mediaItems', responseItems);
                   return chirp.next();

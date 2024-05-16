@@ -42,6 +42,7 @@
             public request      : ChirpRequest;            
             public response     : ChirpResponse;
             public user         : ChirpUser;
+            public site         : string;
             public errors       : Array<string> = [];
             public responded    : boolean;
             public jwtFields    : {};
@@ -61,7 +62,7 @@
                   this.steps        = [];
                   this.jwtFields    = {};
                   this.currentStep  = -1;
-                  
+                  this.site         = request.site;
             }
             
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

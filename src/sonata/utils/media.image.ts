@@ -15,9 +15,9 @@
 
       import Media                                    from "../utils/media.js";
       import { MediaImageItem, ResizedImage }         from "./.interfaces.js";
-      import sharp                                    from 'sharp';
+      import sharp, { OverlayOptions }                from 'sharp';
       import * as exifParser                          from 'exif-parser';
-      import { fileTypeFromBuffer }                     from 'file-type';     
+      import { fileTypeFromBuffer }                   from 'file-type';     
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Media
@@ -90,10 +90,6 @@
                   //|| Get the Meta Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   await this.extractMeta();
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Original Conversion
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  this.originalBuffer          = (await sharp(this.buffer).toFormat('webp').toBuffer({ resolveWithObject: true })).data;     
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the Meta Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
@@ -181,68 +177,146 @@
             }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Resize based on the longest side
+            //|| Original
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-            async resize(maxSize: number) : Promise<boolean> {
-                  app.log("MediaImage :: resize("+this.status+") :: Resizing to " + maxSize + "px", "info");
+            public async original(): Promise<boolean> {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Check
+                  //|| Original Conversion
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  if (this.status !== "OK") return false;
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Get the New Dimensions
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
-                  const metadata                = await sharp(this.buffer).metadata();
-                  let oldWidth                  = metadata.width!;
-                  let oldHeight                 = metadata.height!;
-                  let orientation:"L"|"P"|"S"   = oldWidth > oldHeight ? "L" : oldWidth < oldHeight ? "P" : "S";
-                  let newWidth                  = (orientation === "P") ? oldWidth * (maxSize / oldHeight) : maxSize;
-                  let newHeight                 = (orientation === "L") ? oldHeight * (maxSize / oldWidth) : maxSize;
-                  if (orientation === "S") {
-                        newWidth                = maxSize;
-                        newHeight               = maxSize;
-                  }                  
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Integers Only 
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
-                  newWidth                = Math.floor(newWidth);
-                  newHeight               = Math.floor(newHeight);
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Resized
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
-                  let resizedImage          = await sharp(this.buffer).resize(newWidth, newHeight).toFormat('webp').toBuffer({ resolveWithObject: true });     
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Push to the sizes array
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                  try { 
+                        var originalBuffer = await sharp(this.buffer).toFormat('webp').toBuffer();
+                        if (!originalBuffer) {
+                              throw new Error('Failed to convert image to webp');
+                        }
+                  } catch (error) {
+                        console.error("Error converting image to webp:", error);
+                        this.status = "CORRUPT";
+                        return false;
+                  }
                   this.sizes.push({
-                        name              : Media.filename("image", this.id, maxSize),
-                        size              : maxSize,
-                        width             : newWidth,
-                        height            : newHeight,
-                        buffer            : resizedImage.data,
-                        orientation       : orientation
+                        path              : Media.filename("originalImage", this.id, 0),
+                        size              : 0,
+                        width             : this.width,
+                        height            : this.height,
+                        buffer            : originalBuffer,
+                        orientation       : this.orientation
                   });
                   return true;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Resize
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+            async resize(maxSize: number, square: boolean, watermarkImg : string): Promise<boolean> {
+                  app.log("MediaImage :: resize(" + this.status + ") :: Resizing to " + maxSize + "px", "info");
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Check
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                  if (this.status !== "OK") return false;            
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Get the New Dimensions
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                  const metadata = await sharp(this.buffer).metadata();
+                  let oldWidth = metadata.width!;
+                  let oldHeight = metadata.height!;
+                  let orientation: "L" | "P" | "S" = oldWidth > oldHeight ? "L" : oldWidth < oldHeight ? "P" : "S";
+                  let newWidth = (orientation === "P") ? oldWidth * (maxSize / oldHeight) : maxSize;
+                  let newHeight = (orientation === "L") ? oldHeight * (maxSize / oldWidth) : maxSize;
+                  if (orientation === "S") {
+                        newWidth = maxSize;
+                        newHeight = maxSize;
+                  }            
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Integers Only 
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                  newWidth = Math.floor(newWidth);
+                  newHeight = Math.floor(newHeight);            
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Resized and Cropped
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                  let resizedImage;
+                  try {
+                        let image = sharp(this.buffer).resize(newWidth, newHeight);
+                        
+                        if (square) {
+                              // Resize to the longer side, then crop to make it square
+                              let longestSide = Math.max(newWidth, newHeight);
+                              image = image.resize(longestSide, longestSide).extract({
+                                    width: maxSize,
+                                    height: maxSize,
+                                    left: (longestSide - maxSize) / 2,
+                                    top: (longestSide - maxSize) / 2
+                              });
+                        }
+            
+                        resizedImage = await image.toBuffer();
+                        if (!resizedImage) {
+                              throw new Error('Failed to resize image');
+                        }
+            
+                        // Load and resize the watermark
+                        console.log("ADDING WATERMARK");
+                        console.log(watermarkImg);
+                        const watermark = await sharp(watermarkImg)
+                              .resize(Math.floor(newWidth * 0.2))
+                              .ensureAlpha(0.2)
+                              .toBuffer();
+            
+                        // Composite the watermark onto the resized image
+                        resizedImage = await sharp(resizedImage)
+                              .composite([{
+                                    input             : watermark,
+                                    gravity           : 'southeast',
+                                    blend             : 'over'
+                              } as OverlayOptions])
+                              .toFormat('webp')
+                              .toBuffer();
+            
+                  } catch (error) {
+                        console.error("Error resizing image:", error);
+                        this.status = "CORRUPT";
+                        return false;
+                  }
+            
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Push to the sizes array
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                  this.sizes.push({
+                        path              : Media.filename("image", this.id, maxSize),
+                        size              : maxSize,
+                        width             : newWidth,
+                        height            : newHeight,
+                        buffer            : resizedImage,
+                        orientation       : orientation
+                  });
+                  return true;
+            }
+            
+            
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Save to Cloud
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-            async saveToCloud(cloudName : string) : Promise<boolean> {
-                  app.log("MediaImage :: saveToCloud("+cloudName+")", "info");
-                  let files = await this.sizes.map( (size) => {
-                        return {
-                              path        : size.name,
-                              data        : size.buffer
+            async saveToCloud(cloudName: string): Promise<boolean> {
+                  app.log("MediaImage :: saveToCloud(" + cloudName + ")", "info");
+                  
+                  // Log each size's path and buffer length
+                  let files = this.sizes.map((size) => {
+                        if (!size.buffer) {
+                              throw new Error(`Buffer is undefined for path: ${size.path}`);
                         }
+                        console.log(size);
+                        console.log(cloudName + " : " + size.path + " : " + size.buffer.byteLength + " bytes");
+                        return {
+                              path: size.path,
+                              data: size.buffer
+                        };
                   });
-                  files.push({
-                        path        : Media.filename("image", this.id, 0, true),
-                        data        : this.originalBuffer
-                  });
-                  await app.cloud(cloudName).write(app("config", "media").bucket, files);                  
+            
+                  await app.cloud(cloudName).write(app("config", "media").bucket, files);
                   return true;
             }
 

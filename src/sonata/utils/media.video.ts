@@ -3,254 +3,399 @@
 //|| Manipulate 
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| FMPEG
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| FMPEG
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+import * as fs                                        from 'fs';
+import ffmpeg                                         from 'fluent-ffmpeg';
+import sharp                                          from 'sharp';
+import { Readable }                                   from 'stream';
+import { promisify }                                  from 'util';
+import { unlink }                                     from 'fs/promises';      
+
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| App
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+import app                                      from "../app.js";
+
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| Media
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+import Media                                    from "../utils/media.js";
+import { MediaVideoItem, MediaVideoMeta  }      from "./.interfaces.js";
+import { ResizedVideo  }                        from "./.interfaces.js";
+
+import { fileTypeFromBuffer }                   from 'file-type';     
+
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| Media
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+const writeFileAsync = promisify(fs.writeFile);
+
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| Media
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+export default class MediaVideo implements MediaVideoItem {
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Var
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-      import { exec }                                 from 'child_process';
-      import * as ffmpeg                              from "fluent-ffmpeg";
-      import { spawn }                                from "child_process";
-      import sharp                                    from 'sharp';
+      public id               : number;
+      public buffer           : Buffer;
+      public filename         : string;
+      public ext              : string; 
+      public width            : number;
+      public height           : number; 
+      public duration         : number;  
+      public orientation      : "L" | "P" | "S";      
+      public meta             : MediaVideoMeta;
+      public status           : "OK" | "PENDING" | "CORRUPT" | "TOOBIG" | "TOOSMALL" | "UNSUPPORTED";
+      public sizes            : ResizedVideo[];
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| App
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Constructor 
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-      import app                                      from "../app.js";
+      constructor(id : number, videoData: Buffer, filename: string) {
+            this.id                 = id;
+            this.buffer             = videoData;
+            this.duration           = 0;
+            this.filename           = app.path(filename).base();
+            this.ext                = app.path(filename).ext().toLowerCase();
+            this.status             = "PENDING";
+            this.sizes              = [];
+            this.meta               = {
+                  bitrate     : '',
+                  format      : '',
+                  duration    : 0,
+                  size        : 0,
+                  width       : 0,
+                  height      : 0,
+                  orientation : 'L'
+            };
+      }
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Media
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Init
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-      import Media                                    from "../utils/media.js";
-      import { MediaVideoItem, ResizedVideo }         from "./.interfaces.js";
-      import { fileTypeFromBuffer }                   from 'file-type';     
-
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Media
-      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-      export default class MediaVideo implements MediaVideoItem {
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Var
+      public async init(): Promise<boolean> {
+            app.log("MediaVideo :: init()", "info");
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Verify Extension
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-            public id               : number;
-            public buffer           : Buffer;
-            public screenshot       : Buffer;               
-            public filename         : string;
-            public ext              : string; 
-            public width            : number;
-            public height           : number; 
-            public duration         : number;  
-            public orientation      : "L" | "P" | "S";      
-            public meta             : Record<string, string>;
-            public status           : "OK" | "PENDING" | "CORRUPT" | "TOOBIG" | "TOOSMALL" | "UNSUPPORTED";
-            public sizes            : ResizedVideo[];
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Constructor 
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-            constructor(id, videoData: Buffer, filename: string) {
-                  this.id                 = id;
-                  this.buffer             = videoData;
-                  this.duration           = 0;
-                  this.filename           = app.path(filename).base();
-                  this.ext                = app.path(filename).ext().toLowerCase(); // Extract file extension
-                  this.status             = "PENDING";
-                  this.sizes              = [];
+            if (!app("config", "media").allowedVideos.includes(this.ext)) {
+                  this.status = "UNSUPPORTED";
+                  return false;
             }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Init
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Check File Type from File
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-            public async init(): Promise<boolean> {
-                  app.log("MediaVideo :: init()", "info");
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Verify Extension
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  if (!app("config", "media").allowedVideos.includes(this.ext)) {
-                        this.status = "UNSUPPORTED";
-                        return false;
-                  }
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Check File Type from File
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  const actualFileType    = await fileTypeFromBuffer(this.buffer);
-                  if (!actualFileType || !actualFileType.mime.startsWith('video/')) {
-                        this.status = "UNSUPPORTED";
-                        return false;
-                  }
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Get the Meta Data
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  //await this.extractMeta();
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Get Screenshot
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  //await this.takeScreenShot();
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Get the Meta Data
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  this.status = 'OK';
-                  app.log("MediaImage :: init()", "success");
-                  return true;
+            const actualFileType    = await fileTypeFromBuffer(this.buffer);
+            if (!actualFileType || !actualFileType.mime.startsWith('video/')) {
+                  this.status = "UNSUPPORTED";
+                  return false;
             }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Meta
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Get the Meta Data
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-            public async extractMeta(): Promise<void> {
-                  app.log("MediaVideo :: extractMeta()", "info");
-                  return new Promise<void>((resolve, reject) => {
-                        // Extract metadata using fluent-ffmpeg
-                        ffmpeg.ffprobe(this.buffer, (err, metadata) => {
-                              if (err) {
-                                    console.error("Error extracting metadata:", err);
-                                    reject(err);
-                                    return;
-                              }
-                              console.log("Metadata:", metadata);
-                              this.meta  = {
-                                    'bitrate' : metadata.format.bit_rate,
-                                    'format' : metadata.format.format_name
-                               }            
-                              resolve();
-                        });
-                  });
-            }          
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Screenshot
+            await this.extractMeta();
+            app.log("MediaVideo :: extractMeta()", "success");          
+            console.log(this.meta);
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Get the Meta Data
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+            this.status = 'OK';
+            return true;
+      }
 
-            public async takeScreenShot(): Promise<void> {
-                  app.log("MediaVideo :: takeScreenShot()", "info");
-                  return new Promise<void>((resolve, reject) => {
-                        const command = `ffmpeg -ss ${Math.floor(this.duration / 2)} -i input.mp4 -frames:v 1 -vf "scale=720:-1" -f image2pipe -vcodec png -`;
-                        exec(command, { encoding: 'buffer' }, (error, stdout, stderr) => {
-                            if (error) {
-                                console.error('Error taking screenshot:', error);
-                                reject(error);
-                            } else {
-                                // Convert the PNG screenshot to WebP format using Sharp
-                                sharp(stdout)
-                                    .toFormat('webp')
-                                    .toBuffer()
-                                    .then((webpBuffer) => {
-                                        // Store the WebP screenshot in the this.screenshot property
-                                        this.screenshot = webpBuffer;
-                                        console.log('Screenshot taken successfully.');
-                                        resolve();
-                                    })
-                                    .catch((err) => {
-                                        console.error('Error converting screenshot to WebP:', err);
-                                        reject(err);
-                                    });
-                            }
-                        });
-                    });
-            }       
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Meta
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Resize based on the longest side
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+      public async extractMeta(): Promise<void> {
+            app.log("MediaVideo :: extractMeta()", "info");
 
-            async resize(maxSize: number) : Promise<boolean> {
-                  app.log("MediaVideo :: resize()", "info");
-          
-                  return new Promise((resolve, reject) => {
-                      // Use FFmpeg to convert and resize the video
-                      const ffmpeg = spawn("ffmpeg", [
-                          "-i", "pipe:0",
-                          "-c:a", "aac", "-b:a", "128k",
-                          "-vf", "scale=2560:1440", "output_1440p.mp4",
-                          "-c:a", "aac", "-b:a", "128k",
-                          "-vf", "scale=1280:720", "output_720p.mp4"
-                      ]);
-          
-                      let video1440p: Buffer = Buffer.alloc(0);
-                      let video720p: Buffer = Buffer.alloc(0);
-          
-                      ffmpeg.stdout.on("data", (data: Buffer) => {
-                          // Collect output data
-                          // FFmpeg outputs logs to stdout, so we should not include it in the final video data
-                          const strData = data.toString();
-                          if (!strData.includes("frame=")) {
-                              if (strData.includes("output_1440p.mp4")) {
-                                  video1440p = Buffer.concat([video1440p, data]);
-                              } else if (strData.includes("output_720p.mp4")) {
-                                  video720p = Buffer.concat([video720p, data]);
-                              }
-                          }
-                      });
-          
-                      ffmpeg.stderr.on("data", (data: Buffer) => {
-                          // Log FFmpeg stderr output
-                          console.error(`FFmpeg stderr: ${data}`);
-                      });
-          
-                      ffmpeg.on("close", (code: number) => {
-                          if (code === 0) {
-                              // FFmpeg conversion and resizing successful
-                              this.sizes.push({
-                                  name: "output_1440p.mp4",
-                                  size: 1440,
-                                  buffer: video1440p,
-                                  width : 1440,
-                                  height : 120
-                              });
-                              this.sizes.push({
-                                  name: "output_720p.mp4",
-                                  size: 720,
-                                  buffer: video720p,
-                                  width : 1440,
-                                  height : 120
-                              });
-                              this.status = "OK";
-                              app.log("MediaVideo :: convertAndResize()", "success");
-                              resolve(true);
-                          } else {
-                              // FFmpeg encountered an error
-                              this.status = "CORRUPT";
-                              app.log("MediaVideo :: convertAndResize()", "error");
-                              reject(false);
-                          }
-                      });
-          
-                      // Pipe video data to FFmpeg stdin
-                      ffmpeg.stdin.write(this.buffer);
-                      ffmpeg.stdin.end();
-                  });
-              }
+            return new Promise<void>((resolve, reject) => {
+                  const readableStream = new Readable();
+                  readableStream.push(this.buffer);
+                  readableStream.push(null);
 
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Save to Cloud
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-
-            async saveToCloud(cloudName : string) : Promise<boolean> {
-                  app.log("MediaVideo :: saveToCloud("+cloudName+")", "info");
-                  let files = await this.sizes.map( (size) => {
-                        return {
-                              path        : size.name,
-                              data        : size.buffer
+                  ffmpeg(readableStream).ffprobe((err, metadata) => {
+                        if (err) {
+                              console.error("Error extracting metadata:", err);
+                              reject(err);
+                              return;
                         }
+
+                        const videoStream = metadata.streams.find(stream => stream.codec_type === 'video');
+                        if (!videoStream) {
+                              reject(new Error('No video stream found'));
+                              return;
+                        }
+
+                        this.meta = {
+                              bitrate     : metadata.format.bit_rate?.toString() || 'N/A',
+                              format      : metadata.format.format_name,
+                              duration    : parseFloat(metadata.format.duration) || 0,
+                              size        : this.buffer.length,
+                              width       : videoStream.width,
+                              height      : videoStream.height,
+                              orientation : videoStream.width > videoStream.height ? "L" : (videoStream.width < videoStream.height ? "P" : "S")
+                        };
+
+                        console.log("Parsed Metadata:", this.meta);
+
+                        resolve();
                   });
-                  files.push({
-                        path        : Media.filename("image", this.id, 0, true),
-                        data        : this.buffer
+            });
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Convert to MP4
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+      public async original(): Promise<void> {
+            app.log("MediaVideo :: original()", "info");
+
+            const tempFilePath = `/tmp/temp-video-${app.random.uuid()}.mp4`;
+            const outputFilePath = `/tmp/output-${app.random.uuid()}.mp4`;
+
+            try {
+                  // Write buffer to a temporary file
+                  await writeFileAsync(tempFilePath, this.buffer);
+
+                  return new Promise<void>((resolve, reject) => {
+                        ffmpeg(tempFilePath)
+                              .output(outputFilePath)
+                              .videoCodec('libx264')
+                              .audioCodec('aac')
+                              .on('end', async () => {
+                                    try {
+                                          const data = await fs.promises.readFile(outputFilePath);
+                                          this.sizes.push({
+                                                path   : Media.filename("originalVideo", this.id, 0),
+                                                type   : "video",
+                                                size   : 0,
+                                                buffer : data
+                                          });
+                                          await unlink(outputFilePath); // Clean up the output file
+                                          resolve();
+                                    } catch (error) {
+                                          reject(error);
+                                    } finally {
+                                          // Ensure the temporary video file is removed
+                                          await unlink(tempFilePath);
+                                    }
+                              })
+                              .on('error', async (err) => {
+                                    console.error("Error converting video to MP4:", err);
+                                    reject(err);
+                                    await unlink(tempFilePath); // Clean up the temporary video file
+                              })
+                              .run();
                   });
-                  await app.cloud(cloudName).write(app("config", "media").bucket, files);                  
-                  return true;
+            } catch (error) {
+                  console.error("Error handling video buffer:", error);
+                  throw error;
             }
+      }
 
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Screenshot
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| EOC
+      public async takeScreenShot(size: number): Promise<void> {
+            app.log("MediaVideo :: takeScreenShot()", "info");
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Generate a Unique Temp File Path
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+            const tempFilePath = `/tmp/temp-video-${app.random.uuid()}.mp4`;
+            const screenshotFilename = `screenshot-${app.random.uuid()}.png`;
+
+            try {
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                  //|| Write Buffer to Temporary File
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                  await writeFileAsync(tempFilePath, this.buffer);
+
+                  return new Promise<void>((resolve, reject) => {
+                        ffmpeg(tempFilePath)
+                              .screenshots({
+                                    count             : 1,
+                                    folder            : '/tmp',
+                                    filename          : screenshotFilename,
+                                    size: `${size}x?`,
+                                    timemarks: ['1'] // Provide a fixed timemark at the start of the video
+                              })
+                              .on('end', async () => {
+                                    try {
+                                          const screenshotPath = `/tmp/${screenshotFilename}`;
+                                          const data = await sharp(screenshotPath).toFormat('webp').toBuffer();
+                                          this.sizes.push({
+                                                path        : Media.filename("screenshot", this.id, size),
+                                                type        : "screenshot",
+                                                size        : size,
+                                                buffer      : data
+                                          });
+                                          await unlink(screenshotPath); // Clean up the screenshot file
+                                          resolve();
+                                    } catch (error) {
+                                          reject(error);
+                                    } finally {
+                                          // Ensure the temporary video file is removed
+                                          await unlink(tempFilePath);
+                                    }
+                              })
+                              .on('error', async (err) => {
+                                    console.error("Error taking screenshot:", err);
+                                    reject(err);
+                                    await unlink(tempFilePath); // Clean up the temporary video file
+                              });
+                  });
+            } catch (error) {
+                  console.error("Error handling video buffer:", error);
+                  throw error;
+            }
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Generate Preview GIF
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+      public async preview(size : number): Promise<void> {
+            app.log("MediaVideo :: previewGIF()", "info");
+      
+            const tempFilePath = `/tmp/temp-video-${app.random.uuid()}.mp4`;
+            const previewFilename = `/tmp/preview-${app.random.uuid()}.gif`;
+      
+            try {
+                  // Write buffer to a temporary file
+                  await writeFileAsync(tempFilePath, this.buffer);
+      
+                  const duration = this.meta.duration;
+                  const interval = duration / 10;
+      
+                  return new Promise<void>((resolve, reject) => {
+                        ffmpeg(tempFilePath)
+                              .output(previewFilename)
+                              .outputOptions([
+                                    `-vf fps=1/${interval},scale=${size}:-1:flags=lanczos`,
+                                    `-frames:v 10`
+                              ])
+                              .on('end', async () => {
+                                    try {
+                                          const data = await fs.promises.readFile(previewFilename);
+                                          this.sizes.push({
+                                                path   : Media.filename("preview", this.id, size),
+                                                type   : "preview",
+                                                size   : size,
+                                                buffer : data
+                                          });
+                                          await unlink(previewFilename); // Clean up the preview file
+                                          resolve();
+                                    } catch (error) {
+                                          reject(error);
+                                    } finally {
+                                          // Ensure the temporary video file is removed
+                                          await unlink(tempFilePath);
+                                    }
+                              })
+                              .on('error', async (err) => {
+                                    console.error("Error creating preview GIF:", err);
+                                    reject(err);
+                                    await unlink(tempFilePath); // Clean up the temporary video file
+                              })
+                              .run();
+                  });
+            } catch (error) {
+                  console.error("Error handling video buffer:", error);
+                  throw error;
+            }
+      }
+           
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Resize based on the longest side
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+      public async resize(size: number): Promise<boolean> {
+            app.log("MediaVideo :: resize()", "info");
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Generate a Unique Temp File Path
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+            const tempFilePath = `/tmp/temp-video-${app.random.uuid()}.mp4`;
+            const outputFilename = `output_${size}p-${app.random.uuid()}.mp4`;
+
+            try {
+                  // Write buffer to a temporary file
+                  await writeFileAsync(tempFilePath, this.buffer);
+
+                  return new Promise<boolean>((resolve, reject) => {
+                        ffmpeg(tempFilePath)
+                              .output(outputFilename)
+                              .videoCodec('libx264')
+                              .size(`${size}x?`) // '?' will maintain aspect ratio based on width
+                              .on('end', async () => {
+                                    app.log(`Video resized to ${size} successfully.`, "success");
+                                    const data = await fs.promises.readFile(outputFilename);
+                                    this.sizes.push({
+                                          path   : Media.filename("video", this.id, size),
+                                          type   : "video",
+                                          size   : size,
+                                          buffer : data
+                                    });
+                                    await unlink(outputFilename); // Clean up the resized video file
+                                    resolve(true);
+                              })
+                              .on('error', async (err) => {
+                                    app.log(`Error resizing video to ${size}: ${err}`, "error");
+                                    await unlink(outputFilename); // Clean up the resized video file
+                                    reject(err);
+                              })
+                              .run();
+                  });
+            } catch (err) {
+                  app.log("One or more resizing operations failed.", "error");
+                  console.error(err);
+
+                  // Clean up the temporary video file in case of error
+                  await unlink(tempFilePath).catch(() => {});
+
+                  return false;
+            }
+      }
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| Save to Cloud
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+      async saveToCloud(cloudName: string): Promise<boolean> {
+            app.log("MediaVideo :: saveToCloud(" + cloudName + ")", "info");
             
-      }      
+            // Log each size's path and buffer length
+            let files = this.sizes.map((size) => {
+                  console.log(cloudName + " : " + size.path + " : " + size.buffer.byteLength + " bytes");
+                  return {
+                        path: size.path,
+                        data: size.buffer
+                  };
+            });
+      
+            await app.cloud(cloudName).write(app("config", "media").bucket, files);
+            return true;
+      }
+      
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+      //|| EOC
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+}

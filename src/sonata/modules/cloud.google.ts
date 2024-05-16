@@ -62,10 +62,23 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
             private uploadFile(bucket: Bucket, file: CloudFile): Promise<void> {
-                  app.log('CloudGoogle : uploadFile()' + file.path, 'info');
+                  app.log('CloudGoogle : uploadFile() ' + file.path, 'info');
+          
+                  // Determine the content type based on the file extension
+                  const extension = file.path.split('.').pop();
+                  let contentType = 'application/octet-stream';
+          
+                  switch (extension) {
+                      case 'webp': contentType = 'image/webp'; break;
+                      case 'gif' : contentType = 'image/gif';  break;
+                      case 'mp4' : contentType = 'video/mp4';  break;
+                      case 'jpg' : contentType = 'video/mp4';  break;
+                      case 'mov' : contentType = 'video/mov';  break;
+                  }
+          
                   const gcsFile = bucket.file(file.path);
                   const stream = gcsFile.createWriteStream({
-                      metadata            : { contentType: 'application/octet-stream' },
+                      metadata            : { contentType },
                       resumable           : false
                   });
           
@@ -83,7 +96,7 @@
           
                       stream.end(file.data);
                   });
-            }
+              }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| End Class
