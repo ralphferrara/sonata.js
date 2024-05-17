@@ -209,7 +209,7 @@
             //|| Resize
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
-            async resize(maxSize: number, square: boolean, watermarkImg : string): Promise<boolean> {
+            async resize(maxSize: number, square: boolean, watermarkImg? : Buffer): Promise<boolean> {
                   app.log("MediaImage :: resize(" + this.status + ") :: Resizing to " + maxSize + "px", "info");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check
@@ -218,15 +218,15 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the New Dimensions
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
-                  const metadata = await sharp(this.buffer).metadata();
-                  let oldWidth = metadata.width!;
-                  let oldHeight = metadata.height!;
-                  let orientation: "L" | "P" | "S" = oldWidth > oldHeight ? "L" : oldWidth < oldHeight ? "P" : "S";
-                  let newWidth = (orientation === "P") ? oldWidth * (maxSize / oldHeight) : maxSize;
-                  let newHeight = (orientation === "L") ? oldHeight * (maxSize / oldWidth) : maxSize;
+                  const metadata                      = await sharp(this.buffer).metadata();
+                  let oldWidth                        = metadata.width!;
+                  let oldHeight                       = metadata.height!;
+                  let orientation: "L" | "P" | "S"    = oldWidth > oldHeight ? "L" : oldWidth < oldHeight ? "P" : "S";
+                  let newWidth                        = (orientation === "P") ? oldWidth * (maxSize / oldHeight) : maxSize;
+                  let newHeight                       = (orientation === "L") ? oldHeight * (maxSize / oldWidth) : maxSize;
                   if (orientation === "S") {
-                        newWidth = maxSize;
-                        newHeight = maxSize;
+                        newWidth          = maxSize;
+                        newHeight         = maxSize;
                   }            
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Integers Only 
@@ -238,48 +238,45 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
                   let resizedImage;
                   try {
-                        let image = sharp(this.buffer).resize(newWidth, newHeight);
-                        
+                        let image = sharp(this.buffer).resize(newWidth, newHeight);                        
                         if (square) {
-                              // Resize to the longer side, then crop to make it square
-                              let longestSide = Math.max(newWidth, newHeight);
-                              image = image.resize(longestSide, longestSide).extract({
-                                    width: maxSize,
-                                    height: maxSize,
-                                    left: (longestSide - maxSize) / 2,
-                                    top: (longestSide - maxSize) / 2
+                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                              //|| Resize to the longer side, then crop to make it square
+                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
+                              let longestSide   = Math.max(newWidth, newHeight);
+                              image             = image.resize(longestSide, longestSide).extract({
+                                    width             : maxSize,
+                                    height            : maxSize,
+                                    left              : (longestSide - maxSize) / 2,
+                                    top               : (longestSide - maxSize) / 2
                               });
-                        }
-            
+                        }            
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Resize to the longer side, then crop to make it square
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
                         resizedImage = await image.toBuffer();
                         if (!resizedImage) {
-                              throw new Error('Failed to resize image');
+                              this.status = "CORRUPT";
+                              return false;      
                         }
-            
-                        // Load and resize the watermark
-                        console.log("ADDING WATERMARK");
-                        console.log(watermarkImg);
-                        const watermark = await sharp(watermarkImg)
-                              .resize(Math.floor(newWidth * 0.2))
-                              .ensureAlpha(0.2)
-                              .toBuffer();
-            
-                        // Composite the watermark onto the resized image
-                        resizedImage = await sharp(resizedImage)
-                              .composite([{
-                                    input             : watermark,
-                                    gravity           : 'southeast',
-                                    blend             : 'over'
-                              } as OverlayOptions])
-                              .toFormat('webp')
-                              .toBuffer();
-            
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Generate the Watermark
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                  
+                        if (watermarkImg !== undefined) {
+                              try {
+                                    resizedImage  = await this.addWatermark(resizedImage, watermarkImg, newWidth, newHeight);
+                              } catch (error) {
+                                    app.log("Error adding watermark to image:", "fail");
+                              }
+                        }
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Add the Watermark to 
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                                                      
                   } catch (error) {
                         console.error("Error resizing image:", error);
                         this.status = "CORRUPT";
                         return false;
-                  }
-            
+                  }            
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Push to the sizes array
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                      
@@ -294,7 +291,53 @@
                   return true;
             }
             
-            
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Add Watermark
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+            static async addWatermark(imageBuffer: Buffer, watermarkImg: Buffer, newWidth: number, newHeight: number, opacity: number = 0.1, paddingPercent: number = 0.05 ): Promise<Buffer> {
+                  try {
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Add Watermark
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        const watermarkWidth    = Math.floor(newWidth * 0.2);
+                        const watermarkBuffer   = await sharp(watermarkImg).resize(watermarkWidth).toBuffer();
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Generate the Watermark in the right side
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        const watermark = await sharp(watermarkBuffer).ensureAlpha().modulate({
+                              brightness        : 1,
+                              saturation        : 1,
+                              lightness         : opacity
+                        }).toBuffer();
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Calculate Padding
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        const paddingX          = Math.floor(newWidth * paddingPercent);
+                        const paddingY          = Math.floor(newHeight * paddingPercent);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Get the Watermark Metadata
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        const watermarkMetadata = await sharp(watermark).metadata();
+                        const watermarkHeight   = watermarkMetadata.height;
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Add the Watermark to the Image
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        const watermarkedImage  = await sharp(imageBuffer).composite([{
+                              input       : watermark,
+                              top         : newHeight - watermarkHeight - paddingY,
+                              left        : newWidth - watermarkWidth - paddingX,
+                              blend       : 'over'
+                        } as OverlayOptions]).toFormat('webp').toBuffer();
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Return Watermark
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                        return watermarkedImage;
+                  } catch (error) {
+                        app.log("Error adding watermark to image:", 'fail');
+                        throw error;
+                  }
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Save to Cloud
@@ -302,20 +345,14 @@
 
             async saveToCloud(cloudName: string): Promise<boolean> {
                   app.log("MediaImage :: saveToCloud(" + cloudName + ")", "info");
-                  
-                  // Log each size's path and buffer length
                   let files = this.sizes.map((size) => {
-                        if (!size.buffer) {
-                              throw new Error(`Buffer is undefined for path: ${size.path}`);
-                        }
-                        console.log(size);
-                        console.log(cloudName + " : " + size.path + " : " + size.buffer.byteLength + " bytes");
+                        if (!size.buffer) throw new Error(`Buffer is undefined for path: ${size.path}`);
+                        console.log(size.path + " : " + (size.buffer.byteLength / 1024) + "KB");
                         return {
                               path: size.path,
                               data: size.buffer
                         };
-                  });
-            
+                  });            
                   await app.cloud(cloudName).write(app("config", "media").bucket, files);
                   return true;
             }

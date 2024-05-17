@@ -63,6 +63,7 @@
                   this.jwtFields    = {};
                   this.currentStep  = -1;
                   this.site         = request.site;
+                  if (app.active == false) return this.respond(500,  'Server is starting');                  
             }
             
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

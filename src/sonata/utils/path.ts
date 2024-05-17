@@ -3,9 +3,9 @@
 //|| Path Function
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import * as path from 'path';
-      import { ParseData } from './.interfaces.js';
-      import { promises as fs, constants } from 'fs';
+      import * as path                                      from 'path';
+      import { ParseData }                                  from './.interfaces.js';
+      import { promises as fs, constants }                  from 'fs';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Path Class
@@ -174,6 +174,20 @@
                         return (returnBuffer) ? data : data.toString();
                     } catch (error) {
                         return undefined;
+                    }
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Safe unlink of a file
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            public async unlink():Promise<boolean> {
+                  try {
+                        fs.unlink(this.dir);
+                        return true;
+                    } catch (error) {
+                        console.log("Path Unlink : File does not exist : " + this.dir, "error");
+                        return false;
                     }
             }
 

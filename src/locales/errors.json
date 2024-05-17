@@ -38,6 +38,7 @@
 "JWTLVL"  : "This area is not accessible to your level of access",
 
 "SUCL01"  : "Login was successful. Redirecting...",
+
 "UPL000"  : "Upload Token missing",
 "UPL001"  : "Upload Token mismatch or expired. Please refresh the page",
 "UPL002"  : "No files uploaded",

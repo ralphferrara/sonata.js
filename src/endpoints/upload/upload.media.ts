@@ -84,7 +84,7 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('uploadJWT') === null)           return chirp.error(400, "UPL000");
                   var jwt = JWT.parse(chirp.data('uploadJWT'));
-                  if (jwt === null)                               return chirp.error(400, "UPL001");
+                  if (jwt === null)                               return chirp.error(400, "UPL000");
                   if (jwt.status !== "valid")                     return chirp.error(400, "UPL001");
                   chirp.data('uploadPayload', jwt.payload as JWTUpload);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

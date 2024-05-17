@@ -9,6 +9,8 @@
 
       import app                          from "../app.js";
       import crypto                       from "crypto";
+      import { format }                   from 'date-fns';
+      import { randomBytes }              from 'crypto';      
       import { fileTypeFromBuffer }       from 'file-type';
       import JWT                          from "../../sonata/utils/jwt.js";
       import { JWTUpload }                from "../../.interfaces.jwt.js";
@@ -122,6 +124,19 @@
                         return null;
                   }
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Temporary Filename generator
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static tempFilename(ext : string, id? : number) : string {
+                  const now               = new Date();
+                  const myID:string       = (id) ? '.' + id.toString() : '';
+                  const formattedDate     = format(now, 'yyyy_MM_dd-HH_mm_ss');
+                  const randomString      = randomBytes(10).toString('hex');
+                  return app.path(app("config", "app").tempDir + `/ffmpeg/${formattedDate}.${randomString}${myID}.${ext}`).abs();            
+            }
+
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| EOC
