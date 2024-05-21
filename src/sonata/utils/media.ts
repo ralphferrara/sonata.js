@@ -56,14 +56,21 @@
                   let format  = app("config", "media").format;
                   let path    = app("config", "media").dirMedia;
                   let ext     = "webp";
+                  let init    = "";
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Missing File
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   switch(type) { 
-                        case "video"           : ext = "mp4"; break;
+                        case "video"           : ext  = "mp4"; break;
                         case "image"           : ext = "webp"; break;
-                        case "preview"         : ext = "webp"; break; 
-                        case "screenshot"      : ext = "gif"; break;
+                        case "preview"         : 
+                              init = "_pre";
+                              ext  = "webp"; 
+                              break; 
+                        case "screenshot"      : 
+                              init = "_ss";
+                              ext = "webp"; 
+                              break;
                         case "originalVideo"   : 
                               ext   = "mp4"; 
                               path  = app("config", "media").dirOriginal;
@@ -93,10 +100,11 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Format the URL
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  format = format.replace("{{ID}}",   id.toString());
-                  format = format.replace("{{SIZE}}", size.toString());
+                  format = format.replace("{{ID}}",   (id === null)   ? -1 : id.toString());
+                  format = format.replace("{{SIZE}}", (size === null) ? 0  : size.toString());
                   format = format.replace("{{HASH}}", hashId);
                   format = format.replace("{{EXT}}",  ext);
+                  format = format.replace("{{INIT}}", init);
                   return path + "/" + format;
             }
 
@@ -129,11 +137,11 @@
             //|| Temporary Filename generator
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static tempFilename(ext : string, id? : number) : string {
+            static tempFilename(ext : string, type? : string, id? : number) : string {
                   const now               = new Date();
                   const myID:string       = (id) ? '.' + id.toString() : '';
                   const formattedDate     = format(now, 'yyyy_MM_dd-HH_mm_ss');
-                  const randomString      = randomBytes(10).toString('hex');
+                  const randomString      = (type) ? type: randomBytes(5).toString('hex');
                   return app.path(app("config", "app").tempDir + `/ffmpeg/${formattedDate}.${randomString}${myID}.${ext}`).abs();            
             }
 

@@ -1,6 +1,7 @@
 node_modules
 config
 config.production
+config.docker
 dist
 package-lock.json
 documents

@@ -96,7 +96,7 @@
 
             async init(): Promise<void> {
                   if (await app.path(app('config', 'languages').path).exists() === false) {
-                        app.log('Language path not found. [' + app('config', 'servers').assets.path + ']', 'break');
+                        app.log('Language path not found. [' + app.path(app('config', 'languages').path).abs() + ']', 'break');
                   }
                   app.log('Parsing Language Files [' + app('config', 'languages').path + ']', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -148,7 +148,7 @@
                   //|| Create Locales Cache Directory
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const localCacheDir = app('config', 'app').tempDir + "/locales/";
-                  const localCacheAbs = app.path(localCacheDir).abs();
+                  const localCacheAbs = await app.path(localCacheDir).abs();
                   try {
                         if (!fs.existsSync(localCacheAbs)) fs.mkdirSync(localCacheAbs);
                   } catch (e) {

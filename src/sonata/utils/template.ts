@@ -114,6 +114,16 @@
                               //|| Append CSS and JS to Their Respective Accumulators
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                               this.html = await this.html.replace(componentElement.outerHTML, component.html);                              
+                              let updatedHTML = this.html;
+                              for (const marker in this.markers) {
+                                    if (this.markers.hasOwnProperty(marker)) {
+                                          const markerValue = this.markers[marker];
+                                          const markerRegex = new RegExp(`{{${marker}}}`, 'g');
+                                          updatedHTML = updatedHTML.replace(markerRegex, markerValue);
+                                          console.log(marker, markerValue);
+                                    }
+                              }
+                              this.html = updatedHTML;                              
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                               //|| Append CSS and JS to Their Respective Accumulators
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -140,6 +150,7 @@
                               const markerValue = this.markers[marker];
                               const markerRegex = new RegExp(`{{${marker}}}`, 'g');
                               updatedHTML = updatedHTML.replace(markerRegex, markerValue);
+                              console.log(marker, markerValue);
                         }
                   }
                   this.html = updatedHTML;

@@ -264,7 +264,7 @@
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                  
                         if (watermarkImg !== undefined) {
                               try {
-                                    resizedImage  = await this.addWatermark(resizedImage, watermarkImg, newWidth, newHeight);
+                                    resizedImage  = await MediaImage.addWatermark(resizedImage, watermarkImg, newWidth, newHeight);
                               } catch (error) {
                                     app.log("Error adding watermark to image:", "fail");
                               }

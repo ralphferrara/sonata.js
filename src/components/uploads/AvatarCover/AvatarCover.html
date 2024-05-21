@@ -1,11 +1,15 @@
 <div class="avatarCover">
-      <div class="avatarUpload_image" style="background:{{AVATAR_COVER}}">
+      <div class="avatarUpload_image" style="background:{{IMAGE_COVER}}">
             <div class="avatarUploadFieldWrapper">                  
-                  <button>[[C:UPLOAD_COVER]]</button>
+                  <form action="/upload/media" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="fid_media_cover" value="{{FID_MEDIA_COVER}}">
+                        <input type="file" id="file-upload" name="files" multiple><br>
+                        <input style="visibility : hidden" type="file" id="avatar" name="avatar" accept="image/*" />      
+                        <input type="hidden" name="uploadJWT" value="{{UPLOADJWT}}">            
+                        <input class="form-control btn submit" type="submit" value="Upload" /><br>            
+                        <button>[[C:UPLOAD_COVER]]</button>
+                  </div>                        
             </div>
-            {{__CHILDREN__}}                  
-      </div>
-      <input type="hidden" name="fid_media_cover" value="{{FID_MEDIA_COVER}}">
-      <input style="visibility : hidden" type="file" id="avatar" name="avatar" accept="image/*" />      
-      <input type="hidden" name="uploadJWT" value="{{UPLOADJWT}}">
+            {{__CHILDREN__}}   
+      </form>
 </div>

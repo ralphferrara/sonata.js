@@ -2,10 +2,11 @@
 //|| Sonata :: Path Interfaces
 //|| Path Function
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
+   
+      import app                                            from '../app.js';
       import * as path                                      from 'path';
-      import { ParseData }                                  from './.interfaces.js';
-      import { promises as fs, constants }                  from 'fs';
+      import { ParseData } from './.interfaces.js';
+      import { promises as fs, constants } from 'fs';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Path Class
@@ -31,8 +32,22 @@
             //|| Absolute Path
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public abs():string {
-                  return path.join(process.cwd(), this.dir);
+            public abs(): string {
+                  const isAbsolutePath = path.isAbsolute(this.dir);
+                  if (isAbsolutePath) {
+                        if (app.inDocker && !this.dir.startsWith('/app')) {
+                              const adjustedPath = path.join('/app', this.dir.startsWith('/') ? this.dir.substring(1) : this.dir);
+                              return adjustedPath;
+                        }
+                        if (!app.inDocker && process.platform === 'win32') {
+                              const windowsPath = path.join(process.cwd(), this.dir);
+                              return windowsPath;
+                        }
+                        return this.dir;
+                  }
+                  const baseDir = app.inDocker ? '/app' : process.cwd();
+                  const finalPath = path.join(baseDir, this.dir);
+                  return finalPath;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -56,7 +71,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             public parent():string {
-                  return path.dirname(path.join(process.cwd(), this.dir));
+                  return path.dirname(this.abs());
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -171,7 +186,7 @@
             public async read(returnBuffer=false):Promise<string | Buffer | undefined> {
                   try {
                         const data: Buffer = await fs.readFile(this.abs());
-                        return (returnBuffer) ? data : data.toString();
+                        return (returnBuffer) ? data : data.toString("utf-8");
                     } catch (error) {
                         return undefined;
                     }
@@ -183,7 +198,7 @@
 
             public async unlink():Promise<boolean> {
                   try {
-                        fs.unlink(this.dir);
+                        await fs.unlink(this.dir);
                         return true;
                     } catch (error) {
                         console.log("Path Unlink : File does not exist : " + this.dir, "error");

@@ -7,11 +7,11 @@
       "module": "ES2022",
       "moduleResolution": "node",
       "scripts": {
-            "build" : "npx tsc",
-            "start" : "npm run build && node dist/index.dev.js",
-            "prod"  : "tsx src/index.ts",
-            "dev"   : "tsx src/index.dev.ts",
-            "test"  : "jest"
+            "build": "npx tsc",
+            "start": "npm run build && node dist/index.dev.js",
+            "prod": "npm run build && node dist/index.dev.js",
+            "dev": "tsx src/index.dev.ts",
+            "test": "jest"
       },
       "keywords": [],
       "author": "Ralph C. Ferrara Jr.",
@@ -53,6 +53,7 @@
             "@types/twilio": "^3.19.3",
             "amqplib": "^0.10.4",
             "bcrypt": "^5.1.1",
+            "chokidar": "^3.6.0",
             "clean-css": "^5.3.3",
             "cluster": "^0.7.7",
             "crypto": "latest",
@@ -63,8 +64,8 @@
             "fs": "^0.0.1-security",
             "kysely": "^0.27.3",
             "mysql2": "^latest",
-            "sharp": "^0.32.6",
             "sendgrid": "^5.2.3",
+            "sharp": "^0.32.6",
             "terser": "^5.29.2",
             "twilio": "^5.0.4",
             "xmldom": "^0.6.0"

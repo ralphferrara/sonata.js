@@ -64,7 +64,7 @@
                   this.filename           = app.path(filename).base();
                   this.ext                = app.path(filename).ext().toLowerCase();
                   this.status             = "PENDING";
-                  this.tmpOriginal        = Media.tempFilename(this.ext, id);
+                  this.tmpOriginal        = Media.tempFilename(this.ext, 'original', id);
                   this.tmpWatermark       = null;
                   this.watermarkBuffer    = null;
                   this.sizes              = [];
@@ -124,13 +124,13 @@
                   //|| Save the Watermark
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   if (watermarkImg !== undefined) {
-                        const wm  = Media.tempFilename("png", this.id);
+                        const wm  = Media.tempFilename("png", 'wmOrig', this.id);
                         try {
                               await fs.writeFile(wm, watermarkImg);
-                              app.log("MediaVideo :: Saved temporary watermark to " + this.tmpWatermark, "success");
+                              app.log("MediaVideo :: Saving temporary watermark to " + this.tmpWatermark, "info");
                               this.tmpWatermark       = wm;
-                              this.watermarkBuffer    = watermarkImg;      
-                              app.log("MediaVideo :: Watermark : " + this.tmpWatermark + ", Exists : " + await app.path(this.tmpWatermark).exists(), "info");
+                              this.watermarkBuffer    = watermarkImg;    
+                              app.log("MediaVideo :: Watermark : " + this.tmpWatermark + " Exists : " + await app.path(this.tmpWatermark).exists(), "info");
                         } catch (error) {
                               app.log("MediaVideo :: Could not save temporary watermark to " + this.tmpWatermark, "fail");
                         }
@@ -184,7 +184,7 @@
                               this.meta = {
                                     bitrate     : metadata.format.bit_rate?.toString() || 'N/A',
                                     format      : metadata.format.format_name,
-                                    duration    : metadata.format.duration ? Math.floor(parseFloat(metadata.format.duration)) : 0,
+                                    duration    : metadata.format.duration ? Math.floor(Number(metadata.format.duration)) : 0,
                                     size        : this.buffer.length,
                                     width       : videoStream.width,
                                     height      : videoStream.height,
@@ -214,7 +214,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                   //|| Generate a Unique Screenshot Temp File Path
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                  const screenshotFilename      = Media.tempFilename("png", this.id);
+                  const screenshotFilename      = Media.tempFilename("webp", 'screenshot', this.id);
                   app.log("MediaVideo :: Temp : " + screenshotFilename, "info");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                   //|| Start
@@ -245,17 +245,20 @@
                                           //|| Load the Screenshot
                                           //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                                           var  screenshotImg  = await sharp(screenshotFilename).toFormat('webp').toBuffer();
+                                          const metadata      = await sharp(screenshotImg).metadata();
+                                          const screenshotWidth = metadata.width;
+                                          const screenshotHeight = metadata.height;                                          
                                           /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                                           //|| Add the Watermark
                                           //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                                           if (this.tmpWatermark !== null) {
-                                                try {
-                                                      screenshotImg  = await MediaImage.addWatermark(screenshotImg, this.watermarkBuffer, this.meta.width, this.meta.height);
+                                                try {                                                      
+                                                      screenshotImg  = await MediaImage.addWatermark(screenshotImg, this.watermarkBuffer, screenshotWidth, screenshotHeight);
+                                                      app.log("Added watermark to screenshot", "success");
                                                 } catch (error) {
                                                       app.log("Error adding watermark to image:", "fail");
                                                 }
                                           }
-                                          await app.path(screenshotFilename).unlink();
                                           /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                                           //|| Add to Sizes Array
                                           //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
@@ -268,6 +271,7 @@
                                           /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                                           //|| Delete the Screenshot Path
                                           //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                                          await app.path(screenshotFilename).unlink();
                                           resolve();
                                     } catch (error) {
                                           reject(error);
@@ -301,7 +305,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                   //|| Preview Files
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                
-                  const previewFilename   = Media.tempFilename("gif", this.id);
+                  const previewFilename   = Media.tempFilename("webp", 'preview', this.id);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                   //|| Start creating the preview GIF
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                
@@ -309,8 +313,7 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                         //|| Get Duration and Interval
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                
-                        const duration = this.meta.duration;
-                        const interval = duration / 10;
+                        const fps         = 3;
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                         //|| Start FFMPEG
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                            
@@ -318,10 +321,13 @@
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                               //|| FFMPEG Commands
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                            
-                              ffmpeg(this.tmpOriginal).output(previewFilename).outputOptions([
-                                    `-vf fps=1/${interval},scale=${size}:-1:flags=lanczos`,
-                                    `-frames:v 10`
+                              ffmpeg(this.tmpOriginal).output(previewFilename)
+                              .outputOptions([
+                                    `-vf fps=${fps},scale=${size}:-1:flags=lanczos`,
+                                    `-frames:v 20`,
+                                    `-loop 0`
                               ])
+                              .toFormat('webp')
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                               //|| Save the Preview
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                            
@@ -375,91 +381,95 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
             public async resize(size: number): Promise<boolean> {
-                app.log("MediaVideo :: resize(" + size + ")", "info");
-                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                //|| Generate a Unique Temp File Path
-                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                const outputFilename = Media.tempFilename("mp4", this.id);
-                const watermarkPath  = Media.tempFilename("png", this.id);
-                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                //|| Generate a Unique Temp File Path
-                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
-                try {
-                    /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                    //|| Async Promise
-                    //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                    return new Promise<boolean>(async (resolve, reject) => {
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                        //|| Start ffMPEG settings
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                        const ffmpegCommand = ffmpeg(this.tmpOriginal).output(outputFilename).videoCodec('libx264');            
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                        //|| If we have a watermark image, resize it and save it to a temporary file
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                        if (this.tmpWatermark !== null) {
-                            app.log("MediaVideo :: Writing Watermark to Temp File (" + watermarkPath + ")", "info");
-                            const watermarkBuffer = await sharp(this.tmpWatermark).resize(Math.floor(this.meta.width * 0.2)).toFormat('png').toBuffer();
-                            await app.path(watermarkPath).write(watermarkBuffer.toString());
-                            app.log("MediaVideo :: Watermark successfully saved : " + watermarkPath + ", Exists : " + await app.path(watermarkPath).exists(), "success");            
-                            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                            //|| If Watermark Image Exists, add the FFMPEG input
-                            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                            ffmpegCommand.input(watermarkPath).complexFilter([{
-                                    filter  : 'scale',
-                                    options : { w: size, h: -1 }
-                                },{
-                                    filter  : 'overlay',
-                                    options : { x: '(main_w-overlay_w)-10', y: '(main_h-overlay_h)-10' }
-                                }
-                            ]);
-                        } else {
-                            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                            //|| If no watermark, just scale the video
-                            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                            ffmpegCommand.videoFilters(`scale=${size}:-1`);
+                  app.log("MediaVideo :: resize(" + size + ")", "head");
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                  //|| Generate a Unique Temp File Path
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                  const outputFilename = Media.tempFilename("mp4", "size" + String(size), this.id);
+                  const watermarkPath  = Media.tempFilename("png", "size" + String(size) + "-wm", this.id);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                  //|| Generate a Unique Temp File Path
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+                  try {
+                      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                      //|| Async Promise
+                      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                      return new Promise<boolean>(async (resolve, reject) => {
+                          /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                          //|| Start ffMPEG settings
+                          //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                          const ffmpegCommand = ffmpeg(this.tmpOriginal).output(outputFilename).videoCodec('libx264').outputOptions([
+                              '-pix_fmt yuv420p',
+                              '-preset veryfast', // Faster encoding preset for testing
+                              '-movflags +faststart' // Optimizes for progressive download
+                          ]).on('start', (commandLine) => {
+                              app.log(`FFmpeg command: ${commandLine}`, "info");
+                          });
+                          /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                          //|| If we have a watermark image, resize it and save it to a temporary file
+                          //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                          if (this.tmpWatermark !== null) {
+                              app.log("MediaVideo :: Writing Watermark to Temp File (" + watermarkPath + ")", "info");
+                              await sharp(this.tmpWatermark).resize(Math.floor(size * 0.2)).toFormat('png').toFile(watermarkPath);
+                              app.log("MediaVideo :: Watermark successfully saved : " + watermarkPath + ", Exists : " + await app.path(watermarkPath).exists(), "success");            
+                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                              //|| If Watermark Image Exists, add the FFMPEG input
+                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                              ffmpegCommand
+                                    .input(watermarkPath)
+                                    .complexFilter([
+                                          `[0:v]scale=${size}:-2[scaled];[scaled][1:v]overlay=(main_w-overlay_w)-10:(main_h-overlay_h)-10[outv]`
+                                    ])
+                                    .outputOptions('-map', '[outv]');
+
+                          } else {
+                              /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                              //|| If no watermark, just scale the video
+                              //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                              ffmpegCommand.videoFilters(`scale=${size}:-2`);
                         }
-            
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
                         //|| When we're done
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
                         ffmpegCommand.on('end', async () => {
-                            app.log(`Video resized to ${size} successfully.`, "success");
-                            const data = await fs.readFile(outputFilename);
-                            this.sizes.push({
-                                path   : Media.filename("video", this.id, size),
-                                type   : "video",
-                                size   : size,
-                                buffer : data
-                            });
-                            await fs.unlink(outputFilename).catch(() => {});
-                            if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
-                            resolve(true);
-                        })
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                        //|| Handle Error
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                        .on('error', async (err) => {
-                            app.log(`Error resizing video to ${size}: ${err}`, "error");
-                            await fs.unlink(outputFilename).catch(() => {});
-                            if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
-                            reject(err);
-                        })
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                        //|| GO!
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                        .run();
-                    });
-                /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
-                //|| Handle Error
-                //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
-                } catch (err) {
-                    console.log(err);
-                    app.log("One or more resizing operations failed.", "error");
-                    await fs.unlink(outputFilename).catch(() => {});
-                    if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
-                    return false;
-                }
-            }
+                              app.log(`Video resized to ${size} successfully.`, "success");
+                              const data = await fs.readFile(outputFilename);
+                              this.sizes.push({
+                                  path   : Media.filename("video", this.id, size),
+                                  type   : "video",
+                                  size   : size,
+                                  buffer : data
+                              });
+                              await fs.unlink(outputFilename).catch(() => {});
+                              if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
+                              resolve(true);
+                          })
+                          /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                          //|| Handle Error
+                          //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                          .on('error', async (err) => {
+                              console.log(err);
+                              app.log(`Error resizing video to ${size}: ${err}`, "error");
+                              await fs.unlink(outputFilename).catch(() => {});
+                              if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
+                              reject(err);
+                          })
+                          /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                          //|| GO!
+                          //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                          .run();
+                      });
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+                  //|| Handle Error
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/              
+                  } catch (err) {
+                      console.log(err);
+                      app.log("One or more resizing operations failed.", "error");
+                      await fs.unlink(outputFilename).catch(() => {});
+                      if (this.tmpWatermark !== null) await fs.unlink(watermarkPath).catch(() => {});
+                      return false;
+                  }
+            }          
             
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
             //|| Save to Cloud
@@ -481,9 +491,19 @@
                   //|| Upload Files to Cloud
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   await app.cloud(cloudName).write(app("config", "media").bucket, files);
+                  await this.cleanTemp();
                   return true;
             }
             
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
+            //|| Clean Temp
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
+            async cleanTemp(): Promise<void> {
+                  app.log("MediaVideo :: cleanTemp()", "info");
+                  await app.path(this.tmpOriginal).unlink();
+                  if (this.tmpWatermark !== null) await app.path(this.tmpWatermark).unlink();
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||    
             //|| EOC

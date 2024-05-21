@@ -1,6 +1,8 @@
 
 <div class="avatarUpload">
-      <img src="{{MEDIA_UPLOAD}}">      
-      <input type="file" id="avatar" name="avatar" accept="image/*" />
-      <input type="hidden" name="uploadJWT" value="{{UPLOADJWT}}">
+      <form action="/upload/media" method="POST" enctype="multipart/form-data">
+            <img src="{{IMAGE_PROFILE}}" alt="My Profile Picture" width="200" height="200">
+            <input type="file" id="avatar" name="avatar" accept="image/*" />
+            <input type="hidden" name="uploadJWT" value="{{UPLOADJWT}}">
+      </form>
 </div>

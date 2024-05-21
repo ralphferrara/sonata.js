@@ -203,7 +203,11 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Routes
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  await this.routes();                                                    
+                  await this.routes();                                    
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Ready to Go 
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  app.active = true;                  
             }
 
 
@@ -234,9 +238,10 @@
                                     let data = null;
                                     if (app.isProduction) {
                                           let productionPath = item.relative.replace('config\/', 'config.production\/');
+                                          console.log("Production Path: " + productionPath);
                                           if (await app.path(productionPath).exists() === true) {
                                                 console.log("Production config file exists: " + productionPath);
-                                                data = (await app.path(productionPath).read()).toString("utf-8");
+                                                data = await app.path(productionPath).read(true);
                                           }
                                     }
                                     if (data === null) data = item.contents.toString("utf-8");                                    

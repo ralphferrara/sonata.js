@@ -13,7 +13,7 @@
       import { FileWatcherObject }                          from './.interfaces.js';
       import app                                            from '../app.js';
       import * as fs                                        from 'fs/promises';
-      import * as fsSync                                    from 'fs';
+      import chokidar                                       from 'chokidar';
       import * as path                                      from 'path';
       import sharp                                          from 'sharp';
 
@@ -57,8 +57,6 @@
             async init(): Promise<void> {
                   this.remainDirs   = [this.dir];
                   this.list         = [];
-                  if (app.isProduction) this.watch = false;
-                  if (!app.isProduction) console.log("FileWatcher::init: Scanning directory: " + this.dir);
                   await this.scan();
                   return;
             }
@@ -76,14 +74,14 @@
                         console.error("FileWatcher::scan: thisPath is undefined.");
                         return;
                   }                    
-                  const fullPath = path.join(process.cwd(), thisPath);
+                  const fullPath = app.path(thisPath).abs();
                   const files = await fs.readdir(fullPath);
                   await Promise.all(
                         files.map(async (item) => {
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                               //|| Var
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                              const abs         = path.join(process.cwd(), thisPath + '/' + item);
+                              const abs         = app.path(thisPath + '/' + item).abs();
                               const relative    = thisPath + '/' + item;
                               const stats       = await fs.stat(abs);
                               const isFile      = stats.isFile();
@@ -105,12 +103,16 @@
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Watcher
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                                    if (typeof this.watch !== 'boolean' || this.watch === true) {
-                                          newFWObj.watcher = fsSync.watch(abs, async (eventType: string, filename: string | null) => {
-                                                if (filename === null) return;
-                                                await this.closeAllWatchers();
-                                                return await this.init();
+                                    if (this.watch) {
+                                          const dockerOptions = app.inDocker ? { usePolling: true, interval: 1000 } : {};
+                                          const watcher = chokidar.watch(abs, {
+                                                persistent: true,
+                                                ...dockerOptions
                                           });
+                                          watcher
+                                          .on('change',     async (path) => {  await this.handleFileChange(); }) 
+                                          .on('unlink',     async (path) => {  await this.handleFileChange(); });
+                                          newFWObj.watcher = watcher;
                                     }
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Resize Image
@@ -139,13 +141,24 @@
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Handle File Change
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            private handleFileChange = async (): Promise<void> => {
+                  await this.closeAllWatchers();
+                  await this.init();
+            };                              
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Rescan
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async closeAllWatchers(): Promise<void> {
                   await Promise.all(
                         this.list.map(async (item) => {
-                              if (item.watcher !== null) item.watcher.close();
+                              if (item.watcher !== null) {
+                                    item.watcher.close().then(() => console.log(`Stopped watching ${item.absolute}`));
+                              }
                         })
                   );
             }

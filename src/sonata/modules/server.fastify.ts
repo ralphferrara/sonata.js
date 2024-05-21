@@ -88,7 +88,7 @@
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
                         var cr = new ChirpResponse();
                         await cr.fastify(response);
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        var chirp = new Chirp(await new ChirpRequest().fastify(request), cr);
                         app.route(chirp);
                   });
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -134,7 +134,7 @@
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
                         var cr = new ChirpResponse();
                         cr.fastify(response);
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        var chirp = new Chirp(await new ChirpRequest().fastify(request), cr);
                         app.route(chirp); 
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -184,7 +184,7 @@
                   this.http.all('*', async (request:FastifyRequest, response:FastifyReply ) => {
                         var cr = new ChirpResponse();
                         cr.fastify(response);
-                        var chirp = new Chirp(new ChirpRequest().fastify(request), cr);
+                        var chirp = new Chirp(await new ChirpRequest().fastify(request), cr);
                         app.route(chirp); 
                   });                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

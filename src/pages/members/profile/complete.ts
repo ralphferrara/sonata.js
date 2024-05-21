@@ -10,7 +10,7 @@
       import  Chirp                             from "../../../sonata/utils/chirp.js"; 
       import  Pages                             from "../../../sonata/modules/router.pages.js"; 
       import  Template                          from "../../../sonata/utils/template.js"; 
-      // import Media                              from "../../../classes/media.js";
+      import Media                              from "../../../sonata/utils/media.js";
 
       import  AbstractMembersProfileComplete    from "../../../abstract/members/profile/profile.complete.js";
       import  { ParseData }                     from "../../../sonata/utils/.interfaces.js"; 
@@ -24,7 +24,7 @@
       export class MembersProfileComplete implements PageInterface {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Var
+      //|| Var
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             public name       : string;
@@ -60,11 +60,12 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  temp.add("ID_USER",           userData.id_user.toString());
-                  temp.add("FID_MEDIA_COVER",   userData.fid_media_cover.toString());
-                  temp.add("FID_MEDIA_PROFILE", userData.fid_media_profile.toString());
-                  // temp.add("IMAGE_PROFILE",     Media.cdn("image", userData.fid_media_profile, 100));
-                  // temp.add("IMAGE_COVER",       Media.cdn("image", userData.fid_media_cover, 1000));
+                  console.log(userData);
+                  temp.add("ID_USER",           String(userData.id_user));
+                  temp.add("FID_MEDIA_COVER",   String(userData.fid_media_cover));
+                  temp.add("FID_MEDIA_PROFILE", String(userData.fid_media_profile));
+                  temp.add("IMAGE_PROFILE",     Media.cdn("image", userData.fid_media_profile, 100));
+                  temp.add("IMAGE_COVER",       Media.cdn("image", userData.fid_media_cover, 1000));
                   temp.add("USER_USERNAME",     userData.user_username);
                   temp.add("USER_DOB",          userData.user_dob);
                   temp.add("USER_GENDER",       userData.user_gender);

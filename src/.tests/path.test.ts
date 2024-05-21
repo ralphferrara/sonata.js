@@ -170,7 +170,7 @@ describe('Path', () => {
 
       describe('write', () => {
             it('should return the file content as a string', async () => {
-                  const filePath = new Path('src/.tests/assets/testwatch.txt');
+                  const filePath = new Path('src/.tests/assets/testwatch.txt').abs();
                   try { 
                         const result = await filePath.write(new Date().toISOString());
                         expect(true).toBe(true);

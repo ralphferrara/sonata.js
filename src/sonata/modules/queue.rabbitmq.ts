@@ -59,7 +59,6 @@
                   app.log("Connecting to RabbitMQ["+this.name+"]..." + this.config.host, "info");
                   try {
                         const amqpUrl     = `amqp://${encodeURIComponent(this.config.username)}:${encodeURIComponent(this.config.password)}@${this.config.host}:${this.config.port}`;
-                        console.log(amqpUrl);
                         this.client       = await amqp.connect(amqpUrl);
                         app.log("RabbitMQ Connected!", "success");
                         this.channel      = await this.client.createChannel(this.config.channel);
