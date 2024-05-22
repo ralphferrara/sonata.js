@@ -92,8 +92,16 @@
                               if (this.list[item] === undefined) continue;
                               // console.log("MINIFY -> " + typeof(this.list[item]) + " -> " + this.list[item].length);
                               // console.log(this.list[item]);
-                              const result = await minify(this.list[item] || "");
-                              if (result.code) js += "\n" + result.code;
+                              try { 
+                                    const result = await minify(this.list[item] || "");
+                                    if (result.code) js += "\n" + result.code;
+                              } catch (error) {
+                                    console.log("MAESTRO MINIFY FAILED :: ERROR READING FILE", item);
+                                    console.log(this.list[item]);
+                                    console.log(error);
+                                    js += "\n" + this.list[item];
+                              }
+
                         }
                         //const gzipPromise = promisify(gzip);                        
                         //const compressedCSS = await gzipPromise(css);

@@ -8,8 +8,8 @@
       "moduleResolution": "node",
       "scripts": {
             "build": "npx tsc",
+            "prod": "npm run build && node dist/index.js",
             "start": "npm run build && node dist/index.dev.js",
-            "prod": "npm run build && node dist/index.dev.js",
             "dev": "tsx src/index.dev.ts",
             "test": "jest"
       },

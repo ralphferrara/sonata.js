@@ -21,6 +21,7 @@
 "REGISTER" : "register",
 "SIGNUP"   : "signup",
 "SEARCH"   : "search",
+"UPLOAD"   : "upload",
 "UPDATE"   : "update",
 "USERNAME" : "username",
 "VERIFY"   : "verify",

@@ -9,6 +9,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import app              from "./sonata/app.js"; 
+      import MicroJWT         from "./sonata/utils/micro.jwt.js"; 
       import fs               from "fs/promises";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -30,5 +31,11 @@
 
       app.init("config/", false, false, await checkIfInDocker(), async () => {
             app.log("DEVELOPMENT MODE STARTED.", "success");                      
+            var token = MicroJWT.sign(123456);
+            console.log(token);
+            var value = MicroJWT.parse(token);
+            console.log(value);
+            
+
       });
       

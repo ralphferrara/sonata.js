@@ -27,8 +27,8 @@
       //|| Fields
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import AvatarUpload       from "./components/uploads/AvatarUpload/AvatarUpload.server.js";
-      import AvatarCover        from "./components/uploads/AvatarCover/AvatarCover.server.js";
+      import UploadAvatar       from "./components/uploads/UploadAvatar/UploadAvatar.server.js";
+      import UploadCover        from "./components/uploads/UploadCover/UploadCover.server.js";
       import TestUpload         from "./components/uploads/TestUpload/TestUpload.server.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -56,7 +56,7 @@
                   //|| Uploads
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Components.register("TestUpload",   TestUpload.init);
-                  Components.register("AvatarUpload", AvatarUpload.init);
-                  Components.register("AvatarCover",  AvatarCover.init);
+                  Components.register("UploadAvatar", UploadAvatar.init);
+                  Components.register("UploadCover",  UploadCover.init);
             }
       }

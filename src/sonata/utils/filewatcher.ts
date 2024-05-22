@@ -157,7 +157,7 @@
                   await Promise.all(
                         this.list.map(async (item) => {
                               if (item.watcher !== null) {
-                                    item.watcher.close().then(() => console.log(`Stopped watching ${item.absolute}`));
+                                    item.watcher.close().then(() => {});
                               }
                         })
                   );

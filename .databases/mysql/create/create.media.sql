@@ -4,7 +4,7 @@ CREATE TABLE `media` (
   `fid_user_approved` int(11) DEFAULT NULL,
   `fid_area` int(11) DEFAULT NULL,
   `fid_folder` int(11) DEFAULT NULL,
-  `media_status` varchar(4) DEFAULT 'PA',
+  `media_status` varchar(4) DEFAULT 'QUE',
   `media_type` varchar(4) DEFAULT NULL,
   `media_area` varchar(4) DEFAULT NULL,
   `media_timestamp` timestamp NULL DEFAULT current_timestamp(),

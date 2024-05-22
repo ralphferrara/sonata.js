@@ -10,11 +10,14 @@
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import Queue                  from "../../sonata/utils/queue.js";
-      import JWT                    from "../../sonata/utils/jwt.js";    
+      import JWT                    from "../../sonata/utils/jwt.js";
+      import MicroJWT               from "../../sonata/utils/micro.jwt.js";
       import { JWTUpload }          from "../../.interfaces.jwt.js";
       import Media                  from "../../sonata/utils/media.js";
       import { UploadFile }         from "../../sonata/modules/.interfaces.js";
       import { UploadMediaItem }    from "../../sonata/utils/.interfaces.js";
+      import AbstractMediaInsert    from "../../abstract/media/media.insert.js";
+      import { QueueItem }          from "../../sonata/utils/.interfaces.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -27,7 +30,7 @@
       //|| Home Page Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
       
-      export class UploadMedia  {
+      export default class UploadMedia  {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Var
@@ -102,7 +105,7 @@
             //|| Process the Uploads
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
 
-            async process(chirp : Chirp): Promise<void> {
+            async process(chirp : Chirp, onSuccess?: (qi: QueueItem) => Promise<void>, onError?: (qi: QueueItem) => Promise<void>): Promise<void> {
                   app.log('UploadMedia : process()', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Response Items
@@ -111,7 +114,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Execute Function
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  for (let i = 0; i < Object.keys(chirp.request.files).length; i++) {         
+                  for (let i = 0; i < Object.keys(chirp.request.files).length; i++) {          
                         const uploadFile : UploadFile  = chirp.request.files[i];
                         console.log("PARSEING FILE", Object.keys(uploadFile));                                       
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -137,13 +140,21 @@
                               umi.status = "UPLTYPE";
                               continue;
                         }
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create ID
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        umi.idMedia    = await AbstractMediaInsert.insertMedia(umi.idUser, umi.fidArea, umi.mediaArea);
+                        umi.jwtStatus  = MicroJWT.sign(umi.idMedia);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create ID
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         responseItems.push(umi);                        
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| TODO : Figure out how to pass all the media data (fid_user, fid_area, media_area, etc)l
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         console.log('Added to Queue ' + queue + typeof(uploadFile.data), umi);
                         console.log("QUEUE -> " + chirp.site);
-                        await Queue.send(queue, uploadFile.data, "buffer", umi, chirp.site);
+                        await Queue.send(queue, uploadFile.data, "buffer", umi, chirp.site, onSuccess, onError);
                   }
                   chirp.data('mediaItems', responseItems);
                   return chirp.next();

@@ -1,0 +1,16 @@
+<div class="UploadCover">
+      <component id="modalUploadCover" src="ModalPopupSmall">
+            <component id="modalPopupSmallUploadCover" src="ModalUpload"></component>
+      </component>      
+      <div id="UploadCoverImage" class="UploadCoverImage" style="background-image:url({{IMAGE_COVER}})">
+            <div class="UploadCoverWrapper">                  
+                  <form action="/upload/cover" method="POST" enctype="multipart/form-data" id="UploadCoverForm"">
+                        <input type="hidden" id="fidMediaCover" name="fid_media_cover" value="{{FID_MEDIA_COVER}}">
+                        <input type="hidden" name="uploadJWT" value="{{UPLOADJWT}}">            
+                        <input type="file" accept="image/*" name="files" id="UploadCoverFile" style="display:none">
+                  </form>                      
+                  <button onclick="$('UploadCover').modal()">[[C:UPLOAD_COVER]]</button>                  
+            </div>
+            {{__CHILDREN__}}
+      </div>
+</div>

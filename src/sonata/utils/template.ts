@@ -120,7 +120,6 @@
                                           const markerValue = this.markers[marker];
                                           const markerRegex = new RegExp(`{{${marker}}}`, 'g');
                                           updatedHTML = updatedHTML.replace(markerRegex, markerValue);
-                                          console.log(marker, markerValue);
                                     }
                               }
                               this.html = updatedHTML;                              
@@ -150,7 +149,6 @@
                               const markerValue = this.markers[marker];
                               const markerRegex = new RegExp(`{{${marker}}}`, 'g');
                               updatedHTML = updatedHTML.replace(markerRegex, markerValue);
-                              console.log(marker, markerValue);
                         }
                   }
                   this.html = updatedHTML;

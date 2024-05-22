@@ -1,6 +1,6 @@
 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
 //|| Sonata.js :: Server Side Rendering
-//|| Cover Upload Component
+//|| Avatar Upload Component
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -10,13 +10,13 @@
       import app                        from "../../../sonata/app.js";
       import Media                      from "../../../sonata/utils/media.js";
       import Chirp                      from "../../../sonata/utils/chirp.js";
-      import  { ComponentData }         from "../../../sonata/utils/.interfaces.js" 
+      import  { ComponentData }         from "../../../sonata/utils/.interfaces.js"
       
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| MainMenu
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
      
-        export default class AvatarCover {
+        export default class AvatarUpload { 
 
                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                 //|| Init
@@ -26,7 +26,6 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Check We Have the Fields
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        console.log(parsed);
                         if (chirp.user.loggedIn === false || chirp.user.id === null) {
                               parsed.html = "<h2>Error : User is Not Logged In</h2>" + parsed.html;
                               return parsed;
@@ -36,7 +35,7 @@
                               return parsed;
                         }                        
                         if (isNaN(+parsed.attributes["data-fidarea"])) {
-                              parsed.html = "<h2>Error : AvatarCover is Missing FIDAREA</h2>" + parsed.html;
+                              parsed.html = "<h2>Error : AvatarUpload is Missing FIDAREA</h2>" + parsed.html;
                               return parsed;
                         }
                         if (app("config", "areas").hasOwnProperty(parsed.attributes["data-area"]) === false) {
@@ -47,6 +46,7 @@
                         //|| Add the Upload JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         let jwt           = await Media.uploadJWT(chirp.user.id, parsed.attributes["data-area"], parseInt(parsed.attributes["data-fidarea"]));
+                        app.log("GOT UploadJWT : " + jwt.length + " length", "info");
                         parsed.html       = parsed.html.replace(/\{\{UPLOADJWT\}\}/g, jwt);                  
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Return

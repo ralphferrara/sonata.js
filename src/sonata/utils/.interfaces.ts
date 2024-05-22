@@ -261,6 +261,8 @@
             meta?       : Object;
             site        : string;
             status      : QueueItemStatus;
+            onSuccess(qi : QueueItem) : Promise<void>;
+            onError(qi : QueueItem)   : Promise<void>;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -365,5 +367,6 @@
             idUser          : number;
             mediaArea       : string;
             fidArea         : number;   
-            idMedia?        : number;         
+            idMedia?        : number;  
+            jwtStatus?      : string;       
       }      

@@ -37,6 +37,9 @@
 "JWTEXP"  : "Login token has expired. Please re-login",
 "JWTLVL"  : "This area is not accessible to your level of access",
 
+"MJWTER"  : "Hash mismatch for the data provided",
+"MSUNDF"  : "Media Status is undefined",
+
 "SUCL01"  : "Login was successful. Redirecting...",
 
 "UPL000"  : "Upload Token missing",

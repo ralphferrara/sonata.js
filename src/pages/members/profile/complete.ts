@@ -21,10 +21,10 @@
       //|| Home Page Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export class MembersProfileComplete implements PageInterface {
+      export default class MembersProfileComplete implements PageInterface {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Var
+            //|| Var
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             public name       : string;
@@ -60,12 +60,19 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  console.log(userData);
+                  console.log('');
+                  console.log('');
+                  console.log('');
+                  console.log(userData.fid_media_cover);
+                  console.log('');
+                  console.log('');
+                  console.log('');
+                  
                   temp.add("ID_USER",           String(userData.id_user));
                   temp.add("FID_MEDIA_COVER",   String(userData.fid_media_cover));
                   temp.add("FID_MEDIA_PROFILE", String(userData.fid_media_profile));
                   temp.add("IMAGE_PROFILE",     Media.cdn("image", userData.fid_media_profile, 100));
-                  temp.add("IMAGE_COVER",       Media.cdn("image", userData.fid_media_cover, 1000));
+                  temp.add("IMAGE_COVER",       Media.cdn("cover", userData.fid_media_cover, 1000));
                   temp.add("USER_USERNAME",     userData.user_username);
                   temp.add("USER_DOB",          userData.user_dob);
                   temp.add("USER_GENDER",       userData.user_gender);

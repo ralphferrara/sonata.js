@@ -60,9 +60,11 @@
       ||=====================================================================================================================|| */
       $.modal = (id,cls,options) => {
             console.log("Opening Modal: " + id);
+            if ($('#'+id).length == 0) return $('snackbar').show('Modal not found: ' + id);
             if (typeof(options) == 'undefined') options = {};
             if (typeof(options.csrf) != 'undefined') $('chirp').csrf();
-            $('#'+id).show();
+            $('#'+id).addClass('active').css('display', 'block');
+            $('#'+id).css('opacity', 1);            
             $('#'+id).find('.close').on('click', () => { $('#'+id).hide(); } );
       };
       /*=====================================================================================================================||

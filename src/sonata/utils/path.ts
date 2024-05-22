@@ -151,6 +151,7 @@
                         doc: 'application/msword',
                         pdf: 'application/pdf',
                         jpg: 'image/jpeg',
+                        webp: 'image/webp',
                         png: 'image/png',
                         mp3: 'audio/mpeg',
                         mp4: 'video/mp4',

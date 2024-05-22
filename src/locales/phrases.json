@@ -7,9 +7,13 @@
 "ENTER_VERIFICATION_CODE"               : "Enter Verification Code", 
 "LOGIN_WITH"                            : "Login with",       
 "LOGIN_WITH_EMAIL_ADDRESS"              : "Login with Email Address",
+"MEDIA_DISCLAIMER"                      : "All content moderated. Please abide by all site rules and regulations",
 "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
+"REMOVE_CURRENT_PHOTO"                  : "Remove Current Photo",
+"TAKE_A_PHOTO"                          : "Take a Photo",
 "VERIFICATION_CODE"                     : "Verification Code",
 "WELCOME_BACK"                          : "Welcome Back",
 "WELCOME_HOME_PAGE"                     : "Welcome to the Home Page",
-"UPLOAD_COVER"                          : "Upload Cover"
+"UPLOAD_COVER"                          : "Upload Cover",
+"UPLOAD_A_PHOTO"                        : "Upload a Photo"
 }

@@ -50,6 +50,7 @@
                   //|| FileWatcher Callback 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   this.watcher.callback = async (structure: FileWatcherObject[]) => {
+                        console.log("SCANNING ASSET : " + app("config", "servers").assets.pathLocal);
                         await Router.clear("asset");
                         for (const item of structure) {
                               if (item.isFile === true) {
@@ -65,16 +66,16 @@
                   //|| Begin
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   await this.watcher.init();                  
-                  return;
+                  return; 
             }
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Route
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async route(route: Route, chirp: Chirp): Promise<any> {   
                   var realPath = chirp.request.url.replace(app("config", "servers").assets.publicPath, app("config", "servers").assets.localPath);
-                  const file = app("assets", chirp.request.url);
+                  const file = app("assets", realPath);
                   if (file === "[NOCACHE]") {
                         var contents = await app.path(realPath).read();
                         if (contents === undefined) {

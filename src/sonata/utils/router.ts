@@ -89,16 +89,25 @@
                         console.log(chirp.request);
                         return;
                   }
-                  console.log("Checking Main Router : " + chirp.request.url);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Route by Type
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  app.log("1. Checking Main Router : " + chirp.request.url, "info");
                   var url = this.routeFix(chirp.request.url);
-                  app.log("Checking Main Router : " + url, "info");
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Route by Type
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  app.log("2. Checking Main Router (Fixed URL) : " + url, "info");
                   var myRoute = app("routes", url);
                   if (myRoute === undefined) {
-                        url = url.replace('.' + app.path(url).ext(),  '');
-                        app.log("  Checking Base - " + url, "info");
-                        myRoute = app("routes", url);
-                        app.log("    Still Undefined - " + url, "info");
-                        if (myRoute === undefined) return chirp.respond(404, "Invalid Route ["+chirp.request.url +"] ");
+                        const baseURL = url.replace('.' + app.path(url).ext(),  '');
+                        app.log("3. Checking Base URL - " + baseURL, "info");
+                        myRoute = app("routes", baseURL);
+                        app.log("4. Still Undefined - " + url, "info");
+                        if (myRoute === undefined) {
+                              app.log("X. No Route Found - " + url, "info");    
+                              return chirp.respond(404, "Invalid Route ["+chirp.request.url +"] ");
+                        }
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Route by Type
@@ -113,6 +122,7 @@
                   //|| Caching
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   app.log("Processing route: " + chirp.request.url, "info");         
+                  return chirp.respond(404, "Not Found ["+chirp.request.url +"] ");
             }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

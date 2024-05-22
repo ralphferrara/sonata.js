@@ -84,13 +84,12 @@
             //|| Send
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async send(queue : string, body : any, type : QueueBodyTypes, meta : Object, site : string) : Promise<QueueItem | null> {
+            static async send(queue : string, body : any, type : QueueBodyTypes, meta : Object, site : string, onSuccess?: (qi: QueueItem) => Promise<void>, onError?: (qi: QueueItem) => Promise<void>) : Promise<QueueItem | null> {
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Clean the Path
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   app.log("Queue Send : [" + queue + "]");
                   if (app.queue(queue) === undefined) {
-                        console.log(app("queues"));
                         app.log("Queue Send : [" + queue + "] - Queue not found.", "error");
                         return null;
                   }
@@ -127,14 +126,18 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Create the QueueItem
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  console.log("SENDING QUEUE ITEM");
+                  console.log(onSuccess);
                   const queueItem: QueueItem = {
                         queue       : queue,
                         body        : body,
                         type        : type,
                         meta        : meta,
                         site        : site,
-                        status      : queueItemStatus
-                  }
+                        status      : queueItemStatus,
+                        onSuccess   : onSuccess ? onSuccess : async (qi: QueueItem) => {},
+                        onError     : onError ? onError : async (qi: QueueItem) => {}
+                  };
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the Channel
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

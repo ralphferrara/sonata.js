@@ -47,7 +47,7 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        const sql     = app.query("sql/media/media.status.sql");
+                        const sql     = app.query("sql/media/media.update.status.sql");
                         const results = await app.db("main").query(sql, [ newStatus, idMedia ]) as Recordset;                        
                         app.log("Updated Media Status - " + results.affected, "success");
                         if (results.affected < 1) return reject(false);                       

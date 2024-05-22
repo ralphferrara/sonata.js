@@ -16,6 +16,12 @@
       import { JWTUpload }                from "../../.interfaces.jwt.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Media Type
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      export type MediaType = "video" | "image" | "cover" | "preview" | "screenshot" | "originalVideo" | "originalImage";
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
@@ -48,7 +54,7 @@
             //|| Generate the Filename
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static filename(type : "video" | "image" | "preview" | "screenshot" | "originalVideo" | "originalImage", id : number | null, size? : number) : string {
+            static filename(type : MediaType, id : number | null, size? : number) : string {
                   app.log('Media : filename()', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get Format
@@ -61,7 +67,8 @@
                   //|| Missing File
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   switch(type) { 
-                        case "video"           : ext  = "mp4"; break;
+                        case "video"           : ext = "mp4"; break;
+                        case "cover"           : ext = "webp"; break;
                         case "image"           : ext = "webp"; break;
                         case "preview"         : 
                               init = "_pre";
@@ -84,10 +91,12 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Hash
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  console.log("Media::filename()::id", id);
                   if (id < 1 || id == null) {
                         switch(type) { 
                               case "video"           : format = app("config", "media").missingV; break;
                               case "image"           : format = app("config", "media").missingI; break;
+                              case "cover"           : format = app("config", "media").missingC; break;
                               case "preview"         : format = app("config", "media").missingP; break;
                               case "screenshot"      : format = app("config", "media").missingS; break;
                               case "originalVideo"   : format = app("config", "media").missingO; break;
@@ -112,7 +121,7 @@
             //|| Generate the CDN Path
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static cdn(type : "video" | "image", id : number | null, size : number) : string {
+            static cdn(type : MediaType, id : number | null, size : number) : string {
                   app.log('Media : cdn()', 'info');
                   return app("config", "media").cdn + Media.filename(type, id, size);
             }            
