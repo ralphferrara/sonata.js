@@ -255,14 +255,13 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface QueueItem {
-            queue       : string;
-            body        : any;
-            type        : QueueBodyTypes;            
-            meta?       : Object;
-            site        : string;
-            status      : QueueItemStatus;
-            onSuccess(qi : QueueItem) : Promise<void>;
-            onError(qi : QueueItem)   : Promise<void>;
+            queue             : string;
+            body              : any;
+            type              : QueueBodyTypes;            
+            meta?             : Object;
+            site              : string;
+            status            : QueueItemStatus;
+            processorName?    : string;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -276,8 +275,18 @@
             client      : any;
             consumer    : QueueConsumer;
             priority    : number;
+            processor   : QueueProcessor;
       }
 
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Queues
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      export interface QueueProcessor { 
+            before?       : Function;
+            afterSuccess? : Function;
+            afterError?   : Function;
+      }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Recordset

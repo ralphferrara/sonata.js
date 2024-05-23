@@ -20,8 +20,8 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
             async init() {
-                  hasCamera = await this.checkHasCamera();
-                  console.log('MediaUpload: Has Camera:', hasCamera);
+                  this.hasCamera = await this.checkHasCamera();
+                  console.log('MediaUpload: Has Camera:', this.hasCamera);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

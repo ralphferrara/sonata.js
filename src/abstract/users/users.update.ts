@@ -24,7 +24,7 @@
                   app.log('AbstractUsersUpdate : setMediaCover()', 'info');
                   return new Promise(async (resolve) => {
                         const sql     = app.query("sql/users/users.media.cover.sql");
-                        const results = await app.db("main").query(sql, [ idMedia, idUser ]) as Recordset;
+                        const results = await app.db("main").query(sql, [ idMedia, idUser ]) as Recordset;                        
                         console.log(results.sql());
                         if (typeof results.affected === "number" ) return resolve(results.affected > 0); else return resolve(false);
                   });

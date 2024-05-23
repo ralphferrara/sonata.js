@@ -1,7 +1,7 @@
 UPDATE
-      media
+      users
 SET
-      fid_media_cover = $1
+      fid_media_cover = ?
 WHERE
-      id_media = $2
+      id_user = ?
 LIMIT 1;            

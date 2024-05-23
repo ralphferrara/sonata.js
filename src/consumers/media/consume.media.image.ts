@@ -9,10 +9,9 @@
 
       import app                                from "../../sonata/app.js";     
       import MediaImage                         from "../../sonata/utils/media.image.js";
-
-      import { QueueItem, QueueConsumer }       from "../../sonata/utils/.interfaces.js";
       import { UploadMediaItem }                from "../../sonata/utils/.interfaces.js";
       import AbstractMediaUpdate                from "../../abstract/media/media.update.js";
+      import { QueueItem, QueueConsumer }       from "../../sonata/utils/.interfaces.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -35,6 +34,7 @@
                   this.name         = this.constructor.name;
                   this.watermarks   = {};
             }
+   
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Load Watermark
@@ -96,16 +96,6 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   await myMediaImage.saveToCloud(app("config", "media").cloud);
                   await AbstractMediaUpdate.mediaSuccess(umi.idMedia,  myMediaImage.width, myMediaImage.height, myMediaImage.orientation, JSON.stringify(myMediaImage.meta));
-                  console.log("WE HAVE A SUCCESS");
-                  console.log(queueItem);
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Handle the OnSucccess
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (typeof(queueItem.onSuccess) === "function") queueItem.onSuccess(queueItem); else app.log('ConsumerMediaImage : No OnSuccess', 'warning');
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Start
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  return;
             }         
             
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

@@ -29,7 +29,7 @@
       //|| Media Status
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export interface JWTMediaStatus {
+      export interface jwtStatus {
             idMedia           : number;
             fidUser           : number;
             status            : string;
