@@ -74,7 +74,7 @@
                                     /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                                     //|| Get the HTML
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                                    
-                                    const parseHTML = await app.path(basePath + ".html").read(false);
+                                    let parseHTML   = await app.path(basePath + ".html").read(false);
                                     const parseCSS  = await app.path(basePath + ".css").read(false);
                                     const parseJS   = await app.path(basePath + ".js").read(false);
                                     if (parseHTML === null) continue;
@@ -84,7 +84,7 @@
                                     const componentData: ComponentData = {
                                           path        : item.relative, 
                                           params      : {},
-                                          html        : typeof(parseHTML) == 'string'     ? parseHTML : '',
+                                          html        : typeof(parseHTML) == 'string'     ? await FontAwesome.parseHTML(parseHTML) : '',
                                           css         : typeof(parseCSS)  == 'string'     ? parseCSS : '',
                                           js          : typeof(parseJS)   == 'string'     ? parseJS : '',
                                     };
@@ -135,7 +135,7 @@
             static async route(chirp : Chirp, key: string, attributes: Record<string, string>, innerContent : string): Promise<ComponentData> {
                   let parsed = app('components', key);
                   if (parsed === undefined) {
-                        app.log('Component not found: ' + key, 'break');
+                        app.log('Component not found: ' + key, 'error');
                         return { path: '', params: {}, html: '', css: '', js: '' };
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

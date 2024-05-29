@@ -46,6 +46,7 @@
                   //|| Generate JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const jwt               = new JWT();
+                  jwt.setExpires(60 * 120);
                   jwt.setPayload(jwtData);
                   return(jwt.sign());
             }                                   
@@ -91,8 +92,8 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Hash
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  console.log("Media::filename()::id", id);
                   if (id < 1 || id == null) {
+                        path    = app("config", "media").dirMissing;                        
                         switch(type) { 
                               case "video"           : format = app("config", "media").missingV; break;
                               case "image"           : format = app("config", "media").missingI; break;
@@ -105,11 +106,11 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Hash
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const hashId = crypto.createHash('sha256').update(app("config", "media").salt+ id.toString() + app("config", "media").salt).digest('hex');
+                  const hashId = (id !== null) ? crypto.createHash('sha256').update(app("config", "media").salt+ id.toString() + app("config", "media").salt).digest('hex') : "";
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Format the URL
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  format = format.replace("{{ID}}",   (id === null)   ? -1 : id.toString());
+                  format = format.replace("{{ID}}",   (id === null)   ? '' : id.toString());
                   format = format.replace("{{SIZE}}", (size === null) ? 0  : size.toString());
                   format = format.replace("{{HASH}}", hashId);
                   format = format.replace("{{EXT}}",  ext);

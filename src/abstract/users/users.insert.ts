@@ -1,6 +1,6 @@
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-//|| SCM :: Utils :: Validation
-//|| User Create
+//|| SCM :: Abstract :: Users
+//|| User Insert
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -14,18 +14,19 @@
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class AbstractUsersUsername {
+      export default class AbstractUsersInsert {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Check if Email Exists in Database
+            //|| Insert a User Record
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async usernameExists(id_user : number, username : string) : Promise<boolean> {
-                  app.log('AbstractUsersCreate : usernameExists()', 'info');
+            static async createUsers(username : string) : Promise<number | null> {
+                  app.log('AbstractUsersInsert : createUsers()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/users/users.username.exists.sql");
-                        const results = await app.db("main").query(sql, [ id_user, username ]) as Recordset;
-                        if (results.count > 0) return resolve(false); else return resolve(true);
+                        const sql     = app.query("sql/users/users.create.sql");
+                        const results = await app.db("main").query(sql, [ username ]) as Recordset;
+                        if (typeof results.insert === "number" ) return resolve(results.insert);
+                        return resolve(null);
                   });
             }
 

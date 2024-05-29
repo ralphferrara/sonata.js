@@ -18,6 +18,7 @@
       export default class SenderTwilio implements SenderWrapper {
 
             public client;
+            public config;
             private phone;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -28,6 +29,7 @@
                   app.log("Setting up sender [Twilio]", 'info');
                   try { 
                         this.client = twilio(config.account, config.token);
+                        this.config = config;
                         this.phone  = config.phone; 
                         this.client.api.accounts(config.account).fetch();
                         app.log('Twilio Client Initiated', 'success');
@@ -44,12 +46,16 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async send(to: string, body: string): Promise<void> {
-                  try {
+                  console.log("SENDING TO " + to);
+                  console.log("SENDING FROM " + this.phone);
+                  console.log(this.config);
+                  console.log("---");
+                  try {                        
                         await this.client.messages.create({body, to, from: this.phone});
-                        app.log('SMS sent via Twilio to ${to} successfully.', 'info');
+                        app.log(`SMS sent via Twilio to ${to} successfully.`, 'info');
                   } catch(error) {
                         console.error(error);
-                        app.log('Could not send SMS via Twilio', 'break');
+                        app.log('Could not send SMS via Twilio - ' + this.phone, 'break');
                   }            
             }
 

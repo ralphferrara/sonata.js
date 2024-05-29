@@ -7,7 +7,6 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import app                        from "../../../sonata/app.js";
       import Media                      from "../../../sonata/utils/media.js";
       import Chirp                      from "../../../sonata/utils/chirp.js";
       import  { ComponentData }         from "../../../sonata/utils/.interfaces.js" 
@@ -30,22 +29,10 @@
                               parsed.html = "<h2>Error : User is Not Logged In</h2>" + parsed.html;
                               return parsed;
                         }                        
-                        if (!parsed.attributes.hasOwnProperty("data-area") || !parsed.attributes.hasOwnProperty("data-fidarea")) {
-                              parsed.html = "<h2>Error : Component is Attributes</h2>" + parsed.html;
-                              return parsed;
-                        }                        
-                        if (isNaN(+parsed.attributes["data-fidarea"])) {
-                              parsed.html = "<h2>Error : AvatarCover is Missing FIDAREA</h2>" + parsed.html;
-                              return parsed;
-                        }
-                        if (app("config", "areas").hasOwnProperty(parsed.attributes["data-area"]) === false) {
-                              parsed.html = "<h2>Error : INVALID AREA</h2>" + parsed.html;
-                              return parsed;
-                        }
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Add the Upload JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        let jwt           = await Media.uploadJWT(chirp.user.id, parsed.attributes["data-area"], parseInt(parsed.attributes["data-fidarea"]));
+                        let jwt           = await Media.uploadJWT(chirp.user.id, "US", chirp.user.id);
                         parsed.html       = parsed.html.replace(/\{\{UPLOADJWT\}\}/g, jwt);                  
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Return

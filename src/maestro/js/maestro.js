@@ -22,6 +22,42 @@
             this.each(function() { fadeStep.call($(this), 0); });
             return this;
       };      
+      /*=====================================================================================================================||
+      || Cookie Function
+      ||=====================================================================================================================|| */
+      $.cookie = (name, value, options) => {
+            if (typeof value !== 'undefined') {
+                  options = options || {};
+                  let cookieString = `${name}=${encodeURIComponent(value)}`;                  
+                  if (options.expires) {
+                        let date;
+                        if (typeof options.expires === 'number') {
+                              date = new Date();
+                              date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+                        } else {
+                              date = options.expires;
+                        }
+                        cookieString += `; expires=${date.toUTCString()}`;
+                  }
+                  if (options.path)       cookieString += `; path=${options.path}`;
+                  if (options.domain)     cookieString += `; domain=${options.domain}`;
+                  if (options.secure)     cookieString += `; secure`;
+                  if (options.sameSite)   cookieString += `; SameSite=${options.sameSite}`;
+                  if (options.httpOnly)   cookieString += `; HttpOnly`;
+                  document.cookie =       cookieString;
+            } else {
+                  const cookieValue = document.cookie.split('; ').find(row => row.startsWith(`${name}=`));
+                  return cookieValue ? decodeURIComponent(cookieValue.split('=')[1]) : null;
+            }
+      };
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Decode JWT
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+      $.decodeJWT = (token) => {
+            const payload = token.split('.')[1];
+            const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+            return JSON.parse(decoded);
+      };
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Additional Zepto Var
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -30,10 +66,16 @@
       //|| Additional Zepto Functions
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
       $.getScript = (url, callback) => {
+            if (document.querySelector(`script[src="${url}"]`)) return callback && callback();
             const s = document.createElement('script');
             s.async = 1;
-            const c = () => (s.onload = s.onreadystatechange = null, document.head.removeChild(s));
-            s.onload = s.onreadystatechange = (e) => ((!e.type || /loaded|complete/.test(s.readyState)) && c(), callback && callback());
+            s.onload = s.onreadystatechange = (e) => {
+                  if (!e.type || /loaded|complete/.test(s.readyState)) {
+                        s.onload = s.onreadystatechange = null;
+                        document.head.removeChild(s);
+                        callback && callback();
+                  }
+            };
             s.src = url;
             document.head.appendChild(s);
       };
@@ -55,12 +97,13 @@
       || Math Functions
       ||=====================================================================================================================|| */
       $.random = (min,max) => { return Math.floor(Math.random() * (typeof(max) == 'number') ? max : 999999 + (typeof(min) == 'number') ? min : 0); }
+      $.guid   = () => { return 'xxxxx-xxxxx-xxxxx-xxxxx'.replace(/[xy]/g, (c) => { var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
       /*=====================================================================================================================||
       || Modal
       ||=====================================================================================================================|| */
       $.modal = (id,cls,options) => {
             console.log("Opening Modal: " + id);
-            if ($('#'+id).length == 0) return $('snackbar').show('Modal not found: ' + id);
+            if ($('#'+id).length == 0) return $("ModalSnackBar").create('MODAL-NF: ' + id);
             if (typeof(options) == 'undefined') options = {};
             if (typeof(options.csrf) != 'undefined') $('chirp').csrf();
             $('#'+id).addClass('active').css('display', 'block');
@@ -71,6 +114,10 @@
       || Components
       ||=====================================================================================================================|| */
       $.random = (min,max) => { return Math.floor(Math.random() * (typeof(max) == 'number') ? max : 999999 + (typeof(min) == 'number') ? min : 0); }
+      /*=====================================================================================================================||
+      || Is Loaded
+      ||=====================================================================================================================|| */
+      $.isLoaded = (c) => { return (typeof($._data.requires[c]) !== 'undefined'); }
       /*=====================================================================================================================||
       || Initialize Maestro
       ||=====================================================================================================================|| */

@@ -21,6 +21,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import UploadCover                       from "./endpoints/upload/upload.cover.js";
+      import UploadProfile                     from "./endpoints/upload/upload.profile.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Define all Routes
@@ -42,6 +43,7 @@
                   //|| Processors
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Queue.processor("mediaImage",   "UploadCover",      null,    UploadCover.afterSuccess,        UploadCover.afterError);
+                  Queue.processor("mediaImage",   "UploadProfile",    null,    UploadProfile.afterSuccess,      UploadProfile.afterError);
 
             }
 

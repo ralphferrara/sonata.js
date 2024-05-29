@@ -1,0 +1,30 @@
+<div id="modalPopupMQS" onclick="event.stopPropagation()">
+      <div class="modalPopupSmallContent">
+            <div class="modalMediaQueueStatus"></div>
+            <li class="template" id="MediaQueueStatusItem-PENDNG">
+                  <span class="pending">Pending</span>
+                  <b>{{FILENAME}}</b>
+                  <i class="icon spinner"><FontAwesomeIcon icon="faSpinner" /></i>
+            </li>
+            <li class="template" id="MediaQueueStatusItem-QUEUED">
+                  <span class="queued">Queued</span>
+                  <b>{{FILENAME}}</b>
+                  <i class="icon"><FontAwesomeIcon icon="faListOl" /></i>
+            </li>
+            <li class="template" id="MediaQueueStatusItem-PROCES">
+                  <span class="process">Processing</span>
+                  <b>{{FILENAME}}</b>
+                  <i class="icon spinner"><FontAwesomeIcon icon="faGear" /></i>
+            </li>
+            <li class="template" id="MediaQueueStatusItem-ERROR">
+                  <span class="error">Error</span>
+                  <b>{{FILENAME}}</b>
+                  <i class="icon"><FontAwesomeIcon icon="faCircleCheck" /></i>
+            </li>
+            <li class="template" id="MediaQueueStatusItem-SUCCES">
+                  <span class="finish">Finished</span>
+                  <b>{{FILENAME}}</b>
+                  <i class="icon"><FontAwesomeIcon icon="faTimes" /></i>
+            </li>
+      </div>
+</div>

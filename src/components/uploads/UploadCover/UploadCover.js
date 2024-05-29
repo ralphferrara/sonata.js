@@ -6,53 +6,74 @@
 
       $.init('UploadCover', class { 
 
-            modalUpload = null
-
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init : Assign Event to File Change
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             init() {
-                  this.fileChange(true);
+                  console.log('Loaded UploadCover');
+                  $('UploadCover').objParent('button.uploadButton').off('click').on('click', () => { $("UploadCover").modal(); });
+                  this.reset();
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Parent
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            objParent(find = null) {
+                  if ($('.UploadCover').length === 0) return $("ModalSnackBar").create("UploadCover::objParent() - No UploadCover Found");    ;
+                  if (find === null) return $('.UploadCover');
+                  if ($('.UploadCover').find(find).length === 0) return $("ModalSnackBar").create("UploadCover::objParent() - No Find("+find+")");    ;                  
+                  return $('.UploadCover').find(find);
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Open the ModalUpload Popup
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
-            modal() {                  
-                  this.modalUpload = $('ModalUpload').create('modalUploadCover', 'UploadCoverFile', 'fidMediaCover', 'UploadCoverImage');
-                  console.log(this.modalUpload);
-                  this.modalUpload.modal();
+            modal() {          
+                  console.log("UploadCover::Modal()");
+                  $('ModalUpload').create( 
+                        $("UserData").data("fid_media_cover"), 
+                        $("UploadCover").objParent("input[type='file']"),
+                        () => {  $("UserData").call("clearMediaCover", {});  }
+                  );                  
             };
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Add/Remove Event Listener to File Field
+            //|| Clear the Media and the ID
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            fileChange(addEvent) {             
-                  $('#UploadCoverFile').off('change').on('change', function(event) { $('UploadCover').process(event); });
-            };
+            modalClear() {
+                  $('UserData').call('clearMediaCover', {});
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Reset the File Field after submission
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            reset() {
-                  this.fileChange(false);
-                  $('#UploadCoverFile').val('');
-                  this.fileChange(true);
+            reset() {                  
+                  $("UploadCover").objParent("input[type='file']").off('change');
+                  $("UploadCover").objParent("input[type='file']").val('');
+                  $("UploadCover").objParent("input[type='file']").off('change').on('change', async (event) => { 
+                        var myFile = event.target.files[0];
+                        const validImage = await $("ModalUpload").checkImage(myFile);
+                        if (!validImage) return $("ModalSnackBar").create("[[INVALID_IMAGE]]");
+                        $("UploadCover").objParent().addClass('loading');                        
+                        $("UploadCover").submit($("UploadCover").objParent().attr('id'), event);                        
+                  });     
             }
+
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Selected File
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            process(event) {
+            submit(myID, event) {              
                   const file = event.target.files[0];
                   if (file) {
-                        $('#UploadCoverImage').addClass('loading');
-                        return $('#UploadCoverForm').submit();
+                        $("UploadCover").objParent().addClass('loading');
+                        return $("UploadCover").objParent("form").submit();
                   }
             };                        
 
@@ -61,14 +82,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             onSuccess(data) {
-                  this.reset();
-                  if (!data.uploads[0]) return onError(data);
-                  const idMedia    = data.uploads[0].idMedia;
-                  const jwtStatus  = data.uploads[0].jwtStatus;
-                  console.log('ID MEDIA: ' + idMedia);
-                  console.log('JWT STATUS: ' + jwtStatus);
-                  const mediaLoader     = new $("MediaQueueLoader");
-                  mediaLoader.create(jwtStatus, '/status/media', this.handleResponse, this.mediaError);
+                  $("UploadCover").reset();
+                  if (!data.uploads[0]) return $("UploadCover").onError(data);
+                  $('ModalMediaQueueStatus').add(data.uploads[0].name, data.uploads[0].jwtStatus, 'profile', $("UploadCover").mqsSuccess, $("UploadCover").mqsError);
             };
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -76,25 +92,29 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             onError(data) {
-                  alert('ERROR UPLOADING');
-                  console.log(data);
-                  this.reset();
+                  $('UploadCover').reset();
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| On Successful Response
+            //|| MediaQueueStatus Success
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            
+            mqsSuccess(mediaQueueStatusItem) {
+                  console.log("MediaQueueStatus::mqsSuccess()");
+                  console.log(mediaQueueStatusItem);
+                  $("UploadCover").objParent().removeClass('loading');
+                  $('UserData').call("fetch", {});
+            };
 
-            handleResponse(status, data) {
-                  console.log("GOT STATUS");
-                  console.log(status);
-                  if (data.status != 'SUCC') return;                  
-                  clearInterval(this.updateInterval);                  
-                  $('#UploadCoverImage').css('background-image', 'url(' + data.mediaURL + ')');
-                  $('#UploadCoverImage').removeClass('loading');                  
-                  $('#fidMediaCover').val(data.idMedia);
-            };            
-
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| MediaQueueStatus Success
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            
+            mqsError(mediaQueueStatusItem) {
+                  alert("ERROR QUEUE Status Update");
+                  console.log(mediaQueueStatusItem);
+            }         
+            
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| EOC
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

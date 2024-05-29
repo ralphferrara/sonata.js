@@ -104,7 +104,8 @@
                         afterSuccess  : afterSuccess,
                         afterError    : afterError
                   };                  
-                  myQueue.processor = myProcessor;
+                  if(myQueue.processor === undefined) myQueue.processor = {};
+                  myQueue.processor[processorName] = myProcessor;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Rewrite Queue
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -175,7 +176,7 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const routeQueue   = app.queue(queue);
                   app.channel(routeQueue.channel).sendMessage(queue, JSON.stringify(queueItem), options);
-                  return null
+                  return queueItem;
             }   
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -203,8 +204,8 @@
                   app.log('Queue : consume() : Get Queue Name', 'info');                  
                   const myQueue         = app("queues", queueItem.queue);
                   if (myQueue === undefined)         app.log("Queue.consume : Queue was not defined : " + data, "info");
-                  const myProcessor     = myQueue.processor;
-                  if (myProcessor === undefined)     app.log("Queue.consume : Processor was not defined : " + data, "info");
+                  const myProcessor     = myQueue.processor[queueItem.processorName] as QueueProcessor;
+                  if (myProcessor === undefined)     app.log("Queue.consume : Processor ["+queueItem.processorName+"] was not defined : " + data, "info");
                   if (typeof(myProcessor.before) === "function") await myProcessor.before(queueItem);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| What Queue are we assigning to
@@ -231,8 +232,9 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Queue Item Errored
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  console.log(myProcessor.afterSuccess.toString());
                   if (myStatus === false) {
-                        app.log("Queue.consume : Failed to process message : " + data, "info");
+                        app.log("Queue.consume : Failed to process message : " + queueItem.queue, "info");
                         if (typeof(myProcessor.afterError) === "function") await myProcessor.afterError(queueItem);
                         return queueItem;
                   }

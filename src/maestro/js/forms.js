@@ -61,7 +61,7 @@
                         }
                   });
                   if ($(myForm).data('errored') == true) {
-                        return $('snackbar').error('Please correct the errors in the form.');
+                        return $("ModalSnackBar").create(`[[PLEASE_CORRECT_THE_FORM_ERRORS]]`);
                   }
                   return $('chirp').handleForm(myForm);
             }

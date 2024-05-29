@@ -7,7 +7,7 @@
       //|| Main
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      div.avatarUpload {
+      div.UploadProfile {
             display           : block;
             margin            : 0 auto;
             border            : 2px dashed #ccc;
@@ -15,12 +15,27 @@
             width             : 200px;
       }
 
-      div.avatarUpload img {
+      div.UploadProfile img {
             display           : block;
             width             : 200px;
             height            : 200px;
             object-fit        : cover;
             border-radius     : 50%;
-            margin            : 30px 0;
+            margin            : 30px 0 10px;
             border            : 4px solid #FFF;
+      }
+
+      .UploadProfile.loading img {
+            opacity                 : 0.5;
+            transform               : scale(0.99);
+            animation               : fadeInScale 1s infinite ease-in-out;
+      }      
+
+      div.UploadProfile button.btn.btn-primary { 
+            display           : block;
+            width             : auto;
+            color             : #FFF;
+            padding           : 10px;
+            cursor            : pointer;
+            margin            : 0 auto 10px;
       }

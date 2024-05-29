@@ -6,15 +6,14 @@ $.init('AuthLogin', class {
 
       onError(data) {
             console.log(data);
-            $('snackbar').show(data.errors);
+            $("ModalSnackBar").create(data.errors);
       };
 
       onSuccess(data) {
             console.log('AUTH LOGIN SUCCESS');
-            $('snackbar').show(data.message);
-            document.cookie = `loginJWT=${data.loginJWT}; path=/`;
+            $("ModalSnackBar").create(data.message);
             setInterval(() => {
-                  window.location.href = '/members/profile/complete/';
+                  //window.location.href = '/members/profile/complete/';
             }, 1000);
       };
 

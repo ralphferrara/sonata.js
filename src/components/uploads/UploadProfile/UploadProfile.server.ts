@@ -30,24 +30,12 @@
                               parsed.html = "<h2>Error : User is Not Logged In</h2>" + parsed.html;
                               return parsed;
                         }                        
-                        if (!parsed.attributes.hasOwnProperty("data-area") || !parsed.attributes.hasOwnProperty("data-fidarea")) {
-                              parsed.html = "<h2>Error : Component is Attributes</h2>" + parsed.html;
-                              return parsed;
-                        }                        
-                        if (isNaN(+parsed.attributes["data-fidarea"])) {
-                              parsed.html = "<h2>Error : AvatarUpload is Missing FIDAREA</h2>" + parsed.html;
-                              return parsed;
-                        }
-                        if (app("config", "areas").hasOwnProperty(parsed.attributes["data-area"]) === false) {
-                              parsed.html = "<h2>Error : INVALID AREA</h2>" + parsed.html;
-                              return parsed;
-                        }
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Add the Upload JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        let jwt           = await Media.uploadJWT(chirp.user.id, parsed.attributes["data-area"], parseInt(parsed.attributes["data-fidarea"]));
+                        let jwt           = await Media.uploadJWT(chirp.user.id, "US", chirp.user.id);
                         app.log("GOT UploadJWT : " + jwt.length + " length", "info");
-                        parsed.html       = parsed.html.replace(/\{\{UPLOADJWT\}\}/g, jwt);                  
+                        parsed.html       = parsed.html.replace(/\{\{UPLOADJWT\}\}/g, jwt);
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Return
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

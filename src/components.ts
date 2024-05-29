@@ -26,8 +26,8 @@
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Fields
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-      import UploadAvatar       from "./components/uploads/UploadAvatar/UploadAvatar.server.js";
+ 
+      import UploadProfile      from "./components/uploads/UploadProfile/UploadProfile.server.js";
       import UploadCover        from "./components/uploads/UploadCover/UploadCover.server.js";
       import TestUpload         from "./components/uploads/TestUpload/TestUpload.server.js";
 
@@ -55,8 +55,8 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Uploads
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  Components.register("TestUpload",   TestUpload.init);
-                  Components.register("UploadAvatar", UploadAvatar.init);
-                  Components.register("UploadCover",  UploadCover.init);
+                  Components.register("TestUpload",    TestUpload.init);
+                  Components.register("UploadProfile", UploadProfile.init);
+                  Components.register("UploadCover",   UploadCover.init);
             }
       }

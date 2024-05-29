@@ -1,0 +1,9 @@
+<div class="component UploadProfile" id="{{ID}}">
+      <form action="/upload/profile" method="POST" enctype="multipart/form-data">
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="My Profile Picture" width="200" height="200" data-user="profile.300">
+            <input type="file" name="files" accept="image/*" style="display:none"/>
+            <input type="hidden" id="uploadJWT" name="uploadJWT" value="{{UPLOADJWT}}">
+      </form>
+      <button class="btn btn-primary uploadButton">[[C:UPLOAD]]</button>
+</div>
+P

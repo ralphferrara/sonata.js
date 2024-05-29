@@ -9,6 +9,12 @@
             //|| Constructor!
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
+            passThru = null;
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Constructor!
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
+
             constructor() { }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -18,8 +24,7 @@
             send(url, data, options) {
                   console.log("--------------| CHIRP SEND | --------------");
                   console.log(url);
-                  console.log(data);
-                  console.log(options);
+                  console.log(data); 
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Set The Request Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
@@ -31,8 +36,9 @@
                   //|| Handle Options
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   if (typeof(options) == 'object') { 
-                        method      = (typeof(options.method) !== 'undefined') ? options.method : $.data('config').routes[route].method;  
-                        obj         = (typeof(options.obj)    !== 'undefined') ? options.obj    : null;
+                        method            = (typeof(options.method) !== 'undefined') ? options.method : $.data('config').routes[route].method;  
+                        obj               = (typeof(options.obj)    !== 'undefined') ? options.obj    : null;
+                        this.passThru     = (typeof(options.passThru) !== 'undefined') ? options.passThru : null;
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the Object
@@ -42,9 +48,9 @@
                         //|| Check for Route
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                         var routes = $.data('config').routes;
-                        if (typeof(routes[route]) == 'undefined') return $('snackbar').show("Configuration Error: Route not found ["+route+"]");
+                        if (typeof(routes[route]) == 'undefined')             return $("ModalSnackBar").create("ROUTE-NF:  ["+route+"]");
                         var name         = $.data('config').routes[route].name;
-                        if (typeof($._data.requires[name]) === 'undefined') return $('snackbar').show("Configuration Error: Route Object not found ["+name+"]");
+                        if (typeof($._data.requires[name]) === 'undefined')   return $("ModalSnackBar").create("ROUTE-OBJ-NF: ["+name+"]");
                         var obj          = $._data.requires[name];
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -76,7 +82,7 @@
                               response = (typeof(response) == 'object') ? response : JSON.parse(response);                                
                               var respData = response || { message: error.message };
                         } catch(e) {
-                              $('snackbar').show("Response Error : Bad JSON ["+url +"|"+ xhr.status + "]");
+                              $("ModalSnackBar").create("BAD-JSON: ["+url +"|"+ xhr.status + "]");
                               console.log(response);
                               console.log(e);
                               return false;
@@ -87,7 +93,7 @@
                   //|| Error
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
                   xhr.onerror = function() {
-                        $('snackbar').show("Communication Error ["+name +"|"+ xhr.status + "]");
+                        $("ModalSnackBar").create("ERROR-COMM: ["+name +"|"+ xhr.status + "]");
                   };
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Send

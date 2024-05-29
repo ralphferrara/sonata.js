@@ -12,7 +12,8 @@
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js"; 
       import AbstractLogins         from "../../abstract/logins/logins.js";
       import AbstractLoginsCreate   from "../../abstract/logins/logins.create.js";
-      import AbstractUsersCreate    from "../../abstract/users/users.create.js";
+      import AbstractUsersSelect    from "../../abstract/users/users.select.js";
+      import AbstractUsersInsert    from "../../abstract/users/users.insert.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -153,7 +154,7 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   for (let i = 0; i < 10; i++) {
                         var username         = "user_" + app.random.uuid().substring(0, 8);      
-                        if (await AbstractUsersCreate.usernameExists(username) === false) {
+                        if (await AbstractUsersSelect.usernameExists(username) === false) {
                               chirp.data('username', username);
                               return chirp.next();
                               break;
@@ -171,7 +172,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Create the User Record
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let result = await AbstractUsersCreate.createUsers(chirp.data('username'));
+                  let result = await AbstractUsersInsert.createUsers(chirp.data('username'));
                   if (result === null) return chirp.error(400, "VUS003");
                   chirp.data('id_user', result);
                   return chirp.next();

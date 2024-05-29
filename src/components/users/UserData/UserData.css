@@ -1,0 +1,39 @@
+button#userDataDebug {
+      position          : fixed;
+      display           : block;
+      bottom            : 10%;
+      left              : 2%;
+      width             : 100px;
+      height            : 50px;
+      background        : #000;
+      z-index           : 9999;
+      box-shadow        : 0 0 10px rgba(0, 0, 0, 0.5);
+      color             : #FFF;
+      padding           : 10px;
+      cursor            : pointer;
+}
+
+div#userDataDebug {
+      position          : fixed;
+      display           : block;
+      top               : 10%;
+      left              : 2%;
+      width             : 50%;
+      min-width         : 300px;
+      height            : auto;
+      background        : #000;
+      z-index           : 9998;
+      box-shadow        : 0 0 10px rgba(0, 0, 0, 0.5);
+      color             : #FFF;
+      padding           : 10px;
+      overflow-y        : scroll;
+} 
+
+div#userDataDebug button {
+      height            : auto;
+      width             : 100%;    
+      display           : inline-block;  
+      background        : #ccc;
+      color             : #000;
+      margin            : 10px 0;
+}

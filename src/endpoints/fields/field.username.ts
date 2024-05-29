@@ -9,7 +9,7 @@
 
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
-      import AbstractUsersUsername  from "../../abstract/users/users.username.js"; 
+      import AbstractUsersSelect  from "../../abstract/users/users.select.js"; 
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -85,7 +85,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| See if the Login Exists
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let passData = await AbstractUsersUsername.usernameExists(chirp.data('id_user'), chirp.data('username'));
+                  let passData = await AbstractUsersSelect.usernameExists(chirp.data('username'), chirp.data('id_user'));
                   if (passData === false) return chirp.error(400, 'VUN003');
                   return chirp.next();
             }            

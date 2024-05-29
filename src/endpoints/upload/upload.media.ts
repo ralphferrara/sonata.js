@@ -3,6 +3,7 @@
 //|| Auth Register Service
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
+
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Register a Path with a Service Obj
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -17,6 +18,7 @@
       import { UploadFile }                     from "../../sonata/modules/.interfaces.js";
       import { UploadMediaItem }                from "../../sonata/utils/.interfaces.js";
       import AbstractMediaInsert                from "../../abstract/media/media.insert.js";
+      import AbstractMediaUpdate                from "../../abstract/media/media.update.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -118,21 +120,23 @@
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const umi:UploadMediaItem     = {
                               name            : uploadFile.name,
-                              status          : "QUEUED",
+                              status          : "PENDNG",
+                              error           : "MEROK",
                               type            : mediaType,
                               idUser          : chirp.data('uploadPayload').idUser,
                               mediaArea       : chirp.data('uploadPayload').mediaArea,
                               fidArea         : chirp.data('uploadPayload').fidArea
                         };
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| TODO : Temporary to avoid compiler errors
+                        //|| Failed Type
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                        
                         if (mediaType === null) {
-                              umi.status = "UPLTYPE";
+                              umi.status = "FAILED";
+                              umi.error  = "MERTYP";
                               continue;
                         }
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Create ID
+                        //|| Create ID - Status will be "PEND"
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         umi.idMedia    = await AbstractMediaInsert.insertMedia(umi.idUser, umi.fidArea, umi.mediaArea);
                         umi.jwtStatus  = MicroJWT.sign(umi.idMedia);
@@ -146,7 +150,11 @@
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         console.log('Added to Queue : ' + queue + typeof(uploadFile.data), umi);
                         console.log("Processor Name : ", chirp.data("processorName"));
-                        await Queue.send(queue, uploadFile.data, "buffer", umi, chirp.site, chirp.data("processorName"));
+                        const inQueue = await Queue.send(queue, uploadFile.data, "buffer", umi, chirp.site, chirp.data("processorName"));
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Update Status based on Queue Status  
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        AbstractMediaUpdate.mediaStatus(umi.idMedia, (inQueue) ? "QUEUED" : "FAILED", "MERQUE");
                   }
                   chirp.data('mediaItems', responseItems);
                   return chirp.next();

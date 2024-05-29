@@ -1,17 +1,19 @@
-<section class="modalUploadContent" id="modalUpload">
-      <h2 class="h2">[[UPLOAD_A_PHOTO]]</h2>
-      <button class="icon upload select">
-            <i><FontAwesomeIcon icon="faUpload" /></i>
-            <span>[[C:UPLOAD]]</span>
-      </button>
-      <button class="icon upload camera">
-            <i><FontAwesomeIcon icon="faCamera" /></i>
-            <span>[[TAKE_A_PHOTO]]</span>
-      </button>
+<component id="{{ID}}" src="ModalPopupSmall">
+      <section class="modalUploadContent" id="{{ID}}">
+            <h2 class="h2">[[UPLOAD_A_PHOTO]]</h2>
+            <button class="icon upload select">
+                  <i><FontAwesomeIcon icon="faUpload" /></i>
+                  <span>[[C:UPLOAD]]</span>
+            </button>
+            <button class="icon upload camera">
+                  <i><FontAwesomeIcon icon="faCamera" /></i>
+                  <span>[[TAKE_A_PHOTO]]</span>
+            </button>
 
-      <button class="icon upload remove">
-            <i><FontAwesomeIcon icon="faTimes" /></i>
-            <span>[[REMOVE_CURRENT_PHOTO]]</span>
-      </button>
-      <span class="disclaimer"">[[MEDIA_DISCLAIMER]]</span>      
-</section>
+            <button class="icon upload remove">
+                  <i><FontAwesomeIcon icon="faTimes" /></i>
+                  <span>[[REMOVE_CURRENT_PHOTO]]</span>
+            </button>
+            <span class="disclaimer"">[[MEDIA_DISCLAIMER]]</span>      
+      </section>
+</component>      

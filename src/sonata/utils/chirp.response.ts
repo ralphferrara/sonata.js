@@ -94,9 +94,19 @@
                   });
                   }
                   if (this.cookiesSet) {
-                        this.cookiesSet.forEach(cookie => {
-                              native.setHeader('Set-Cookie', `${cookie.name}=${cookie.value}; Path=${cookie.options.path}; Max-Age=${cookie.options.maxAge}; HttpOnly=${cookie.options.httpOnly}; Secure=${cookie.options.secure}`);
-                        });
+                        const cookies = this.cookiesSet.map(cookie => {
+                              let cookieOptions = "";
+                              cookieOptions += (cookie.options.path) ? `; Path=${cookie.options.path}` : '';
+                              cookieOptions += (cookie.options.maxAge) ? `; Max-Age=${cookie.options.maxAge}` : '';
+                              cookieOptions += (cookie.options.httpOnly) ? '; HttpOnly' : '';
+                              cookieOptions += (cookie.options.secure) ? '; Secure' : '';
+                              cookieOptions += (cookie.options.sameSite) ? `; SameSite=${cookie.options.sameSite}` : '';
+                          
+                              const cookieString = `${cookie.name}=${encodeURIComponent(cookie.value)}${cookieOptions}`;
+                              return cookieString;
+                          });
+                          
+                          native.setHeader('Set-Cookie', cookies);
                   }
                   if (status === 301 || status === 302) {
                         native.setHeader('Location', body);

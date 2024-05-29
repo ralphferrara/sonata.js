@@ -48,13 +48,17 @@
             //|| Write a File
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public async write(bucketName: string, files: CloudFile[]): Promise<void> {
+            public async write(bucketName: string, files: CloudFile[]): Promise<boolean> {
                   app.log('CloudGoogle : write()', 'info');
                   const myBucket = await this.openBucket(this.name, bucketName);
                   const uploadPromises = files.map(file => this.uploadFile(myBucket, file));          
-                  return Promise.all(uploadPromises)
-                      .then(() => console.log('All files uploaded successfully!'))
-                      .catch(err => console.error('Error uploading one or more files:', err));
+                  return Promise.all(uploadPromises).then(() => {
+                        return true;
+                        console.log('All files uploaded successfully!')
+                  }).catch((err) => {
+                        console.error('Error uploading one or more files:', err)
+                        return false;
+                  });
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

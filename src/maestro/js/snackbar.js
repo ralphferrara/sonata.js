@@ -14,11 +14,19 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/    
 
             show(message, options) { 
-                  if (!$('.snackbar-container').length) $('body').append('<div id="snackbar-container"></div>');
-                  const $snackbarContainer = $('#snackbar-container');
-                  const $snackbar = $('<div class="snackbar">'+message+'</div>');
-                  $snackbarContainer.append($snackbar);                  
-                  $snackbar.fadeOut((4000 / $('div.snackbar').length), function() { $snackbar.remove(); });
+                  console.log("SNACKBAR MESSAGE : " + message);
+                  if (!$('#snackbar-container').length) {
+                        alert("No snackbar container found");
+                        $('body').append($('<div id="snackbar-container"></div>'));
+                  }
+                  const myID = $.guid();
+                  $('#snackbar-container').append($('<div class="snackbar" id="'+myID+'">'+message+'</div>'));
+                  alert('<div class="snackbar" id="'+myID+'">'+message+'</div>');
+                  window.setTimeout(() => {
+                        alert(myID);
+                        $('#'+myID).remove();
+                  }, 3000);
+
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

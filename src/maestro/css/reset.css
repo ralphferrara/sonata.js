@@ -90,3 +90,9 @@
       h6 {
             font-size               : 100%;
       }
+
+      svg {
+            display     : inline-block;
+            width       : 32px;
+            height      : 32px;
+      }

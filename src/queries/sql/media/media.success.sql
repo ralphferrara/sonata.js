@@ -1,7 +1,8 @@
 UPDATE 
       media
 SET       
-      media_status = 'SUCC',
+      media_status = ?,
+      media_error  = 'MEROK',
       media_dimension_x = ?, 
       media_dimension_y = ?,
       media_orientation = ?,

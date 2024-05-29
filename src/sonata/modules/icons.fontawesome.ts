@@ -52,7 +52,7 @@
                 static async parseHTML(htmlString: string): Promise<string> {
                         const dom                       = new JSDOM(htmlString);
                         const document                  = dom.window.document;                
-                        const fontAwesomeIconElements   = document.querySelectorAll('fontawesomeicon');
+                        const fontAwesomeIconElements   = document.querySelectorAll('FontAwesomeIcon');
                         for (const element of fontAwesomeIconElements) {
                                 const iconName = element.getAttribute('icon');
                                 if (iconName) {

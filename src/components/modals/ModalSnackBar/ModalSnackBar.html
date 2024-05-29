@@ -1,0 +1,23 @@
+<div class="ModalSnackBar" id="modalSnackBar">
+      <ul></ul>
+      <li class="template" id="ModalSnackBar-SUCCESS">
+            <button class="close" onclick="$(this).parent().remove()"><FontAwesomeIcon icon="faTimes" /></button>
+            <b>{{MESSAGE}}</b>
+            <i class="icon"><FontAwesomeIcon icon="faSquareCheck" /></i>
+      </li>
+      <li class="template" id="ModalSnackBar-PENDING">
+            <button class="close" onclick="$(this).parent().remove()"><FontAwesomeIcon icon="faTimes" /></button>
+            <b>{{MESSAGE}}</b>
+            <i class="icon spinner"><FontAwesomeIcon icon="faGear" /></i>
+      </li>
+      <li class="template" id="ModalSnackBar-ERROR">
+            <button class="close" onclick="$(this).parent().remove()"><FontAwesomeIcon icon="faTimes" /></button>
+            <b>{{MESSAGE}}</b>
+            <i class="icon error"><FontAwesomeIcon icon="faCircleExclamation" /></i>           
+      </li>
+      <li class="template" id="ModalSnackBar-DEFAULT">
+            <button class="close" onclick="$(this).parent().remove()"><FontAwesomeIcon icon="faTimes" /></button>
+            <b>{{MESSAGE}}</b>
+            <i class="icon"><FontAwesomeIcon icon="faCircleInfo" /></i>
+      </li>
+</div>

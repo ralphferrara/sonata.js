@@ -5,9 +5,13 @@
 "EMAIL_ADDRESS"                         : "Email Address",
 "FINISH_YOUR_PROFILE"                   : "Finish Your Profile",   
 "ENTER_VERIFICATION_CODE"               : "Enter Verification Code", 
+"INVALID_IMAGE"                         : "Invalid Image Uploaded",
 "LOGIN_WITH"                            : "Login with",       
 "LOGIN_WITH_EMAIL_ADDRESS"              : "Login with Email Address",
 "MEDIA_DISCLAIMER"                      : "All content moderated. Please abide by all site rules and regulations",
+"MEDIA_UPLOADED_SUCCESSFULLY"           : "Media uploaded successfully",
+"MEDIA_UPLOAD_FAILED"                   : "Media upload failed", 
+"PLEASE_CORRECT_THE_FORM_ERRORS"        : "Please correct the form errors",
 "REGISTER_WITH_EMAIL_ADDRESS"           : "Register with Email Address",
 "REMOVE_CURRENT_PHOTO"                  : "Remove Current Photo",
 "TAKE_A_PHOTO"                          : "Take a Photo",
@@ -15,5 +19,7 @@
 "WELCOME_BACK"                          : "Welcome Back",
 "WELCOME_HOME_PAGE"                     : "Welcome to the Home Page",
 "UPLOAD_COVER"                          : "Upload Cover",
-"UPLOAD_A_PHOTO"                        : "Upload a Photo"
+"UPLOAD_A_PHOTO"                        : "Upload a Photo",
+"YOUR_ACCOUNT_HAS_BEEN_CREATED"         : "Your account has been created. Please check your email/phone for a verification code.",
+"YOUR_ACCOUNT_HAS_BEEN_VERIFIED"        : "Your account has been verified."
 }

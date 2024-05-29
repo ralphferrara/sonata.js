@@ -11,12 +11,12 @@ $.init('AuthVerification', class {
       onError(result)  { 
             console.log('AUTH Verify ERROR');
             console.log(result.data); 
-            $('snackbar').show(result.data.errors);
+            $("ModalSnackBar").create(result.data.errors);
       };
 
       onSuccess() {
             console.log('AUTH Verify SUCCESS');
-            $('snackbar').show('Your account has been verified.');
+            $("ModalSnackBar").create(`[[YOUR_ACCOUNT_HAS_BEEN_VERIFIED]]`);
             $('#modalVerification').hide();
       };
 

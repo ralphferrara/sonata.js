@@ -34,13 +34,13 @@
                               return parsed;
                         }                        
                         if (isNaN(+parsed.attributes["data-fidarea"])) {
-                              parsed.html = "<h2>Error : AvatarUpload is Missing FIDAREA</h2>" + parsed.html;
+                              parsed.html = "<h2>Error : UploadProfile is Missing FIDAREA</h2>" + parsed.html;
                               return parsed;
                         }
                         if (app("config", "areas").hasOwnProperty(parsed.attributes["data-area"]) === false) {
                               parsed.html = "<h2>Error : INVALID AREA</h2>" + parsed.html;
                               return parsed;
-                        }              
+                        }               
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Return
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

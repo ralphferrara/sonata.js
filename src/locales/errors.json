@@ -1,6 +1,7 @@
 {
 "CHP000"  : "Chirp invalid or null",    
 "CHP002"  : "Payload too large",  
+"CHP003"  : "Expected data did not match DTO", 
 
 "VEP001"  : "Request was not an email address or phone number",
 
@@ -48,5 +49,19 @@
 "UPL003"  : "File size too large",
 "UPL004"  : "File type not allowed",
 "UPL005"  : "File could not be uploaded",
-"UPLOOK"  : "File uploaded successfully"
+"UPLOOK"  : "File uploaded successfully",
+
+"MEROK"   : "Media Upload Successful",
+"MERUPL"  : "Media file could not be uploaded",
+"MERTYP"  : "Invalid Type or Corrupt",
+"MERSIZ"  : "Media too large or too small",
+"MERRES"  : "Error Resizing File",
+"MERSAV"  : "Error storing file in our storage",
+"MERDEL"  : "Error removing media",
+"MERUDF"  : "Undefined Error",
+"MERJWT"  : "JWT Token missing or invalid",
+
+"ERRMID"  : "Media ID not provided or is invalid",
+"ERRMAR"  : "Media Area is invalid"
+
 }

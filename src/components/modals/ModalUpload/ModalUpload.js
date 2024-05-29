@@ -5,27 +5,37 @@
 
       $.init('ModalUpload', class { 
 
-            myID        = null;
-            fieldInput  = null;
-            fieldID     = null;
-            imageDiv    = null;
+            myID              = null;
+            fidMedia          = null;
+            componentID       = null;
+            component         = null;
+            fieldFile         = null;
+            funcClear         = () => { return console.log("ModalUpload :: Clear function not defined"); };
+            funcSet           = () => { return console.log("ModalUpload :: Set function not defined"); };
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            init() {}
+            init() {
+                  console.log('Loaded ModalUpload');
+            }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Init
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            create(myID, fieldInput, fieldID, imageDiv) {
-                  this.myID        = myID;
-                  this.fieldInput  = fieldInput;
-                  this.fieldID     = fieldID;
-                  this.imageDiv    = imageDiv
+            create(fidMedia, fieldFile, funcClear) {
+                  console.log('ModalUpload::Create()');
+                  this.componentID = 'modalUpload';
+                  this.component   = $(`#${this.componentID}`);
+                  if (this.component.length === 0) $("ModalSnackBar").create(`ERROR-MODALUPLOAD-NF`);
+                  this.fidMedia    = fidMedia;
+                  this.fieldFile   = fieldFile;
+                  if (this.fieldFile.length === 0) $("ModalSnackBar").create(`ERROR-MODALUPLOAD-FIELDFIELD-NF`);
+                  this.funcClear   = funcClear;
                   this.setupEventListeners();
+                  this.modal();
                   return this;
             }            
 
@@ -34,39 +44,23 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             setupEventListeners() {
-                  let id = -1;
-                  try { id = parseInt($(`#${this.fieldID}`).val()); } catch (e) { id = -1; }
-
-                  console.log(`MediaUpload: ID: ${id}`);
-                  $(`#${this.myID} button.remove`).off('click').on('click', () => { this.remove(); });
-                  $(`#${this.myID} button.remove`).toggle(id > 0);
-
-                  $(`#${this.myID} button.camera`).off('click').on('click', () => { this.camera(); });
-                  $(`#${this.myID} button.camera`).toggle($('device').hasCamera);
-
-                  $(`#${this.myID} button.select`).off('click').on('click', () => { this.select(); });
+                  $(`#${this.componentID} button.remove`).off('click').on('click', () => { this.remove(); });
+                  $(`#${this.componentID} button.remove`).toggle(this.fidMedia > 0);
+                  $(`#${this.componentID} button.camera`).off('click').on('click', () => { this.camera(); });
+                  $(`#${this.componentID} button.camera`).toggle($('device').hasCamera);
+                  $(`#${this.componentID} button.select`).off('click').on('click', () => { this.select(); });
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Show Modal
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            modal() {
-                  let id = -1;
-                  try { id = parseInt($(`#${this.fieldID}`).val()); } catch (e) { id = -1; }
-                  if (id > 0 || this.hasCamera) {
-                        $(`#${this.myID}`).show();
+            modal() {                  
+                  if (this.fidMedia > 0 || $('device').hasCamera) {
+                        this.component.show(); 
                   } else {
-                        $(`#${this.fieldInput}`).click();
+                        this.fieldFile.click();
                   }
-            }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Hide Modal
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            hide() {
-                  $(`#${this.myID}`).hide();
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -74,9 +68,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             camera() {
-                  $(`#${this.fieldInput}`).attr("capture", "environment");
-                  $(`#${this.fieldInput}`).click();
-                  this.hide();
+                  this.fieldFile.attr("capture", "environment");
+                  this.fieldFile.click();
+                  this.component.hide();
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -84,9 +78,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             select() {
-                  $(`#${this.fieldInput}`).removeAttr("capture");
-                  $(`#${this.fieldInput}`).click();
-                  this.hide();
+                  this.fieldFile.removeAttr("capture");
+                  this.fieldFile.click();
+                  this.component.hide();
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -95,9 +89,55 @@
 
             remove() {
                   if (confirm("Are you sure?")) {
-                        $(`#${this.fieldID}`).val(-1);
-                        $(`#${this.imageDiv}`).css('background-image', 'none');      
+                        this.funcClear();
                   }
-                  this.hide();
+                  this.component.hide();
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Check Video
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async checkVideo(file) {
+                  return new Promise((resolve, reject) => {
+                      const video = document.createElement('video');
+                      video.preload = 'metadata';              
+                      video.onloadedmetadata = function() {
+                          window.URL.revokeObjectURL(video.src);
+                          resolve(true);
+                      };              
+                      video.onerror = function() {
+                          window.URL.revokeObjectURL(video.src);
+                          resolve(false);
+                      };              
+                      video.src = URL.createObjectURL(file);
+                  });
+            };
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Check Image
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            async checkImage(file) {
+                  return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        const objectURL = URL.createObjectURL(file);
+                        img.onload = function() {
+                              URL.revokeObjectURL(objectURL);
+                              resolve(true);
+                        };
+                        img.onerror = function() {
+                              URL.revokeObjectURL(objectURL);
+                              resolve(false);
+                        };
+                        img.src = objectURL;
+                  });
+            };
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| EOC
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
       });
+
+

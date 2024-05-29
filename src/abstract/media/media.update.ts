@@ -7,8 +7,9 @@
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import app                      from "../../sonata/app.js";
-      import Recordset                from "../../sonata/utils/recordset.js"; 
+      import app                                from "../../sonata/app.js";
+      import Recordset                          from "../../sonata/utils/recordset.js"; 
+      import { MediaStatuses, MediaErrors }     from "../../sonata/utils/.interfaces.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Util Class
@@ -20,14 +21,14 @@
             //|| Update Media Status
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async mediaStatus(idMedia : number, newStatus : string) : Promise<boolean> {
+            static async mediaStatus(idMedia : number, mediaStatus : MediaStatuses, mediaError : MediaErrors) : Promise<boolean> {
                   app.log('AbstractMediaUpdate : mediaStatus()', 'info');
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const sql     = app.query("sql/media/media.update.status.sql");
-                        const results = await app.db("main").query(sql, [ newStatus, idMedia ]) as Recordset;                        
+                        const results = await app.db("main").query(sql, [ mediaStatus, mediaError, idMedia ]) as Recordset;                        
                         app.log("Updated Media Status - " + results.affected, "success");
                         if (results.affected < 1) return reject(false);                       
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -41,14 +42,19 @@
             //|| Successfully uploaded and resized media
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async mediaSuccess(idMedia : number, x :number, y : number, orientation : "L" | "P" | "S", exif : string) : Promise<boolean> {
+            static async mediaSuccess(idMedia : number, mediaStatus: MediaStatuses, x :number, y : number, orientation : "L" | "P" | "S", meta : string) : Promise<boolean> {
                   app.log('AbstractMediaUpdate : mediaSuccess('+idMedia+')', 'info');
+                  console.log(x);
+                  console.log(y);
+                  console.log(orientation);
+                  console.log('------');                  
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const sql     = app.query("sql/media/media.success.sql");
-                        const results = await app.db("main").query(sql, [ x, y, orientation, exif, idMedia ]) as Recordset;                        
+                        const results = await app.db("main").query(sql, [ mediaStatus, x, y, orientation, meta, idMedia ]) as Recordset;                        
+                        console.log(results.sql());
                         app.log(results.sql() + " - Affected : " + results.affected, "info");
                         if (results.affected < 1) return reject(false);                       
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

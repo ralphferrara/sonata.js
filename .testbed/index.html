@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maestro.js Framework Test</title>
+    <style>
+        .hidden { display: none; }
+        .highlight { background-color: yellow; }
+    </style>
+</head>
+<body>
+
+    <h1>Maestro.js Framework Test</h1>
+
+    <div id="test1" class="test">
+        Test Element 1
+    </div>
+    <div id="test2" class="test hidden">
+        Test Element 2
+    </div>
+    <div id="test3" class="test">
+        Test Element 3
+    </div>
+
+    <ul id="test-list">
+        <li>Item 1</li>
+        <li>Item 2</li>
+    </ul>
+
+    <button id="test-btn">Run Tests</button>
+
+    <script src="js/maestro.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('test-btn').addEventListener('click', function() {
+                // Select elements and log them
+                console.log($('#test1').elements);
+                
+                // Add class
+                $('.test').addClass('highlight');
+                
+                // Remove class
+                $('#test2').removeClass('hidden');
+                
+                // Append content
+                $('#test-list').append('<li>Appended Item</li>');
+                
+                // Prepend content
+                $('#test-list').prepend('<li>Prepended Item</li>');
+                
+                // Set attribute
+                $('#test1').attr('data-test', 'value');
+                
+                // Get attribute
+                console.log($('#test1').attr('data-test'));
+                
+                // Remove attribute
+                $('#test1').removeAttr('data-test');
+                
+                // Hide element
+                $('#test3').hide();
+                
+                // Show element
+                $('#test3').show();
+            });
+        });
+    </script>
+</body>
+</html>

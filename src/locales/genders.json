@@ -16,7 +16,7 @@
 "GENDER_PGND": "pangender",
 "GENDER_NEUT": "neutrois",
 "GENDER_GVAR": "gendervariant",
-"GENDER_GNC": "gendernonconforming",
+"GENDER_GNC" : "gendernonconforming",
 "GENDER_TMSM": "transmasculine",
 "GENDER_TFEM": "transfeminine",
 "GENDER_INSR": "intersex",

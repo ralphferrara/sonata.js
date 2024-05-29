@@ -119,8 +119,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
 
             async respond(chirp : Chirp): Promise<void> {
-                  chirp.setCookie('loginJWT', chirp.data('loginJWT'), { path: '/', httpOnly: true, secure: true, sameSite: "strict", maxAge: 60 * 60 * 24 * 7});
+                  chirp.setCookie('loginJWT', chirp.data('loginJWT'), { path: '/', httpOnly: false, secure: false, sameSite: "lax", maxAge: 60 * 60 * 24 * 7});
                   var respData = {
+                        jwtLogin       : chirp.data('loginJWT'),
                         message        : app.lang.routeError("SUCL01", chirp.request.lang)
                   };
                   return chirp.respond(200, respData);

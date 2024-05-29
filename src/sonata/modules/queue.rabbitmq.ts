@@ -117,15 +117,16 @@
             //|| Send Message to Queue
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            public async sendMessage(queueName : string, message: string) {
+            public async sendMessage(queueName : string, message: string) : Promise<boolean>{
                   try {
                         await this.channel.sendToQueue(queueName, Buffer.from(message));
                         app.log("Message sent to queue '" + queueName + "'.", "info");
                   } catch (error) {
                         app.log("Failed to send to queue : " + queueName +  message + ": " + message, "error");
                         console.log(error);
-                        throw error;
+                        return false;
                   }
+                  return true;
             }     
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
