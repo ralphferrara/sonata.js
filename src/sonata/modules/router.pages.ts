@@ -51,6 +51,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async route(route:Route, chirp:Chirp): Promise<void> {   
+                  chirp.ttl.step("Page Routing Start");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Clean Name
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -62,6 +63,7 @@
                   if (app('cache', routeURL) !== undefined) {
                         if(chirp.request.url.endsWith('.js'))     return chirp.respond(200, app('cache', routeURL).body.js,  { contentType : 'application/javascript' });
                         if(chirp.request.url.endsWith('.css'))    return chirp.respond(200, app('cache', routeURL).body.css, { contentType : 'text/css' });                        
+                        chirp.ttl.step("Page Routing End - Cache Hit");
                         return chirp.respond(200, app('cache', routeURL).body.html, { contentType : 'text/html' });
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -84,6 +86,7 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   parseData.html = parseData.html.replace(/{{PAGEJS}}/g,  route.path + '.js');
                   parseData.html = parseData.html.replace(/{{PAGECSS}}/g, route.path + '.css');
+                  chirp.ttl.step("Page Routing End");
                   return chirp.respond(200, parseData.html, { contentType : 'text/html' });
             }
 

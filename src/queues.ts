@@ -16,7 +16,7 @@
       import ConsumerMediaImage                from "./consumers/media/consume.media.image.js";
       import ConsumerMediaVideo                from "./consumers/media/consume.media.video.js";
       import ConsumerEmail                     from "./consumers/email/consume.email.js";
-      import ConsumerSMS                       from "./consumers/email/consume.sms.js";
+      import ConsumerSMS                       from "./consumers/sms/consume.sms.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Processors

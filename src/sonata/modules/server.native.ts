@@ -85,6 +85,11 @@
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                               //|| Parse all the Parts
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                              if (request.url === '/favicon.ico') {
+                                    response.writeHead(404, {'Content-Type': 'text/plain'});
+                                    response.end("Page Not Found");
+                                    return;
+                              }                              
                               const parser            = new MultipartParser(request.headers['content-type']);
                               parser.parseRequest(request, response).then(async parsedData => {
                                     if (parsedData === undefined) {
@@ -104,7 +109,6 @@
                                     //|| Create the Main Chirp
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                                     const chirp = new Chirp(chirpRequest, chirpResponse);
-                                    await chirp.auth();
                                     await app.route(chirp);
                               });
                         } catch (error) {
@@ -154,6 +158,7 @@
                         ca: caFile
                   }, (request, response) => { 
                         try {
+
                               /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                               //|| Parse all the Parts
                               //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -176,7 +181,6 @@
                                     //|| Create the Main Chirp
                                     //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                                     const chirp = new Chirp(chirpRequest, chirpResponse);
-                                    await chirp.auth();
                                     await app.route(chirp);
                               });
                         } catch (error) {

@@ -71,7 +71,7 @@
                   const header            = app.str(JSON.stringify(this.header)).toBase64();
                   const encodedPayload    = app.str(JSON.stringify(this.payload)).toBase64();
                   const signatureInput    = `${header}.${encodedPayload}`;
-                  this.signature          = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64');
+                  this.signature          = crypto.createHmac('blake2b512', secret).update(signatureInput).digest('base64');
                   this.status             = 'created';
                   return `${signatureInput}.${this.signature}`;            
             }
@@ -119,9 +119,8 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const secret             = app("config", "jwt").secret;
                   const signatureInput     = `${header}.${payload}`;
-                  const expectedSignature  = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64').replace(/=/g, '');
+                  const expectedSignature = crypto.createHash('blake2b512').update(signatureInput).digest('base64').replace(/=/g, '');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Signature
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

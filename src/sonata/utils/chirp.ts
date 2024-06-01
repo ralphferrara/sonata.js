@@ -24,6 +24,7 @@
       import ChirpUser                          from './chirp.user.js';
       import JWT                                from './jwt.js';
       import Users                              from '../../classes/users.js';
+      import TTL                                from './ttl.js';
 
       import { CookieOptions }                  from './.interfaces.js';
       import { JWTLogin }                       from "../../.interfaces.jwt.js";
@@ -49,6 +50,7 @@
             private steps       : Array<Function> = [];
             private currentStep : number;
             private dataset     : Record<string, string> = {};
+            public ttl          : TTL;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Process Native
@@ -63,6 +65,7 @@
                   this.jwtFields    = {};
                   this.currentStep  = -1;
                   this.site         = request.site;
+                  this.ttl          = new TTL(request.url);
                   if (app.active == false) return this.respond(200,  'Server is starting. Chill out dog', {contentType : 'text/html'});                  
             }
             
@@ -71,7 +74,9 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async auth() {
+                  this.ttl.step("User Verification Start");
                   await this.user.verify(this.cookie('loginJWT'));                  
+                  this.ttl.step("User Verification End");
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -90,9 +95,11 @@
                   this.currentStep++;
                   if (this.currentStep >= this.steps.length) return this.respond(501, {'error' : 'Not Implemented'});
                   if (typeof this.steps[this.currentStep] === 'function') {
+                        this.ttl.step("Chirp Step" + this.steps[this.currentStep].name);
                         await (this.steps[this.currentStep] || (() => { app.log("Chirp :: Next :: Current step is undefined", 'error'); }))(this);
                   } else {
                         console.log("Invalid Step", this.currentStep, this.steps);
+                        
                   }
                   return;
             }
@@ -149,6 +156,7 @@
                         contentType = 'application/json';
                         data        = JSON.stringify(data);
                   }
+                  this.ttl.complete();
                   return this.response.respond(status, data, contentType, options);
             }
 

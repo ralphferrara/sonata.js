@@ -17,6 +17,7 @@
                   switch(level) {
                         case 'info'     : this.echo(message, 'INFO', 'fgGray');     break;
                         case 'warn'     : this.echo(message, 'WARN', 'fgYellow');   break;
+                        case 'ttl'      : this.echo(message, 'INFO', 'fgGreen');     break;
                         case 'error'    : this.echo(message, 'ERR ', 'fgRed');      break;
                         case 'debug'    : this.echo(message, 'DBUG', 'fgGreen');    break;
                         case 'success'  : this.echo(message, '   ►', 'fgBlue');     break;
