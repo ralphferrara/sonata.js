@@ -1,20 +1,23 @@
-section.modal.verification div.content {
-        height      : 40%;
-        width       : 40%;
-        top         : 50%;
-        left        : 50%;
-        margin      : -10% auto auto -20%;
-        min-height  : 325px;
-  }
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components CSS
+//|| Modal Register
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-  section.modal.vertification div.content h2 {
-        margin      : 20px 0 20px 0;
-  }
+      section.ModalVerification {
+            display           : none;
+            flex-direction    : column;
+            justify-content   : top;
+            align-items       : center;
+            width             : 100%;
+            padding           : 20px;
+            border            : 1px solid #CCC;
+      }
 
-  div.form-group input.verificationCode {
-        font-size      : 200%;
-        letter-spacing : 50px;
-        text-align     : center;            
-        border-radius  : 0;
-  }
+
+      div.form-group input.verificationCode {
+            font-size      : 200%;
+            letter-spacing : 50px;
+            text-align     : center;            
+            border-radius  : 0;
+      }
 

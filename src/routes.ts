@@ -44,6 +44,7 @@
       import AuthRegister                 from "./endpoints/auth/register.js";
       import AuthVerification             from "./endpoints/auth/verification.js";
       import AuthLogin                    from "./endpoints/auth/login.js";
+      import AuthForgot                   from "./endpoints/auth/forgot.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Define all Pages
@@ -52,6 +53,7 @@
       import PageHome                     from "./pages/index.js";
       import PageLogin                    from "./pages/public/login/login.js";
       import PageRegister                 from "./pages/public/register/register.js";
+      import PageForgot                   from "./pages/public/forgot/forgot.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Members Pages
@@ -100,6 +102,7 @@
                   Router.register("/auth/login",                  "POST", new AuthLogin(),                  "endpoint",             0); 
                   Router.register("/auth/verify",                 "POST", new AuthVerification(),           "endpoint",             0); 
                   Router.register("/auth/register",               "POST", new AuthRegister(),               "endpoint",             0);
+                  Router.register("/auth/forgot",                 "POST", new AuthForgot(),                 "endpoint",             0);                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Members
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -111,6 +114,7 @@
                   Router.register("/",                            "POST", new PageHome(),                   "page",                 0);
                   Router.register("/login",                       "POST", new PageLogin(),                  "page",                 0); 
                   Router.register("/register",                    "POST", new PageRegister(),               "page",                 0); 
+                  Router.register("/forgot",                      "POST", new PageForgot(),                 "page",                 0); 
 
             }
 

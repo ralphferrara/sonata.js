@@ -74,55 +74,52 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the Route
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (typeof(chirp) === "undefined") {
-                        console.log("BAD CHIRP : ");
-                        console.log(chirp);
-                        return;
-                  }
-                  if (typeof(chirp.request) === "undefined") {
-                        console.log("BAD CHIRP REQUEST: ");
-                        console.log(chirp);
-                        return;
-                  }
-                  if (typeof(chirp.request.url) === "undefined") {
-                        console.log("BAD CHIRP URL: ");
-                        console.log(chirp.request);
-                        return;
-                  }
+                  if (typeof(chirp) === "undefined")                    return false;
+                  if (typeof(chirp.request) === "undefined")            return chirp.error(400, "CHP000");
+                  if (typeof(chirp.request.url) === "undefined")        return chirp.error(404, "Invalid URL");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Route by Type
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  app.log("1. Checking Main Router : " + chirp.request.url, "info");
-                  var url = this.routeFix(chirp.request.url);
-                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Route by Type
-                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  app.log("2. Checking Main Router (Fixed URL) : " + url, "info");
-                  var myRoute = app("routes", url);
-                  if (myRoute === undefined) {
-                        const baseURL = url.replace('.' + app.path(url).ext(),  '');
-                        app.log("3. Checking Base URL - " + baseURL, "info");
-                        myRoute = app("routes", baseURL);
-                        app.log("4. Still Undefined - " + url, "info");
-                        if (myRoute === undefined) {
-                              app.log("X. No Route Found - " + url, "info");    
-                              return chirp.respond(404, "Invalid Route ["+chirp.request.url +"] ");
-                        }
-                  }
+                  const myRoute = this.getRoute(chirp);
+                  if (myRoute === undefined) return chirp.respond(404, "Invalid Route ["+chirp.request.url +"] ");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Route by Type
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   switch(myRoute.type) { 
-                        case "asset"        : return Assets.route(myRoute, chirp); break;
-                        case "maestro"      : return Maestro.route(myRoute, chirp); break;
-                        case "page"         : return Pages.route(myRoute, chirp); break;
-                        case "endpoint"     : return Endpoints.route(myRoute, chirp); break;
+                        case "asset"        : return Assets.route(myRoute, chirp);        break;
+                        case "maestro"      : return Maestro.route(myRoute, chirp);       break;
+                        case "page"         : return Pages.route(myRoute, chirp);         break;
+                        case "endpoint"     : return Endpoints.route(myRoute, chirp);     break;
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Caching
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   app.log("Processing route: " + chirp.request.url, "info");         
                   return chirp.respond(404, "Not Found ["+chirp.request.url +"] ");
+            }           
+            
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Get Route
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static getRoute(chirp : Chirp) : Route | undefined {
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Generate all the Possible Routes
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  var url           = this.routeFix(chirp.request.url);
+                  const baseURL     = url.replace('.' + app.path(url).ext(),  '');
+                  let possibleRoutes : string[] = [];
+                  possibleRoutes.push(chirp.request.url);
+                  possibleRoutes.push(chirp.request.url + "/index");
+                  possibleRoutes.push(baseURL);
+                  possibleRoutes.push(baseURL.replace("/index", ""));
+                  possibleRoutes.push(baseURL.replace("index",  ""));
+                  for(var i = 0; i < possibleRoutes.length; i++) {
+                        app.log("Possible Route: " + possibleRoutes[i], "info");
+                        let myRoute = app("routes", possibleRoutes[i]);
+                        if (myRoute !== undefined) return myRoute;
+                  }
+                  return undefined;
             }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

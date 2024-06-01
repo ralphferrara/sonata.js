@@ -31,7 +31,7 @@
       //|| Top - Global 
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      nav.navPublic div.navPublicTop button {
+      nav.navPublic div.navPublicTop a {
             background              : transparent;
             border                  : none;
             color                   : #FFF;
@@ -76,7 +76,7 @@
             height                  : 100%;
       }
 
-      nav.navPublic div.navPublicTop div.navTopNotify button {
+      nav.navPublic div.navPublicTop div.navTopNotify a {
             height                  : 100%;
             width                   : var(--nav-top-button-width);
       }
@@ -85,7 +85,7 @@
       //|| Top - Auth
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      nav.navPublic div.navPublicTop div.navTopAuth button {
+      nav.navPublic div.navPublicTop div.navTopAuth a {
             margin                  : 0 10px;
             padding                 : 10px 20px;
             font-size               : 0.9em;
@@ -95,12 +95,12 @@
             transition              : background-color 0.3s ease;
       }
 
-      nav.navPublic div.navPublicTop div.navTopAuth button:hover {
+      nav.navPublic div.navPublicTop div.navTopAuth a:hover {
             background              : rgba(255,255,255,1);
             color                   : #000;
       }
 
-      nav.navPublic div.navPublicTop div.navTopAuth button span {
+      nav.navPublic div.navPublicTop div.navTopAuth a span {
             padding                 : 5px;
       }
 

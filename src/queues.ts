@@ -13,8 +13,10 @@
       //|| Consumers
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import { ConsumerMediaImage }            from "./consumers/media/consume.media.image.js";
-      import { ConsumerMediaVideo }            from "./consumers/media/consume.media.video.js";
+      import ConsumerMediaImage                from "./consumers/media/consume.media.image.js";
+      import ConsumerMediaVideo                from "./consumers/media/consume.media.video.js";
+      import ConsumerEmail                     from "./consumers/email/consume.email.js";
+      import ConsumerSMS                       from "./consumers/email/consume.sms.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Processors
@@ -39,6 +41,8 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   await Queue.register("mediaImage",        "main",    "mediaImage",        new ConsumerMediaImage(),  1);
                   await Queue.register("mediaVideo",        "main",    "mediaVideo",        new ConsumerMediaVideo(),  1);
+                  await Queue.register("sendEmail",         "main",    "sendEmail",         new ConsumerEmail(),       1);
+                  await Queue.register("sendSMS",           "main",    "sendSMS",           new ConsumerSMS(),         1);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Processors
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

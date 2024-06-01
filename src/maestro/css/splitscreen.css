@@ -10,6 +10,7 @@
       .splitscreen {
             display           : flex;
             height            : 100%;
+            width             : 100%;
       }
       
       .splitscreen.left, .splitscreen.right {
@@ -19,11 +20,10 @@
       
       .left {
             width             : 50%;
-            background        : #CCC;
-            padding           : 20px;            
+            padding           : 40px;
       }
       
       .right {
             width             : 50%;
-            padding           : 60px;
+            padding           : 40px;
       }

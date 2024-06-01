@@ -1,20 +1,25 @@
-$.init('AuthLogin', class {
+/*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+//|| True Components JS
+//|| Modal Login
+//||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      init() {
-            console.log("Loaded AuthLogin");
-      }
+      $.init('AuthLogin', class {
 
-      onError(data) {
-            console.log(data);
-            $("ModalSnackBar").create(data.errors);
-      };
+            init() {
+                  console.log("Loaded AuthLogin");
+            }
 
-      onSuccess(data) {
-            console.log('AUTH LOGIN SUCCESS');
-            $("ModalSnackBar").create(data.message);
-            setInterval(() => {
-                  //window.location.href = '/members/profile/complete/';
-            }, 1000);
-      };
+            onError(data) {
+                  console.log(data);
+                  $("ModalSnackBar").create(data.errors);
+            };
 
-});
+            onSuccess(data) {
+                  console.log('AUTH LOGIN SUCCESS');
+                  $("ModalSnackBar").create(data.message);
+                  setInterval(() => {
+                        window.location.href = '/members/profile/complete/';
+                  }, 1000);
+            };
+
+      });

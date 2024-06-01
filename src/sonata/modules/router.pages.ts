@@ -75,7 +75,15 @@
                   var parseData = await route.object.execute(chirp);
                   if(chirp.request.url.endsWith('.js'))     return chirp.respond(200, parseData.js,  { contentType : 'application/javascript' });
                   if(chirp.request.url.endsWith('.css'))    return chirp.respond(200, parseData.css, { contentType : 'text/css' });                        
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| HTML
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   parseData.html = await Lang.parse(parseData.html, chirp.request.lang);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| PAGEJS/CSS
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
+                  parseData.html = parseData.html.replace(/{{PAGEJS}}/g,  route.path + '.js');
+                  parseData.html = parseData.html.replace(/{{PAGECSS}}/g, route.path + '.css');
                   return chirp.respond(200, parseData.html, { contentType : 'text/html' });
             }
 

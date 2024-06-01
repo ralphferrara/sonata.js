@@ -45,6 +45,8 @@
             
             public async parseRequest(request: any, response : any): Promise<RequestData> {
                   const ip = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
+                  console.log(request.url);
+                  if (request.url === '//') return undefined;
                   const urlDetails: UrlWithParsedQuery = parseUrl(request.url, true);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Process query parameters to ensure they are all strings

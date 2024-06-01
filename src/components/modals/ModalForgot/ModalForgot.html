@@ -1,0 +1,17 @@
+
+<section class="content register ModalForgot" id="modalForgot">
+      <div class="border-box form">
+            <form action="/auth/forgot" method="post" id="registerEmail">
+                  <h2>[[FORGOT_YOUR_PASSWORD]]</h2>
+                  <div class="form-group" data-validation="email" data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
+                        <label for="registerEmail"></label>
+                        <input name="emailOrPhone" type="email" class="form-control" id="emailOrPhone" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
+                  </div>
+                  <button class="icon" />
+                        <i><FontAwesomeIcon icon="faChevronRight" /></i>
+                        <span>[[C:REMIND_ME]]</span>
+                  </button>
+            </form>
+      </div>
+</section>
+<component src="ModalVerification" id="modalVerification"></component>

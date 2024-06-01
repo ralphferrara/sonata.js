@@ -1,35 +1,35 @@
-<section class="content register" id="modalRegister">
-      <div class="">
-            <div class="border-box form">
-                  <form action="/auth/register" method="post" id="registerEmail">
-                        <h2>[[REGISTER_WITH_EMAIL_ADDRESS]]</h2>
-                        <div class="form-group" data-validation="email"
-                              data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
-                              <label for="registerEmail"></label>
-                              <input name="emailOrPhone" type="email" class="form-control" id="emailOrPhone" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
-                        </div>
-                        <button class="icon" />
-                              <i><FontAwesomeIcon icon="faChevronRight" /></i>
-                              <span>[[C:REGISTER]]</span>
-                        </button>
-                  </form>
-                  <div class="divide"><b>[[OR]]</b></div>
 
-                  <button class="icon social google">
-                        <i><FontAwesomeIcon icon="faGoogle" /></i>
-                        <span>[[C:CONTINUE_WITH]] <b>Google</b></span>
+<section class="content register ModalRegister" id="modalRegister">
+      <div class="border-box form">
+            <form action="/auth/register" method="post" id="registerEmail">
+                  <h2>[[REGISTER_WITH_EMAIL_ADDRESS]]</h2>
+                  <div class="form-group" data-validation="email"
+                        data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
+                        <label for="registerEmail"></label>
+                        <input name="emailOrPhone" type="email" class="form-control" id="emailOrPhone" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com">
+                  </div>
+                  <button class="icon" />
+                        <i><FontAwesomeIcon icon="faChevronRight" /></i>
+                        <span>[[C:REGISTER]]</span>
                   </button>
+            </form>
+            <div class="divide"><b>[[OR]]</b></div>
 
-                  <button class="icon social twitter">
-                        <i><FontAwesomeIcon icon="faTwitter" /></i>
-                        <span>[[C:CONTINUE_WITH]] <b>Twitter</b></span>
-                  </button>
+            <button class="icon social google">
+                  <i><FontAwesomeIcon icon="faGoogle" /></i>
+                  <span>[[C:CONTINUE_WITH]] <b>Google</b></span>
+            </button>
 
-                  <button class="icon social apple">
-                        <i><FontAwesomeIcon icon="faApple" /></i>
-                        <span>[[C:CONTINUE_WITH]] <b>Apple</b></span>
-                  </button>
+            <button class="icon social twitter">
+                  <i><FontAwesomeIcon icon="faTwitter" /></i>
+                  <span>[[C:CONTINUE_WITH]] <b>Twitter</b></span>
+            </button>
 
-            </div>
+            <button class="icon social apple">
+                  <i><FontAwesomeIcon icon="faApple" /></i>
+                  <span>[[C:CONTINUE_WITH]] <b>Apple</b></span>
+            </button>
+
       </div>
 </section>
+<component src="ModalVerification" id="modalVerification"></component>

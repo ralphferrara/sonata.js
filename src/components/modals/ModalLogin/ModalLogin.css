@@ -10,10 +10,9 @@
       section.ModalLogin {
             display           : flex;
             flex-direction    : column;
-            justify-content   : center;
+            justify-content   : top;
             align-items       : center;
-            height            : 100%;
             width             : 100%;
-            background-color  : #f0f0f0;
-            padding           : 200px 30px 100px 30px;
+            padding           : 20px;
+            border            : 1px solid #CCC;
       }
