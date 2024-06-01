@@ -37,17 +37,24 @@
             //|| Add Events
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            addEvents() {             
-                  $('.FieldUsername input').off('keyup change').on('keyup change', function() { 
-                        $('.FieldUsername').removeClass('ok error wait').addClass('wait');
-                        var postData = {
-                              'id_user'  : parseInt($('.FieldUsername').attr('data-id_user')),
-                              'username' : $('.FieldUsername input').val()
-                        };
-                        if ($('FieldUsername').timer !== 'undefined') window.clearTimeout($('FieldUsername').timer);
-                        $('FieldUsername').timer = window.setTimeout(function() { $('chirp').send('/fields/field.username', postData);}, 500);
-                  });
+            addEvents() {       
+                  if ($('.FieldUsername input').val().length > 2) this.checkUsername();
+                  $('.FieldUsername input').off('keyup change').on('keyup change', this.checkUsername);
             }      
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Check Username
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            
+            checkUsername() { 
+                  $('.FieldUsername').removeClass('ok error wait').addClass('wait');
+                  var postData = {
+                        'id_user'  : parseInt($('.FieldUsername').attr('data-id_user')),
+                        'username' : $('.FieldUsername input').val()
+                  };
+                  if ($('FieldUsername').timer !== 'undefined') window.clearTimeout($('FieldUsername').timer);
+                  $('FieldUsername').timer = window.setTimeout(function() { $('chirp').send('/fields/field.username', postData);}, 500);
+            }
             
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| EOC

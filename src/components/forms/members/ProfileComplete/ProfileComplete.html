@@ -4,14 +4,15 @@
             <component id="user_cover" src="UploadCover" id="coverUpload">                  
                   <component id="userProfile" src="UploadProfile"></component>
             </component>      
-            <div class="formFieldsProfileComplete">  
-                  <h2>[[C:FINISH_YOUR_PROFILE]]</h2>
-                  <component id="user_gender" label="[[C:GENDER]]" src="FieldGender" value="{{USER_GENDER}}"></component>
-                  <component id="user_username" label="[[C:USERNAME]]" src="FieldUsername" id_user={{ID_USER}} value="{{USER_USERNAME}}"></component>
-                  <component id="user_password" label="[[C:PASSWORD]]" src="FieldPassword" value=""></component>
-                  <component id="user_dob" label="[[DOB]]" src="FieldDOB" value="{{USER_DOB}}" placeholder="[[DOB]]"></component>            
-                  <component id="submit" value="[[C:UPDATE]]" src="FieldSubmit"></component>    
-                  User ID : {{ID_USER}}
+            <div class="formFieldsProfileComplete"> 
+                  <form action="/users/profile/complete" method="post" id="formProfileComplete"> 
+                        <h2>[[C:FINISH_YOUR_PROFILE]]</h2>
+                        <component id="user_gender" label="[[C:GENDER]]" src="FieldGender" value="{{USER_GENDER}}"></component>
+                        <component id="user_username" label="[[C:USERNAME]]" src="FieldUsername" id_user={{ID_USER}} value="{{USER_USERNAME}}"></component>
+                        <component id="user_password" label="[[C:PASSWORD]]" src="FieldPassword" data="{{PASSWORD_REGEX}} value=""></component>
+                        <component id="user_dob" label="[[DOB]]" src="FieldDOB" value="{{USER_DOB}}" placeholder="[[DOB]]"></component>            
+                        <component id="submit" value="[[C:UPDATE]]" src="FieldSubmit"></component>    
+                  </form>
             </div>        
             <component id="uploadStatus" src="ModalMediaQueueStatus"></component>
 </div>      

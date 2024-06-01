@@ -10,20 +10,21 @@
       import app                      from "../../sonata/app.js";
       import Recordset                from "../../sonata/utils/recordset.js"; 
 
+      
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class AbstractLoginsCreate {
+      export default class AbstractLoginsSelect {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Check if Email Exists in Database
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async existsEmail(email : string) : Promise<number | null> {
-                  app.log('AbstractLoginsCreate : existsEmail()', 'info');
+                  app.log('AbstractLoginsSelect : existsEmail()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.exists.email.sql");
+                        const sql     = app.query("sql/logins/select.logins.exists.email.sql");
                         const results = await app.db("main").query(sql, [ email ]) as Recordset;                        
                         if (results.count > 0 && results.rows && results.rows[0] && results.rows[0].id_login) return resolve(results.rows[0].id_login as number); else return resolve(null);
                   });
@@ -34,23 +35,22 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async existsPhone(phone : string) : Promise<number | null> {
-                  app.log('AbstractLoginsCreate : existsPhone()', 'info');
+                  app.log('AbstractLoginsSelect : existsPhone()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.exists.phone.sql");
+                        const sql     = app.query("sql/logins/select.logins.exists.phone.sql");
                         const results = await app.db("main").query(sql, [ phone ]) as Recordset;
                         if (results.count > 0) return resolve(results.rows[0].id_login as number); else return resolve(null);
                   });
             }
-
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Lookup Login
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async lookupLogin(idLogin:number) : Promise<{ id_user : number, username : string, status : string } | null> {
-                  app.log('AbstractLoginsCreate : lookupLogin()', 'info');
+                  app.log('AbstractLoginsSelect : lookupLogin()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.lookup.users.sql");
+                        const sql     = app.query("sql/logins/select.logins.lookup.users.sql");
                         const results = await app.db("main").query(sql, [ idLogin ]) as Recordset;
                         if (results.count > 0) {
                               const userData = {
@@ -62,35 +62,56 @@
                         }
                         return resolve(null);
                   });
+            }   
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Get the Password from an Email address
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async getPasswordByEmail(email : string) : Promise<{ id_login : number, password : string } | null> {
+                  app.log('AbstractLoginsSelect : getPasswordByEmail()', 'info');
+                  return new Promise(async (resolve, reject) => {
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Pull the Recordset
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        const sql     = app.query("sql/logins/select.logins.password.email.sql");
+                        const results = await app.db("main").query(sql, [ email ]) as Recordset;                        
+                        if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) reject(null);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create the JWT
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        resolve({
+                              "password" : results.rows[0].login_password,
+                              "id_login" : results.rows[0].id_login
+                        });
+                  });
+            }
+            
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Get the Password from an Phone Number
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async getPasswordByPhone(phone : string) : Promise< { id_login : number, password : string } | null> {
+                  app.log('AbstractLoginsSelect : getPasswordByPhone()', 'info');
+                  return new Promise(async (resolve, reject) => {
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Pull the Recordset
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        const sql     = app.query("sql/logins/select.logins.password.phone.sql");
+                        const results = await app.db("main").query(sql, [ phone ]) as Recordset;                        
+                        if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) reject(null);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create the JWT
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        resolve({
+                              "password" : results.rows[0].login_password,
+                              "id_login" : results.rows[0].id_login
+                        });
+                  });
             }            
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Create a Login Record with Phone Number
+            //|| EOC
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            static async createLoginsByPhone(id : number, phone:string) : Promise<number | null> {
-                  app.log('AbstractLoginsCreate : createLoginsPhone()', 'info');
-                  return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.create.phone.sql");
-                        const results = await app.db("main").query(sql, [ id, phone ]) as Recordset;
-                        if (typeof results.insert === "number" ) return resolve(results.insert);
-                        return resolve(null);
-                  });
-            }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Create a Login Record with Email
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            static async createLoginsByEmail(id : number, email : string) : Promise<number | null> {
-                  app.log('AbstractLoginsCreate : createLoginsEmail()', 'info');
-                  return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/logins/logins.create.email.sql");
-                        const results = await app.db("main").query(sql, [ id, email ]) as Recordset;
-                        if (typeof results.insert === "number" ) return resolve(results.insert);
-                        return resolve(null);
-                  });
-            }
-
-
       }
+            

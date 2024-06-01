@@ -216,6 +216,7 @@
                         await fs.writeFile(this.abs(), stringContent);
                         return true;
                     } catch (error) {
+                        console.log("WRITE ERROR");
                         console.error(error);
                         return false;
                     }

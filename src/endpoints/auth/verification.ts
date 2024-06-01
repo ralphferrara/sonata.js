@@ -10,8 +10,9 @@
       import app                    from "../../sonata/app.js";     
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js"; 
-      import AbstractLogins         from "../../abstract/logins/logins.js";
-      import AbstractLoginsCreate   from "../../abstract/logins/logins.create.js";
+      import AbstractLoginsSelect   from "../../abstract/logins/logins.select.js";
+      import AbstractLoginsJWT      from "../../abstract/logins/logins.jwt.js";
+      import AbstractLoginsInsert   from "../../abstract/logins/logins.insert.js";
       import AbstractUsersSelect    from "../../abstract/users/users.select.js";
       import AbstractUsersInsert    from "../../abstract/users/users.insert.js";
 
@@ -103,21 +104,21 @@
                   //|| Check if there is a Login record for the Email 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('registerType') === 'email') { 
-                        let result  = await AbstractLoginsCreate.existsEmail(chirp.data('emailOrPhone'));
+                        let result  = await AbstractLoginsSelect.existsEmail(chirp.data('emailOrPhone'));
                         if (result !== null) chirp.data('id_login', result); else chirp.data('id_login', null);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check if there is a Login record for the Phone
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('registerType') === 'phone') { 
-                        let result = await AbstractLoginsCreate.existsPhone(chirp.data('emailOrPhone'));
+                        let result = await AbstractLoginsSelect.existsPhone(chirp.data('emailOrPhone'));
                         if (result !== null) chirp.data('id_login', result); else chirp.data('id_login', null);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| If there is a Login record, then we need to get the User ID
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (chirp.data('id_login') !== null) {
-                        let userData = await AbstractLoginsCreate.lookupLogin(chirp.data('id_login'));
+                        let userData = await AbstractLoginsSelect.lookupLogin(chirp.data('id_login'));
                         console.log(userData);
                         if (userData !== null) {
                               chirp.data('id_user',   userData.id_user);
@@ -188,12 +189,12 @@
                   //|| Create the User Record
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('registerType') === 'email') {
-                        let result = await AbstractLoginsCreate.createLoginsByEmail(chirp.data('id_user'), chirp.data('emailOrPhone'));
+                        let result = await AbstractLoginsInsert.createLoginsByEmail(chirp.data('id_user'), chirp.data('emailOrPhone'));
                         if (result === null) return chirp.error(400, "VUS004");
                         chirp.data('id_login', result);
                   }
                   if (chirp.data('registerType') === 'phone') {
-                        let result = await AbstractLoginsCreate.createLoginsByPhone(chirp.data('id_user'), chirp.data('emailOrPhone'));
+                        let result = await AbstractLoginsInsert.createLoginsByPhone(chirp.data('id_user'), chirp.data('emailOrPhone'));
                         if (result === null) return chirp.error(400, "VUS005");
                         chirp.data('id_login', result);
                   }                                    
@@ -209,7 +210,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let jwt = await AbstractLogins.loginJWT(chirp.data('id_login'));
+                  let jwt = await AbstractLoginsJWT.loginJWT(chirp.data('id_login'));
                   console.log(jwt);
                   chirp.data('loginJWT', jwt);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

@@ -3,7 +3,7 @@ CREATE TABLE `users` (
   `fid_media_profile` int(11) DEFAULT NULL,
   `fid_media_cover` int(11) DEFAULT NULL,
   `fid_verification` int(11) DEFAULT NULL,
-  `user_status` char(2) DEFAULT 'PV',
+  `user_status` char(2) DEFAULT 'PC',
   `user_level` tinyint(4) DEFAULT 0,
   `user_username` varchar(64) NOT NULL,
   `user_gender` varchar(4) DEFAULT 'M',

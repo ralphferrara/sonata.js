@@ -79,8 +79,26 @@
                   const formattedMonth = month.toString().padStart(2, '0');
                   const formattedDay = day.toString().padStart(2, '0');
                   const newDateValue = `${year}-${formattedMonth}-${formattedDay}`;
+                  const minAge = $('#' + myID).parent().attr('data-minAge');
+                  console.log("MIN AGE: " + minAge + " MY AGE = " + this.calculateAge(newDateValue));
+                  const age = this.calculateAge(newDateValue);
+                  $('#' + myID).parent().find(".myAge").html("[[C:AGE]] : " + age);
+                  $('#' + myID).parent().removeClass("invalid valid").addClass( (age < minAge) ? "invalid" : "valid");
                   $('#' + myID).val(newDateValue);            
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Calculate Age
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            calculateAge(birthDate) {
+                  const today = new Date();
+                  const birthDateObj = new Date(birthDate);
+                  let age = today.getFullYear() - birthDateObj.getFullYear();
+                  const monthDifference = today.getMonth() - birthDateObj.getMonth();
+                  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDateObj.getDate())) age--;
+                  return age;
+            }            
             
             
 

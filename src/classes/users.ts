@@ -53,7 +53,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Pull the Recordset
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const sql     = app.query("sql/logins/logins.jwt.sql");
+                  const sql     = app.query("sql/logins/select.logins.jwt.sql");
                   const results = await app.db("main").query(sql, [ payload.id_login ]) as Recordset;                        
                   if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) {
                         jwt.status = 'expired';

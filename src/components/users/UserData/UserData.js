@@ -35,6 +35,11 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             debug(debugShow = false) { 
+                  if (debugShow === false) { 
+                        $('button#userDataDebug').remove();
+                        $('div#userDataDebug').remove(); 
+                        return; 
+                  }
                   const userData = $.data('userData');
                   var myHTML = '';
                   for (const key in userData) myHTML += `<tr><td>${key}</td><td> ${userData[key]}</td></tr>`;

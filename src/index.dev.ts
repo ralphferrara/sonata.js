@@ -29,6 +29,6 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       app.init("config/", false, false, await checkIfInDocker(), async () => {
-            app.log("DEVELOPMENT MODE STARTED.", "success");        
+            app.log("DEVELOPMENT MODE STARTED.", "success");    
       });
       

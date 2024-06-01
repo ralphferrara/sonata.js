@@ -1,5 +1,5 @@
 
-<div class="form-group FieldDOB">      
+<div class="form-group FieldDOB" data-minAge="18">
       <label for="{{ID}}">{{LABEL}}</label>
       <div class="FieldDOB-selects-container">
             <select class="form-control FieldDOBMonth" data-parentId="{{ID}}">
@@ -19,5 +19,7 @@
             <select class="form-control FieldDOBDay" data-parentId="{{ID}}"></select>
             <select class="form-control FieldDOBYear" data-parentId="{{ID}}"></select>            
       </div>
-      <input type="date" id="{{ID}}" name="{{ID}}" value="{{VALUE}}" class="FieldDOBDate">
+      <input type="date" id="{{ID}}" name="dob" value="{{VALUE}}" class="FieldDOBDate">
+      <span class="status statusError">✕ [[DOB_ERROR]] <i class="minAge">18</i></span>      
+      <span class="status statusSuccess">✓ <i class="myAge"></i></span>
 </div> 

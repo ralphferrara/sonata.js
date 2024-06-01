@@ -37,3 +37,22 @@
             display                 : none;
       }
 
+      .FieldDOB .status {
+            display           : none;
+            margin            : 10px 0 0;
+            padding           : 10px 10px;
+            background        : rgba(0, 0, 0, 0.05);
+            border-radius     : 4px;
+            font-size         : 90%;
+            font-weight       : bold;
+      }      
+
+      .FieldDOB.valid .status.statusSuccess {
+            display           : block;
+      }
+
+      .FieldDOB.invalid .status.statusError {
+            display           : block;
+            color             : red;
+      }
+

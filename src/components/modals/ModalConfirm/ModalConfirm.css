@@ -1,0 +1,67 @@
+/* Modal Container */
+div.modal.overlay.confirm {
+      display            : none;
+      justify-content    : center;
+      align-items        : center;
+      position           : fixed;
+      top                : 0;
+      left               : 0;
+      right              : 0;
+      bottom             : 0;
+      width              : 100%;
+      height             : 100%;
+      background-color   : rgba(0, 0, 0, 0.5); /* Optional: Adds a semi-transparent background */
+      z-index            : 1000;
+      max-width          : 100%;
+}
+
+/* Modal */
+div.modal.confirm {
+      display            : flex;
+      flex-direction     : column;
+      width              : 50%;
+      min-width          : 300px;
+      max-width          : 500px;
+      background-color   : #FFF;
+      padding            : 20px;
+      border-radius      : 10px;
+      box-sizing         : border-box;
+      overflow           : auto;
+      z-index            : 1001; /* Make sure it's above the background overlay */
+}
+
+div.modal.confirm h2 {
+      padding            : 10px 0;
+
+}
+
+div.modal.confirm p {
+      padding            : 10px 0;
+}
+
+/* Buttons Container */
+div.modal.confirm .buttons {
+      display            : flex;
+      justify-content    : flex-end;
+      margin-top         : auto; /* Ensures the buttons are at the bottom */
+}
+
+/* Affirm Button */
+div.modal.confirm .buttons button.affirm {
+      background         : #000;
+      color              : #FFF;
+      border             : 0;
+      padding            : 10px 20px;
+      margin-right       : 10px;
+      cursor             : pointer;
+}
+
+/* Decline Button */
+div.modal.confirm .buttons button.decline {
+      background         : rgba(0,0,0,0.5);
+      color              : #FFF;
+      border             : 0;
+      padding            : 10px 20px;
+      margin-right       : 10px;
+      cursor             : pointer;
+}

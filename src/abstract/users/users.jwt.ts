@@ -26,7 +26,7 @@
             static async create(chirp : Chirp) : Promise<string | boolean> {
                   app.log('AbstractUsersSelect : fetchUserData()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/users/users.data.fetch.sql");
+                        const sql     = app.query("sql/users/select.users.data.fetch.sql");
                         const results = await app.db("main").query(sql, [ chirp.user.id ]) as Recordset;
                         if (results.count == 0) return resolve(false); 
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

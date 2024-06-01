@@ -10,7 +10,7 @@
       div.UploadProfile {
             display           : block;
             margin            : 0 auto;
-            border            : 2px dashed #ccc;
+            border            : 1px solid transparent;
             cursor            : pointer;
             width             : 200px;
       }

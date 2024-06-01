@@ -50,7 +50,7 @@
                         //|| Blog Posts
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         try { 
-                                const blogs     = await app.db("main").query(app.query("sql/blogs/public.blogs.footer.sql"));
+                                const blogs     = await app.db("main").query(app.query("sql/blogs/select.blogs.footer.sql"));
                                 const navBlogs  = blogs.toArray().map(blog => {
                                         let myDate           = new Date(blog.blog_timestamp);
                                         let strDate          = myDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });

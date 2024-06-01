@@ -215,7 +215,7 @@
       app.db      = (name:string, value?:any) => { return app("databases", name, value); };    
       app.channel = (name:string, value?:any) => { return app("channels",  name, value); };    
       app.queue   = (name:string, value?:any) => { return app("queues",    name, value); };    
-      app.query   = (name:string, value?:any) => { return app("queries",   name, value); };
+      app.query   = (name:string, value?:any) => { if (app("queries",   name, value) === undefined) app.log("Query was not found : " + name, 'break'); else return app("queries",   name, value); };
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Call a Sender Wrapper

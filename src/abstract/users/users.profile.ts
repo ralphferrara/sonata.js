@@ -7,24 +7,24 @@
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import app                          from "../../../sonata/app.js";
-      import Recordset                    from "../../../sonata/utils/recordset"; 
-      import { MembersProfileComplete }   from "../../.interfaces.js";
+      import app                          from "../../sonata/app.js";
+      import Recordset                    from "../../sonata/utils/recordset"; 
+      import { MembersProfileComplete }   from "../.interfaces.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class AbstractMembersProfileComplete {
+      export default class AbstractUsersProfile {
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Check if Email Exists in Database
+            //|| Get the Profile Complete Data
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async profileData(id_user : number) : Promise<MembersProfileComplete | null> {
-                  app.log('AbstractMembersProfileComplete : profileData()', 'info');
+            static async getProfileData(id_user : number) : Promise<MembersProfileComplete | null> {
+                  app.log('AbstractUsersProfile : getProfileData()', 'info');
                   return new Promise(async (resolve) => {
-                        const sql     = app.query("sql/users/users.profile.complete.sql");
+                        const sql     = app.query("sql/users/select.profile.complete.sql");
                         const results = await app.db("main").query(sql, [ id_user ]) as Recordset;
                         if (results.count > 0) {
                               const userDOB = new Date(results.rows[0].user_dob);
@@ -41,5 +41,28 @@
                          } else return resolve(null);
                   });
             }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Set the Profile Data
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async setProfileData(respValues : MembersProfileComplete) : Promise<boolean> {
+                  app.log('AbstractUsersProfile : setProfileData()', 'info');
+                  return new Promise(async (resolve) => {
+                        const sql     = app.query("sql/users/update.profile.complete.sql");
+                        const results = await app.db("main").query(sql, [                               
+                              respValues.user_gender,
+                              respValues.user_username,
+                              respValues.user_dob,
+                              respValues.id_user
+                         ]) as Recordset;
+                         console.log(results.sql());
+                         if (results.affected > 0) return resolve(true); else return resolve(false);
+                  });
+            }            
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| EOC
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       }

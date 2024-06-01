@@ -36,8 +36,9 @@
       export interface MembersProfileComplete {
             id_user            : number;
             user_username      : string;
+            user_password?     : string;
             user_gender        : string;
             user_dob           : string;
-            fid_media_profile  : number;
-            fid_media_cover    : number;
+            fid_media_profile? : number;
+            fid_media_cover?   : number;
       }

@@ -62,17 +62,6 @@ services:
       sonata_network:
         ipv4_address: 172.20.0.6
 
-  apache:
-    image: httpd:latest
-    container_name: maestro_testbed
-    ports:
-      - "8080:80"
-    volumes:
-      - ./.testbed:/usr/local/apache2/htdocs/
-    networks:
-      sonata_network:
-        ipv4_address: 172.20.0.7
-
 volumes:
   mariadb_data:
     driver: local

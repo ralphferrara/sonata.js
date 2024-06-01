@@ -35,7 +35,7 @@
       export interface PageInterface {
             name        : string;
             cacheTime   : number;
-            execute(chirp:Chirp): Promise<ParseData>;
+            execute(chirp:Chirp): Promise<ParseData | boolean>;
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

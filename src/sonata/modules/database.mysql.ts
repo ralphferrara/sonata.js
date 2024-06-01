@@ -180,7 +180,7 @@
                         result.status = "OK";
                   } catch (error) {
                         console.log(error);
-                        app.log("MySQL Query Error:", "break");
+                        app.log("MySQL Query Error: " + result.sql(), "break");
                         console.log(error);
                         result.status = "ERROR";
                         result.error  = error;

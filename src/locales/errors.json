@@ -25,6 +25,10 @@
 "VUN005"  : "Username contains an offensive word",            
 
 "VPW001"  : "Pasword mismatch",
+"VPW002"  : "Password is missing or does not meet quality requirements",
+
+"VGNDR1" : "Gender not provided",
+"VDOB01" : "Date of Birth not provided or does not meet age requirements",
 
 "TWE001"  : "Invalid Code",
 "TWE002"  : "Invalid Token",

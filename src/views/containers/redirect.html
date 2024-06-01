@@ -1,0 +1,9 @@
+<div>
+      <h1>Redirecting To: {{REDIRECT_URL}}</h1>
+      <p>Redirecting in 3 seconds...</p>
+      <script>
+            setTimeout(() => {
+                  window.location.href = '{{REDIRECT_URL}}';
+            }, 3000);
+      </script>
+</div>

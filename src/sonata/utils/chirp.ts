@@ -133,6 +133,7 @@
 
             redirect(statusCode = 301 | 302, newURL : string): boolean {
                   this.response.redirect(statusCode, newURL);
+                  this.responded = true;
                   return false;
             }
 

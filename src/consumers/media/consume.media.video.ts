@@ -11,7 +11,7 @@
       import MediaVideo                         from "../../sonata/utils/media.video.js";
       import { QueueItem, QueueConsumer }       from "../../sonata/utils/.interfaces.js";
       import { UploadMediaItem }                from "../../sonata/utils/.interfaces.js";
-      import AbstractMediaUpdate                from "../../abstract/media/media.insert.js";
+      import AbstractMediaUpdate                from "../../abstract/media/media.update.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -94,7 +94,11 @@
                   //|| Upload to the Cloud
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   await myMediaVideo.saveToCloud(app("config", "media").cloud);
-                  await AbstractMediaUpdate.mediaSuccess(umi.idMedia,  myMediaVideo.meta.width, myMediaVideo.meta.height, myMediaVideo.meta.orientation, JSON.stringify(myMediaVideo.meta));
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Success
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  const mediaStatus = app("config", "media").requireApproval ? "APPRA" : "READY";
+                  await AbstractMediaUpdate.mediaSuccess(umi.idMedia,  mediaStatus, myMediaVideo.meta.width, myMediaVideo.meta.height, myMediaVideo.meta.orientation, JSON.stringify(myMediaVideo.meta));
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Start
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

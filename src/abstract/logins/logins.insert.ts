@@ -1,6 +1,6 @@
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-//|| SCM :: Abstract :: Media
-//|| Media Insert
+//|| SCM :: Utils :: Validation
+//|| Logins :: Insert
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -14,30 +14,35 @@
       //|| Util Class
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class AbstractMediaInsert {
+      export default class AbstractLoginsInsert {  
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Insert Media
+            //|| Create a Login Record with Phone Number
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async insertMedia(idUser : number, fidArea : number, mediaArea : string) : Promise<number | null> {
-                  app.log('AbstractMediaInsert : insertMedia()', 'info');
-                  return new Promise(async (resolve, reject) => {
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Pull the Recordset
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        const sql     = app.query("sql/media/insert.media.sql");
-                        const results = await app.db("main").query(sql, [ idUser, fidArea, mediaArea ]) as Recordset;                        
-                        if (results.insert < 1) return reject(null);                       
-                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                        //|| Create the JWT
-                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        resolve(results.insert);
+            static async createLoginsByPhone(id : number, phone:string) : Promise<number | null> {
+                  app.log('AbstractLoginsCreate : createLoginsPhone()', 'info');
+                  return new Promise(async (resolve) => {
+                        const sql     = app.query("sql/logins/insert.logins.phone.sql");
+                        const results = await app.db("main").query(sql, [ id, phone ]) as Recordset;
+                        if (typeof results.insert === "number" ) return resolve(results.insert);
+                        return resolve(null);
                   });
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| EOC
+            //|| Create a Login Record with Email
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async createLoginsByEmail(id : number, email : string) : Promise<number | null> {
+                  app.log('AbstractLoginsCreate : createLoginsEmail()', 'info');
+                  return new Promise(async (resolve) => {
+                        const sql     = app.query("sql/logins/insert.logins.email.sql");
+                        const results = await app.db("main").query(sql, [ id, email ]) as Recordset;
+                        if (typeof results.insert === "number" ) return resolve(results.insert);
+                        return resolve(null);
+                  });
+            }
+
 
       }
