@@ -34,12 +34,13 @@
       <body>
             <style>
                   main {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        height: calc(100vh - var(--nav-height));
-                        font-family: 'Noto Sans', sans-serif;
+                        display                 : flex;
+                        flex-direction          : column;
+                        align-items             : center;
+                        justify-content         : center;
+                        height                  : calc(100vh - var(--nav-height));
+                        font-family             : 'Noto Sans', sans-serif;
+                        margin-top              : var(--nav-height-public);
                   }
             </style>
             <component src="NavPublic" id="navPublic"></component>
@@ -47,7 +48,8 @@
                   {{SUBPAGE}}
             </main>
             <component src="NavFooter" id="navFooter"></component>
-
+            <component id="modalConfirm" src="ModalConfirm"></component>
+            <component id="modalSnackBar" src="ModalSnackBar"></component>            
             <script src="/maestro.js"></script>
             <script src="/login.js"></script>
       </body>

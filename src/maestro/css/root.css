@@ -33,6 +33,7 @@
             //|| Navigation Sizes / Colors
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             --nav-height                  : 50px; 
+            --nav-height-public           : 100px; 
             --nav-top-button-width        : 70px;
             --nav-color-top-bg            : rgba(0,0,0,0.8);
             --nav-color-bottom-bg         : rgba(0,0,0,0.3);

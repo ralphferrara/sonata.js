@@ -51,6 +51,7 @@
 
       import PageHome                     from "./pages/index.js";
       import PageLogin                    from "./pages/public/login/login.js";
+      import PageRegister                 from "./pages/public/register/register.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Members Pages
@@ -102,13 +103,14 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Members
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  Router.register("/members/",                    "POST", new MembersIndex(),               "page",                 1);
+                  Router.register("/members",                     "POST", new MembersIndex(),               "page",                 1);
                   Router.register("/members/profile/complete",    "POST", new MembersProfileComplete(),     "page",                 1);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Public Pages
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Router.register("/",                            "POST", new PageHome(),                   "page",                 0);
                   Router.register("/login",                       "POST", new PageLogin(),                  "page",                 0); 
+                  Router.register("/register",                    "POST", new PageRegister(),               "page",                 0); 
 
             }
 

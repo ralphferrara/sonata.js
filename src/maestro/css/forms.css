@@ -145,6 +145,7 @@
             background        : #FFF;
             overflow          : hidden;
             cursor            : pointer;
+            padding           : 0;
       }
 
       button.icon i { 
