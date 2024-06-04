@@ -11,7 +11,7 @@
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import AbstractLoginsJWT      from "../../abstract/logins/logins.jwt.js"; 
       import AbstractLoginsSelect   from "../../abstract/logins/logins.select.js"; 
-      import Users                  from "../../classes/users.js";
+      import Users                  from "../../sonata/utils/users.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class

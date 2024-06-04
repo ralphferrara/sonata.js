@@ -16,7 +16,7 @@
             };
 
             onSuccess(data) {
-                  $("ModalSnackBar").create(`[[YOUR_ACCOUNT_HAS_BEEN_CREATED]]`);
+                  $("ModalSnackBar").create(`[[CODE_SENT]]`);
                   $('#modalForgot').hide();
                   $('AuthVerification').modal(data);
             };

@@ -17,7 +17,7 @@
       import  app                                                               from '../app.js'
       import  FileWatcher                                                       from './filewatcher.js'
       import  { FileWatcherObject, LanguageEntity, LanguageEntityPending }      from './.interfaces.js'
-      import  GoogleTranslate                                                   from "../modules/google.translate.js"
+      import  TranslateGoogle                                                   from "../vendors/translation/translate.google.js"
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -83,7 +83,8 @@
             //|| Route Error
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            routeError(key:string, lang:string) {                                    
+            routeError(key:string, lang:string) {           
+                  if (key === undefined || key === null) return "Unknown Error";                         
                   if (app.lang.list['ERROR_' + key] === undefined) return '!!' + key + '!!';
                   if (lang === app('config', 'languages').root) return app.lang.list['ERROR_' + key].rootValue;
                   if (app.lang.list['ERROR_' + key].locale[lang] === undefined) return '!!!' + key + '!!!';
@@ -288,7 +289,7 @@
                               const target = lang;
                               for (const key of Object.keys(this.pending[lang])) {
                                     if (this.pending[lang][key].value === null) {
-                                          const translation = await GoogleTranslate.translate(this.pending[lang][key].rootValue, root, target);
+                                          const translation = await TranslateGoogle.translate(this.pending[lang][key].rootValue, root, target);
                                           app.log("Traslation Complete : " + translation, "info");
                                           this.pending[lang][key].value = translation;
                                     }

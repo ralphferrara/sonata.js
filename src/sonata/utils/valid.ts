@@ -116,7 +116,7 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       valid.minLength = (value: string | undefined, min: number): boolean => {
-            if (value !== undefined && value.trim().length >= min) return true;                  
+            if (value !== undefined && value !== null && value.trim().length >= min) return true;                  
             return false;
       }
 

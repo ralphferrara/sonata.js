@@ -29,7 +29,6 @@
 
       import UsersDataFetch               from "./endpoints/users/data.fetch.js";
       import UsersSetMedia                from "./endpoints/users/set.media.js";
-      import ProfileComplete              from "./endpoints/users/profile/complete.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Status
@@ -42,24 +41,28 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import AuthRegister                 from "./endpoints/auth/register.js";
-      import AuthVerification             from "./endpoints/auth/verification.js";
       import AuthLogin                    from "./endpoints/auth/login.js";
       import AuthForgot                   from "./endpoints/auth/forgot.js";
+      import AuthVerification             from "./endpoints/auth/verification.js";
+      import AuthVerified                 from "./endpoints/auth/verified.js";
+      import AuthComplete                 from "./endpoints/auth/complete.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Define all Pages
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       import PageHome                     from "./pages/index.js";
-      import PageLogin                    from "./pages/public/login/login.js";
-      import PageRegister                 from "./pages/public/register/register.js";
-      import PageForgot                   from "./pages/public/forgot/forgot.js";
+      import PageLogin                    from "./pages/auth/login.js";
+      import PageRegister                 from "./pages/auth/register.js";
+      import PageComplete                 from "./pages/auth/complete.js";
+      import PageForgot                   from "./pages/auth/forgot.js";
+      import PageReset                    from "./pages/auth/reset.js";
+      import PageAuthError                from "./pages/auth/auth.error.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Members Pages
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import MembersProfileComplete      from "./pages/members/profile/complete.js";
       import MembersIndex                from "./pages/members/index.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -95,7 +98,6 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Router.register("/users/data.fetch",            "POST", new UsersDataFetch(),             "endpoint",             1);
                   Router.register("/users/set.media",             "POST", new UsersSetMedia(),              "endpoint",             1);
-                  Router.register("/users/profile/complete",      "POST", new ProfileComplete(),            "endpoint",             1);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Authentication
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -103,18 +105,25 @@
                   Router.register("/auth/verify",                 "POST", new AuthVerification(),           "endpoint",             0); 
                   Router.register("/auth/register",               "POST", new AuthRegister(),               "endpoint",             0);
                   Router.register("/auth/forgot",                 "POST", new AuthForgot(),                 "endpoint",             0);                  
+                  Router.register("/auth/verified",               "POST", new AuthVerified(),               "endpoint",             0);
+                  Router.register("/auth/complete",               "POST", new AuthComplete(),               "endpoint",             1);                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Members
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Router.register("/members",                     "POST", new MembersIndex(),               "page",                 1);
-                  Router.register("/members/profile/complete",    "POST", new MembersProfileComplete(),     "page",                 1);
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Auth Pages
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  Router.register("/login",                       "POST", new PageLogin(),                  "page",                 0); 
+                  Router.register("/register",                    "POST", new PageRegister(),               "page",                 0); 
+                  Router.register("/forgot",                      "POST", new PageForgot(),                 "page",                 0); 
+                  Router.register("/reset",                       "POST", new PageReset(),                  "page",                 1); 
+                  Router.register("/complete",                    "POST", new PageComplete(),               "page",                 1);
+                  Router.register("/authError",                   "POST", new PageAuthError(),              "page",                 0);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Public Pages
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   Router.register("/",                            "POST", new PageHome(),                   "page",                 0);
-                  Router.register("/login",                       "POST", new PageLogin(),                  "page",                 0); 
-                  Router.register("/register",                    "POST", new PageRegister(),               "page",                 0); 
-                  Router.register("/forgot",                      "POST", new PageForgot(),                 "page",                 0); 
 
             }
 

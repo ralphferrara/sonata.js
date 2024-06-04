@@ -1,39 +1,52 @@
 //*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
 //|| Sonata.js :: Senders
-//|| SendGrid Sender Wrapper
+//|| Twilio Sender Wrapper
 //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| Import
+      //|| Interfaces
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   
-      import { SenderWrapper }            from './.interfaces.js';
-      import  app                         from '../app.js';
-      import sendgrid                     from "@sendgrid/mail"
+      import { SenderWrapper }            from '../.interfaces.js';
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| NPM Dependencies
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      import twilio                       from 'twilio';
+
+      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+      //|| Imports
+      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+      import  app                         from '../../app.js';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Import
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      export default class SenderSendGrid implements SenderWrapper {
+      export default class SenderTwilio implements SenderWrapper {
 
             public client;
-            private email: string;
+            public config;
+            private phone;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             constructor(config : any) {
-                  app.log("Setting up sender [SendGrid]"), 'info';
-                  this.client = sendgrid;
-                  this.email  = config.from;
+                  app.log("Setting up sender [Twilio]", 'info');
                   try { 
-                        this.client.setApiKey(config.token);
-                        app.log('SendGrid Client Initiated', 'success');
+                        this.client = twilio(config.account, config.token);
+                        this.config = config;
+                        this.phone  = config.phone; 
+                        this.client.api.accounts(config.account).fetch();
+                        app.log('Twilio Client Initiated', 'success');
                   } catch (error) {
-                        console.log(error);
-                        app.log('Could not initiate SendGrid Client', 'break');
+                        console.error(error);
+                        app.log('Could not initiate Twilio Client', 'break');
+                        throw error;
                   }
                   return this;
             }
@@ -42,15 +55,18 @@
             //|| Send
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            async send(to: string, subject:string, text: string, html? : string): Promise<void> {
-                  try {
-                        const msg = { to, from: this.email, subject, text, html};
-                        await this.client.send(msg);
-                        app.log('SMS sent via Twilio to ${to} successfully.', 'info');
-                  } catch (error) {
+            async send(to: string, body: string): Promise<void> {
+                  console.log("SENDING TO " + to);
+                  console.log("SENDING FROM " + this.phone);
+                  console.log(this.config);
+                  console.log("---");
+                  try {                        
+                        await this.client.messages.create({body, to, from: this.phone});
+                        app.log(`SMS sent via Twilio to ${to} successfully.`, 'info');
+                  } catch(error) {
                         console.error(error);
-                        app.log('Could not send Email via SendGrid', 'break');
-                  }                  
+                        app.log('Could not send SMS via Twilio - ' + this.phone, 'break');
+                  }            
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

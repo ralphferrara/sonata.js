@@ -97,7 +97,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Generate the Code
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let result = TwoFactor.generate((chirp.data('registerType') == 'phone') ? chirp.data('phone') : chirp.data('email'));
+                  let result = TwoFactor.generate((chirp.data('registerType') == 'phone') ? chirp.data('phone') : chirp.data('email'), "REGISTER");
                   chirp.data('token',       result.token);
                   chirp.data('code',        result.code);
                   console.log('VERIFICATION CODE: ' + result.code);

@@ -36,11 +36,11 @@
                         //|| Generate Payload
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         let jwtData: JWTLogin = {
-                              id_login          : results.rows[0].id_login,
-                              id_user           : results.rows[0].id_user,
-                              user_status       : results.rows[0].user_status,
-                              user_level        : results.rows[0].user_level,
-                              user_username     : results.rows[0].user_username
+                              idLogin           : results.rows[0].id_login,
+                              idUser            : results.rows[0].id_user,
+                              status            : results.rows[0].user_status,
+                              level             : results.rows[0].user_level,
+                              username          : results.rows[0].user_username
                         };
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Create the JWT

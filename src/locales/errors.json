@@ -17,6 +17,12 @@
 "VUS004"  : "Login record could not be inserted - Email",
 "VUS005"  : "Login record could not be inserted - Phone",
 
+"VAT001"  : "Invalid verification token", 
+"VAT002"  : "Verification code missing",
+"VAT003"  : "Verification area missing",
+"VAT004"  : "Verification area invalid",
+"VAT005"  : "Verification token expired or invalid",
+
 "VUN000"  : "Username too short",
 "VUN001"  : "Username invalid, no special characters or spaces allowed",
 "VUN002"  : "User ID was not found",

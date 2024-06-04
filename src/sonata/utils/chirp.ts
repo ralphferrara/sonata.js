@@ -23,7 +23,7 @@
       import ChirpResponse                      from './chirp.response.js';
       import ChirpUser                          from './chirp.user.js';
       import JWT                                from './jwt.js';
-      import Users                              from '../../classes/users.js';
+      import Users                              from './users.js';
       import TTL                                from './ttl.js';
 
       import { CookieOptions }                  from './.interfaces.js';
@@ -241,7 +241,7 @@
                   //|| Check the Page Level
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const jwtPayload = jwt.payload as JWTLogin;
-                  if (pageLevel > jwtPayload.user_level) {
+                  if (pageLevel > jwtPayload.level) {
                         this.error(401, 'JWTLVL');
                         if (route.type === "page") return this.redirect(302, '/login?message=JWTLVL&redirect=' + this.request.url);
                         return false;
