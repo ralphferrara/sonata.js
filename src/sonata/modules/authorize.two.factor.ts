@@ -38,9 +38,9 @@
 
             static redirect(area : TwoFactorTypes) : string {
                   switch(area) {
-                        case "REGISTER": return "/register";
+                        case "REGISTER": return "/complete";
                         case "LOGIN":    return "/login";
-                        case "RESET":    return "/forgot";
+                        case "RESET":    return "/reset";
                   }
             }
 
@@ -109,7 +109,7 @@
                   if ( code === undefined)                               return {'status' : false, 'errors' : 'TWE001'};
                   if ( typeof(token) !== 'string' )                      return {'status' : false, 'errors' : 'TWE002'};
                   if ( twoData[token] === undefined )                    return {'status' : false, 'errors' : 'TWE003'};                  
-                 /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Strip and Check Email / Phone
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const verifyData = twoData[token];

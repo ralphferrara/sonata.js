@@ -5,12 +5,15 @@
 
             <form action="/auth/login" method="post" id="registerEmail">
                   <h2>[[LOGIN_WITH_EMAIL_ADDRESS]]</h2>
-                  <div class="form-group" data-validation="email"
-                        data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
+                  <div class="form-group" data-validation="email" data-error="[[Please enter a valid email address]]" data-label="[[EMAIL_ADDRESS]]">
                         <label for="registerEmail"></label>
                         <input name="emailOrPhone" type="email" class="form-control" id="emailOrPhone" aria-describedby="emailHelp" value="ralph.ferrara@gmail.com" />
                   </div>
                   <component src="FieldPassword" label="[[C:PASSWORD]]" id="password" name="password"></component>
+
+                  <div class="linkForgot">
+                        <a class="linkForgot" href="/forgot" title="[[FORGOT_YOUR_PASSWORD]]">[[FORGOT_YOUR_PASSWORD]]</a>
+                  </div>
 
                   <button class="icon" />
                         <i><FontAwesomeIcon icon="faChevronRight" /></i>
@@ -38,3 +41,4 @@
       </div>
 
 </section>
+<component src="LoginData" id="loginData"></component>

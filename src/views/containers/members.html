@@ -25,7 +25,7 @@
 
             <!-- Stylesheets -->
             <link rel="stylesheet" href="/maestro.css">
-            <link rel="stylesheet" href="/members/index.css"> 
+            <link rel="stylesheet" href="{{PAGECSS}}"> 
 
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +39,7 @@
                         top               : var(--nav-height);
                         height            : calc(100vh - var(--nav-height));
                         font-family       : 'Noto Sans', sans-serif;
-                  }
+                  } 
             </style>
             <component src="NavMembers" id="navMembers"></component>
             <main>
@@ -47,10 +47,11 @@
             </main>
             
             <component id="userData" src="UserData"></component>
+            <component id="loginData" src="LoginData"></component>
             <component id="modalConfirm" src="ModalConfirm"></component>
             <component id="modalSnackBar" src="ModalSnackBar"></component>
 
             <script src="/maestro.js"></script>
-            <script src="/members/index.js"></script>
+            <script src="{{PAGEJS}}"></script>
       </body>
 </html>

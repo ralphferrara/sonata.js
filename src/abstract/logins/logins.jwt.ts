@@ -24,7 +24,8 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             static async loginJWT(idLogin : number) : Promise<string | null> {
-                  app.log('AbstractLoginsJWT : loginJWT()', 'info');
+                  app.log('AbstractLoginsJWT : loginJWT('+idLogin+')', 'info');
+                  if (!idLogin) return null;
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Pull the Recordset
@@ -42,11 +43,13 @@
                               level             : results.rows[0].user_level,
                               username          : results.rows[0].user_username
                         };
+                        console.log(jwtData);
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Create the JWT
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         const jwt               = new JWT();
                         jwt.setPayload(jwtData);
+                        jwt.setExpires(app("config", "authorizations").twoFactor.expires);         
                         resolve(jwt.sign());
                   });
             }

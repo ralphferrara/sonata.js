@@ -17,6 +17,8 @@
       import Chirp                  from "../../sonata/utils/chirp.js"; 
       import JWT                    from "../../sonata/utils/jwt.js";
       import TwoFactor              from "../../sonata/modules/authorize.two.factor.js";
+      import AbstractLoginsJWT      from "../../abstract/logins/logins.jwt.js";
+      import AbstractLoginsSelect   from "../../abstract/logins/logins.select.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Home Page Class
@@ -50,6 +52,8 @@
                   //|| List the Steps
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   chirp.step(this.validate);
+                  chirp.step(this.lookup);
+                  chirp.step(this.setLogin);                  
                   chirp.step(this.redirect);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Start
@@ -67,15 +71,17 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check if token exists
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  console.log(chirp.data("jwtVerified"));
                   if (!app.valid.minLength(chirp.data("jwtVerified"), 64))          return chirp.error(400, 'VAT005');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   var jwt = JWT.parse(chirp.data('jwtVerified'));
+                  console.log("VERIFIED --> " );
+                  console.log(jwt);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| If JWT can't be renewed
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  console.log(jwt.status);
                   if (jwt.status !== 'valid' && jwt.status !== 'created') { 
                         chirp.redirect(302, "/authError?error=VAT005");
                         return;
@@ -86,15 +92,38 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   return chirp.next();
             }                 
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Lookup
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
+
+            async lookup(chirp : Chirp): Promise<void> {
+                  app.log('AuthVerified : lookup()', 'info');
+                  let idLogin = await AbstractLoginsSelect.idByEmailPhone(chirp.data("payload").emailOrPhone, chirp.data("payload").type);
+                  console.log("IDLOGIN : " + idLogin);
+                  chirp.data("idLogin", idLogin);
+                  return chirp.next();      
+            }
        
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Login
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
+
+            async setLogin(chirp : Chirp): Promise<void> {
+                  app.log('AuthVerified : setLogin()', 'info');
+                  let jwtLogin = await AbstractLoginsJWT.loginJWT(chirp.data("idLogin"));
+                  chirp.setCookie('loginJWT', jwtLogin, { path: '/', httpOnly: false, secure: false, sameSite: "lax", maxAge: 60 * 60 * 24 * 7});
+                  return chirp.next();      
+            }
+            
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Respond with all the valid data
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/            
 
-            async redirect(chirp : Chirp): Promise<void> {
+            async redirect(chirp : Chirp): Promise<void> {                  
                   const payload = chirp.data("payload") as JWTVerified;
                   const redirect = TwoFactor.redirect(payload.area);
-                  chirp.redirect(302, redirect + "?jwtVerified=" + chirp.data("jwtVerified"));
+                  chirp.redirect(302, redirect);
                   return;
             }
 

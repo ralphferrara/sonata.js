@@ -20,6 +20,7 @@
 "OR"       : "or",
 "PASSWORD" : "password",
 "REGISTER" : "register",
+"RESET"    : "reset",
 "SIGNUP"   : "signup",
 "SEARCH"   : "search",
 "UPLOAD"   : "upload",

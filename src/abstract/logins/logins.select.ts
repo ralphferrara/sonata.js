@@ -68,7 +68,7 @@
             //|| Get the Password from an Email address
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async getPasswordByEmail(email : string) : Promise<{ id_login : number, password : string } | null> {
+            static async getPasswordByEmail(email : string) : Promise<{ idLogin : number, password : string } | null> {
                   app.log('AbstractLoginsSelect : getPasswordByEmail()', 'info');
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -82,7 +82,7 @@
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         resolve({
                               "password" : results.rows[0].login_password,
-                              "id_login" : results.rows[0].id_login
+                              "idLogin"  : results.rows[0].id_login
                         });
                   });
             }
@@ -91,7 +91,7 @@
             //|| Get the Password from an Phone Number
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async getPasswordByPhone(phone : string) : Promise< { id_login : number, password : string } | null> {
+            static async getPasswordByPhone(phone : string) : Promise< { idLogin : number, password : string } | null> {
                   app.log('AbstractLoginsSelect : getPasswordByPhone()', 'info');
                   return new Promise(async (resolve, reject) => {
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -105,8 +105,29 @@
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                         resolve({
                               "password" : results.rows[0].login_password,
-                              "id_login" : results.rows[0].id_login
+                              "idLogin"  : results.rows[0].id_login
                         });
+                  });
+            }            
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Get the ID Login by Email or Phone
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            static async idByEmailPhone(emailOrPhone : string, type : string) : Promise< { idLogin : number, password : string } | null> {
+                  app.log('AbstractLoginsSelect : idByEmailPhone()', 'info');
+                  return new Promise(async (resolve, reject) => {
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Pull the Recordset
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        const sqlFile = (type === "email") ? "sql/logins/select.logins.exists.email.sql" : "sql/logins/select.logins.password.phone.sql";
+                        const sql     = app.query(sqlFile);
+                        const results = await app.db("main").query(sql, [ emailOrPhone ]) as Recordset;                        
+                        if (results.count > 0 && results.rows && results.rows[0] && !results.rows[0].id_login) reject(null);
+                        /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                        //|| Create the JWT
+                        //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                        resolve(results.rows[0].id_login);
                   });
             }            
 

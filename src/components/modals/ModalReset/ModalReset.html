@@ -1,0 +1,16 @@
+
+<section class="content register ModalReset" id="modalReset">
+      <div class="border-box form">
+            <form action="/auth/reset" method="post" id="registerEmail">
+                  <h2>[[RESET_YOUR_PASSWORD]]</h2>
+                  <component id="user_password" label="[[C:PASSWORD]]" src="FieldPassword" data="{{PASSWORD_REGEX}} value=""></component>
+                  <component id="user_password_match" label="[[C:PASSWORD]]" src="FieldPasswordMatch" data="{{PASSWORD_REGEX}} value=""></component>                  
+                  <button class="icon" />
+                        <i><FontAwesomeIcon icon="faChevronRight" /></i>
+                        <span>[[C:RESET]]</span>
+                  </button>
+            </form>
+      </div>
+</section>
+<component id="loginData" src="LoginData"></component>
+<component id="userData" src="UserData"></component>

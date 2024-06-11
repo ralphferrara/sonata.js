@@ -1,0 +1,26 @@
+div#loginDataDebug h4 {
+      margin            : 0;
+      padding           : 5px 0;
+      color             : #FFF;
+}
+
+div#loginDataDebug {
+      position          : fixed;
+      display           : block;
+      top               : 10%;
+      left              : 2%;
+      width             : 50%;
+      min-width         : 300px;
+      height            : auto;
+      background        : #000;
+      z-index           : 9998;
+      box-shadow        : 0 0 10px rgba(0, 0, 0, 0.5);
+      color             : #FFF;
+      padding           : 10px;
+      overflow-y        : scroll;
+} 
+
+div#loginDataDebug table tr td {
+      width             : 50%;
+      padding           : 4px;
+}

@@ -27,7 +27,7 @@
                   app.log('AbstractUsersSelect : fetchUserData()', 'info');
                   return new Promise(async (resolve) => {
                         const sql     = app.query("sql/users/select.users.data.fetch.sql");
-                        const results = await app.db("main").query(sql, [ chirp.user.id ]) as Recordset;
+                        const results = await app.db("main").query(sql, [ chirp.user.idUser ]) as Recordset;
                         if (results.count == 0) return resolve(false); 
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Handle the URLS

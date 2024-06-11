@@ -23,8 +23,10 @@
 
             loadCookie() { 
                   const jwt = $.cookie('userJWT');
-                  if (jwt) {
+                  if (jwt && jwt !== 'undefined' && jwt !== null) {
                       const userData = $.decodeJWT(jwt);
+                      console.log("UserData::loadCookie()::JWT");
+                      console.log(userData);
                       $.data('userData', userData);
                   }                    
                   this.debug(false);                  

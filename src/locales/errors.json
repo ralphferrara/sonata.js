@@ -19,9 +19,8 @@
 
 "VAT001"  : "Invalid verification token", 
 "VAT002"  : "Verification code missing",
-"VAT003"  : "Verification area missing",
-"VAT004"  : "Verification area invalid",
-"VAT005"  : "Verification token expired or invalid",
+"VAT003"  : "Verification token missing or invalid",
+"VAT004"  : "Verification token unexpected verification type",
 
 "VUN000"  : "Username too short",
 "VUN001"  : "Username invalid, no special characters or spaces allowed",
@@ -35,6 +34,10 @@
 
 "VGNDR1" : "Gender not provided",
 "VDOB01" : "Date of Birth not provided or does not meet age requirements",
+
+"VRS001" : "Password was not valid",
+"VRS002" : "Re-entered Password was not valid",
+"VRS003" : "Passwords do not match",
 
 "TWE001"  : "Invalid Code",
 "TWE002"  : "Invalid Token",

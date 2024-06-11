@@ -5,7 +5,7 @@
                   <component id="userProfile" src="UploadProfile"></component>
             </component>      
             <div class="formFieldsProfileComplete"> 
-                  <form action="/users/profile/complete" method="post" id="formProfileComplete"> 
+                  <form action="/auth/complete" method="post" id="formProfileComplete"> 
                         <h2>[[C:FINISH_YOUR_PROFILE]]</h2>
                         <component id="user_gender" label="[[C:GENDER]]" src="FieldGender" value="{{USER_GENDER}}"></component>
                         <component id="user_username" label="[[C:USERNAME]]" src="FieldUsername" id_user={{ID_USER}} value="{{USER_USERNAME}}"></component>
@@ -16,4 +16,4 @@
             </div>        
             <component id="uploadStatus" src="ModalMediaQueueStatus"></component>
 </div>      
-
+<component src="LoginData" id="loginData"></component>

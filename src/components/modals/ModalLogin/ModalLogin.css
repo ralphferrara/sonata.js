@@ -16,3 +16,24 @@
             padding           : 20px;
             border            : 1px solid #CCC;
       }
+
+      div.linkForgot {
+            display           : block;
+            padding           : 10px 0;
+            text-align        : center;
+      }
+
+      div.linkForgot a.linkForgot {
+            display           : inline-block;
+            color             : #000;
+            text-decoration   : none;
+            background        : rgba(0,0,0,0.5);
+            padding           : 8px 20px;
+            border-radius     : 5px;
+            color             : #FFF;
+            font-weight       : bold;
+      }
+
+      div.linkForgot a.linkForgot:hover {
+            background        : rgba(0,0,0,1);
+      }

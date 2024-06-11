@@ -31,7 +31,7 @@
                   const issuedAt          = Math.floor(Date.now() / 1000);
                   const expirationTime    = issuedAt + app("config", "jwt").defaultExpires;
                   this.header             = {
-                        alg         : 'SHA256',
+                        alg         : 'blake2b512',
                         typ         : 'JWT',
                         iss         : issuedAt,
                         exp         : expirationTime,
@@ -110,7 +110,6 @@
                   try {                         
                         myJWT.header       = JSON.parse(Buffer.from(header, 'base64').toString());
                         myJWT.payload      = JSON.parse(Buffer.from(payload, 'base64').toString());
-                         
                   } catch (error) {
                         myJWT.payload      = {};
                         myJWT.status       = 'invalid';
@@ -120,7 +119,7 @@
                   //|| Check the 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const signatureInput     = `${header}.${payload}`;
-                  const expectedSignature = crypto.createHash('blake2b512').update(signatureInput).digest('base64').replace(/=/g, '');
+                  const expectedSignature  = crypto.createHmac('blake2b512', app("config", "jwt").secret).update(signatureInput).digest('base64').replace(/=/g, '');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Signature
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

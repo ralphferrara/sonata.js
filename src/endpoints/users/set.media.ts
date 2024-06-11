@@ -101,28 +101,28 @@
                   //|| Clear Cover
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (chirp.data("clear") === true && chirp.data("area") === "cover") {
-                        var isCleared = await AbstractUsersUpdate.clearMediaCover(chirp.user.id);
+                        var isCleared = await AbstractUsersUpdate.clearMediaCover(chirp.user.idUser);
                         chirp.data('isCleared', isCleared);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Clear Profile
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (chirp.data("clear") === true && chirp.data("area") === "profile") {
-                        var isCleared = await AbstractUsersUpdate.clearMediaProfile(chirp.user.id);
+                        var isCleared = await AbstractUsersUpdate.clearMediaProfile(chirp.user.idUser);
                         chirp.data('isCleared', isCleared);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Set Profile
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (chirp.data("clear") === false && chirp.data("area") === "profile") {
-                        var isSet = await AbstractUsersUpdate.setMediaProfile(chirp.data("idMedia"), chirp.user.id);
+                        var isSet = await AbstractUsersUpdate.setMediaProfile(chirp.data("idMedia"), chirp.user.idUser);
                         chirp.data('isSet', isSet);
                   }                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Set Profile
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
                   if (chirp.data("clear") === false && chirp.data("area") === "cover") {
-                        var isSet = await AbstractUsersUpdate.setMediaCover(chirp.data("idMedia"), chirp.user.id);
+                        var isSet = await AbstractUsersUpdate.setMediaCover(chirp.data("idMedia"), chirp.user.idUser);
                         chirp.data('isSet', isSet);
                   }                  
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

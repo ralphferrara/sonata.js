@@ -7,12 +7,12 @@
       //|| Register a Path with a Page/Controller Obj
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
+      import app                               from "../../sonata/app.js";
       import Chirp                             from "../../sonata/utils/chirp.js"; 
       import Pages                             from "../../sonata/modules/router.pages.js"; 
       import Template                          from "../../sonata/utils/template.js"; 
       import Media                             from "../../sonata/utils/media.js";
 
-      import AbstractUsersSelect               from "../../abstract/users/users.select.js";
       import AbstractUsersProfile              from "../../abstract/users/users.profile.js";
       import { ParseData }                     from "../../sonata/utils/.interfaces.js"; 
       import { PageInterface }                 from "../../sonata/modules/.interfaces.js";    
@@ -37,7 +37,7 @@
 
             constructor() {
                   this.name         = this.constructor.name;
-                  this.cacheTime    = 60;
+                  this.cacheTime    = -1;
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
@@ -45,14 +45,19 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             async execute(chirp:Chirp) : Promise<ParseData> {
+                  app.log('PageComplete::execute()', 'info');
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check User Status 
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  const myStatus = await AbstractUsersSelect.userStatus(chirp.user.id);
-                  switch(myStatus) { 
-                        case 'NA'    : return Template.redirect(chirp, '/login/'); break;                        
-                        case 'C'     : return Template.redirect(chirp, '/members/'); break;
-                        case 'PC'    : break;
+                  switch(chirp.user.status) { 
+                         case 'NA'    : 
+                              chirp.redirect(301, '/login/'); 
+                              return {html: 'Redirecting to /login/', js: '', css : ''} as ParseData; 
+                              break;
+                         case 'C'     : 
+                              chirp.redirect(301, '/members/'); 
+                              return {html: 'Redirecting to /members/', js: '', css : ''} as ParseData; 
+                              break;
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Init
@@ -61,12 +66,12 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Template Files
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  temp.main   = "containers/members.html";
+                  temp.main   = "containers/wrapper.html";
                   temp.sub    = "auth/complete.html"; 
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get User Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  const userData = await AbstractUsersProfile.getProfileData(chirp.payload('id_user'));
+                  const userData = await AbstractUsersProfile.getProfileData(chirp.user.idUser);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Parse Data
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  

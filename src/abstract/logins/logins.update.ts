@@ -20,11 +20,11 @@
             //|| Check if Email Exists in Database
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            static async password(password : string, idUser : number) : Promise<boolean> {
+            static async password(password : string, isLogin : number) : Promise<boolean> {
                   app.log('AbstractLoginsUpdate : password()', 'info');
                   return new Promise(async (resolve) => {
                         const sql     = app.query("sql/logins/update.logins.password.sql");
-                        const results = await app.db("main").query(sql, [ password, idUser ]) as Recordset;                        
+                        const results = await app.db("main").query(sql, [ password, isLogin ]) as Recordset;                        
                         if (results.affected > 0) return resolve(true); else return resolve(false);
                   });
             }

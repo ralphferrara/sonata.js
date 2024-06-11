@@ -25,7 +25,7 @@
                         /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                         //|| Check We Have the Fields
                         //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                        if (chirp.user.loggedIn === false || chirp.user.id === null) {
+                        if (chirp.user.loggedIn === false || chirp.user.idUser === null) {
                               parsed.html = "<h2>Error : User is Not Logged In</h2>" + parsed.html;
                               return parsed;
                         }                        

@@ -67,7 +67,7 @@
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
             redirect(statusCode = 301 | 302, newURL : string): void {
-                  this.respond(statusCode, newURL, 'text/html', { contentType : 'text/plain'});
+                  this.respond(statusCode, newURL, 'text/html', { contentType : 'text/plain', 'headers' : { "Cache-Control" : "no-cache" } } );
                   return;
             }
 

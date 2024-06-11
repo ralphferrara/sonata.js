@@ -70,6 +70,9 @@
             static async reAuthorize(jwt : JWT): Promise<JWT> {
                   app.log('Users : reAuthorize()', 'info');
                   var payload = jwt.payload as JWTLogin;
+                  console.log("REAUTH");
+                  console.log(jwt.status);
+                  if (jwt.status !== 'valid' && jwt.status !== 'expired') return jwt;
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Pull the Recordset
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -93,8 +96,9 @@
                   //|| Create the JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const newJWT               = new JWT();
-                  await newJWT.setPayload(jwtData);
-                  await newJWT.sign();
+                  newJWT.setPayload(jwtData);
+                  newJWT.setExpires(app("config", "jwt").defaultExpires);
+                  newJWT.sign();
                   return newJWT;                                    
             }
 
@@ -109,32 +113,31 @@
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('registerType') === 'email') { 
                         let result  = await AbstractLoginsSelect.existsEmail(chirp.data('emailOrPhone'));
-                        if (result !== null) chirp.data('id_login', result); else chirp.data('id_login', null);
+                        if (result !== null) chirp.data('idLogin', result); else chirp.data('idLogin', null);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check if there is a Login record for the Phone
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   if (chirp.data('registerType') === 'phone') { 
                         let result = await AbstractLoginsSelect.existsPhone(chirp.data('emailOrPhone'));
-                        if (result !== null) chirp.data('id_login', result); else chirp.data('id_login', null);
+                        if (result !== null) chirp.data('idLogin', result); else chirp.data('idLogin', null);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| If there is a Login record, then we need to get the User ID
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  if (chirp.data('id_login') !== null) {
-                        let userData = await AbstractLoginsSelect.lookupLogin(chirp.data('id_login'));
-                        console.log(userData);
+                  if (chirp.data('idLogin') !== null) {
+                        let userData = await AbstractLoginsSelect.lookupLogin(chirp.data('idLogin'));
                         if (userData !== null) {
-                              chirp.data('id_user',   userData.id_user);
+                              chirp.data('idUser',   userData.id_user);
                               chirp.data('username',  userData.username);
                               chirp.data('status',    userData.status);                              
                               chirp.step(Users.makeLoginJWT);
-                        } else chirp.data('id_login', null);
+                        } else chirp.data('idLogin', null);
                   }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| No Record exists, add steps for creating new users and logins
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/                  
-                  if (chirp.data('id_login') === null) {
+                  if (chirp.data('idLogin') === null) {
                         chirp.step(Users.username);
                         chirp.step(Users.createUsers);
                         chirp.step(Users.createLogins);
@@ -193,12 +196,12 @@
                   if (chirp.data('registerType') === 'email') {
                         let result = await AbstractLoginsInsert.createLoginsByEmail(chirp.data('id_user'), chirp.data('emailOrPhone'));
                         if (result === null) return chirp.error(400, "VUS004");
-                        chirp.data('id_login', result);
+                        chirp.data('idLogin', result);
                   }
                   if (chirp.data('registerType') === 'phone') {
                         let result = await AbstractLoginsInsert.createLoginsByPhone(chirp.data('id_user'), chirp.data('emailOrPhone'));
                         if (result === null) return chirp.error(400, "VUS005");
-                        chirp.data('id_login', result);
+                        chirp.data('idLogin', result);
                   }                                    
                   return chirp.next();
             }                                  
@@ -212,7 +215,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Get the JWT
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let jwt = await AbstractLoginsJWT.loginJWT(chirp.data('id_login'));
+                  let jwt = await AbstractLoginsJWT.loginJWT(chirp.data('idLogin'));
                   console.log(jwt);
                   chirp.data('loginJWT', jwt);
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

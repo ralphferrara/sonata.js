@@ -101,7 +101,7 @@
                   //|| See if the Login Exists
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   let passData = (chirp.data('registerType') == 'phone') ? await AbstractLoginsSelect.getPasswordByPhone(chirp.data('phone')) : await AbstractLoginsSelect.getPasswordByEmail(chirp.data('email'));
-                  if (passData === null || !passData.id_login || !passData.password) return chirp.error(403, (chirp.data('registerType') == 'phone') ? "VEP002" : "VEM002");
+                  if (passData === null || !passData.idLogin || !passData.password) return chirp.error(403, (chirp.data('registerType') == 'phone') ? "VEP002" : "VEM002");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Check the Password
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
@@ -109,8 +109,7 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| We got the info
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  let jwt = await AbstractLoginsJWT.loginJWT(passData.id_login);
-                  console.log(jwt);
+                  let jwt = await AbstractLoginsJWT.loginJWT(passData.idLogin);
                   chirp.data('loginJWT', jwt);
                   return chirp.next();
             }            
@@ -122,7 +121,6 @@
             async respond(chirp : Chirp): Promise<void> {
                   chirp.setCookie('loginJWT', chirp.data('loginJWT'), { path: '/', httpOnly: false, secure: false, sameSite: "lax", maxAge: 60 * 60 * 24 * 7});
                   var respData = {
-                        jwtLogin       : chirp.data('loginJWT'),
                         message        : app.lang.routeError("SUCL01", chirp.request.lang)
                   };
                   return chirp.respond(200, respData);
