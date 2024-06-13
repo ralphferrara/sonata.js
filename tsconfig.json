@@ -1,32 +1,30 @@
 {
       "compilerOptions": {
-        "target": "ES2022",
-        "module": "ES2022",
-        "strict": true,
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "skipLibCheck": false, // Consider type-checking declaration files for strictness
-        "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "declaration": true,
-        "sourceMap": true,
-        "noImplicitAny": false, // Ensure no expressions and variables default to the 'any' type
-        "noImplicitThis": false, // Raise error on 'this' expressions with an implied 'any' type
-        "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
-        "strictNullChecks": false, // Enable strict null checking
-        "strictFunctionTypes": true, // Ensure function parameter types are correctly checked
-        "strictBindCallApply": true, // Enable strict 'bind', 'call', and 'apply' methods on functions
-        "noImplicitReturns": true, // Report error when not all code paths in function return a value
-        "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
-        "noUncheckedIndexedAccess": true, // Include 'undefined' in index signature results
-        "noUnusedLocals": true, // Report errors on unused locals
-        "noUnusedParameters": false, // Report errors on unused parameters
-        "useUnknownInCatchVariables": true, // Type catch clause variables as 'unknown' instead of 'any'
-                "noImplicitOverride": true, // Ensure overridden methods explicitly use the 'override' keyword
-        "noPropertyAccessFromIndexSignature": true // Disallow accessing properties on objects with index signatures
+              "target"                                   : "ES2022",
+              "module"                                   : "ES2022",
+              "strict"                                   : true,
+              "esModuleInterop"                          : true,
+              "moduleResolution"                         : "node",
+              "skipLibCheck"                             : false, // Consider type-checking declaration files for strictness
+              "forceConsistentCasingInFileNames"         : true,
+              "outDir"                                   : "./dist",
+              "declaration"                              : true,
+              "sourceMap"                                : true,
+              "noImplicitAny"                            : false, // Ensure no expressions and variables default to the 'any' type
+              "noImplicitThis"                           : false, // Raise error on 'this' expressions with an implied 'any' type
+              "alwaysStrict"                             : true, // Parse in strict mode and emit "use strict" for each source file
+              "strictNullChecks"                         : false, // Enable strict null checking
+              "strictFunctionTypes"                      : true, // Ensure function parameter types are correctly checked
+              "strictBindCallApply"                      : true, // Enable strict 'bind', 'call', and 'apply' methods on functions
+              "noImplicitReturns"                        : true, // Report error when not all code paths in function return a value
+              "noFallthroughCasesInSwitch"               : true, // Report errors for fallthrough cases in switch statement
+              "noUncheckedIndexedAccess"                 : true, // Include 'undefined' in index signature results
+              "noUnusedLocals"                           : true, // Report errors on unused locals
+              "noUnusedParameters"                       : false, // Report errors on unused parameters
+              "useUnknownInCatchVariables"               : true, // Type catch clause variables as 'unknown' instead of 'any'
+              "noImplicitOverride"                       : true, // Ensure overridden methods explicitly use the 'override' keyword
+              "noPropertyAccessFromIndexSignature"       : true // Disallow accessing properties on objects with index signatures
       },
       "include": ["src/*.ts", "src/**/*.ts", "src/sonata/utils/.interfaces.ts"],
       "exclude": ["node_modules"]
-    }
-    
+}

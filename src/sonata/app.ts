@@ -221,7 +221,14 @@
       //|| Call a Sender Wrapper
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      app.sender  = (name:string, value?:any) => { return app("senders", name, value); };                
+      app.sender  = (name:string, type: "sms" | "email", value?:any) => { 
+            if (value === undefined) {
+                  if (typeof(app("senders", type)[name]) !== "undefined") return app("senders", type)[name];
+                  return undefined;
+            }
+            if (typeof(app("senders", type)) === "undefined") app("senders", type, {});
+            app("senders", type)[name] = value;
+      }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Sites

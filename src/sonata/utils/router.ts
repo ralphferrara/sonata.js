@@ -7,14 +7,14 @@
       //|| Import
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  app                               from "../app.js"
-      import  Assets                            from "../modules/router.assets.js"
-      import  Endpoints                         from "../modules/router.endpoints.js"
-      import  Maestro                           from "../modules/router.maestro.js"
-      import  Pages                             from "../modules/router.pages.js"
-      import  Chirp                             from "./chirp.js"
-      import  { Route, RouteCache, RouteTypes } from "./.interfaces.js"
-      import  { PageLevel }                     from "./.interfaces.js"
+      import app                               from "../app.js"
+      import Assets                            from "../modules/router.assets.js"
+      import Endpoints                         from "../modules/router.endpoints.js"
+      import Maestro                           from "../modules/router.maestro.js"
+      import Pages                             from "../modules/router.pages.js"
+      import Chirp                             from "./chirp.js"
+      import { Route, RouteCache, RouteTypes } from "./.interfaces.js"
+      import { PageLevel }                     from "./.interfaces.js"
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Class
@@ -81,7 +81,9 @@
                   //|| Route by Type
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   const myRoute = this.getRoute(chirp);
-                  if (myRoute === undefined) return chirp.respond(404, "Invalid Route ["+chirp.request.url +"] ");
+                  if (myRoute === undefined) {
+                        return chirp.redirect(301, "/error/404?redirect=" + chirp.request.url);
+                  }
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Route by Type
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/

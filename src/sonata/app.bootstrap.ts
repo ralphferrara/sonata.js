@@ -45,38 +45,45 @@
       //|| Storage Systems
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  StorageRedis                      from "./modules/storage.redis.js";
-      import  StorageLocal                      from "./modules/storage.local.js";
+      import StorageRedis                             from "./modules/storage.redis.js";
+      import StorageLocal                             from "./modules/storage.local.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Cloud Systems
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
       
-      import  CloudGoogle                       from "./vendors/storage/cloud.google.js";      
+      import CloudGoogle                              from "./vendors/storage/cloud.google.js";      
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Senders
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  SenderTwilio                      from "./vendors/senders/sender.twilio.js";
-      import  SenderSendGrid                    from "./vendors/senders/sender.sendgrid.js";
+      import { SenderConfigSMS, SenderConfigEmail}    from "./vendors/.interfaces.js";
+
+      import SenderTwilio                             from "./vendors/senders/sms/sender.sms.twilio.js";
+      import SenderSNS                                from "./vendors/senders/sms/sender.sms.aws.js";
+      import SenderGoogleSMS                          from "./vendors/senders/sms/sender.sms.google.js";
+
+      import SenderSendGrid                           from "./vendors/senders/email/sender.email.sendgrid.js";
+      import SenderSES                                from "./vendors/senders/email/sender.email.aws.js";
+      import SenderGoogleEmail                        from "./vendors/senders/email/sender.email.google.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Router
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  AppDefinedRoutes                   from "../routes.js";
-      import  TwoFactor                          from "./modules/authorize.two.factor.js"; 
-      import  Assets                             from "./modules/router.assets.js";
-      import  Maestro                            from "./modules/router.maestro.js";
-      import  Components                         from "./modules/router.components.js";
-      import  Views                              from "./modules/router.views.js"; 
+      import  AppDefinedRoutes                        from "../routes.js";
+      import  TwoFactor                               from "./modules/authorize.two.factor.js"; 
+      import  Assets                                  from "./modules/router.assets.js";
+      import  Maestro                                 from "./modules/router.maestro.js";
+      import  Components                              from "./modules/router.components.js";
+      import  Views                                   from "./modules/router.views.js"; 
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| App
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/      
 
-      import  app                               from "./app.js";
+      import  app                                     from "./app.js";
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Sonata Class - Bootloader for the application
@@ -466,16 +473,42 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Options
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  if (app("config", "senders") === undefined) return app.log("No senders configuration found in the config directory. No senders configured.", "warn");
+                  if (app("config", "senders.sms") === undefined)       return app.log("No SMS senders configuration found in the config directory. No SMS senders configured.", "warn");
+                  if (app("config", "senders.email") === undefined)     return app.log("No Email senders configuration found in the config directory. No Email senders configured.", "warn");
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-                  //|| Loop through config senders
+                  //|| Loop through config SMS senders
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  for (let sender in app("config", "senders")) {                        
-                        let sendConfig = app("config", "senders")[sender];
-                        switch(sender) {
-                              case "twilio"  : app.sender(sender, new SenderTwilio(sendConfig)); break;
-                              case "sendgrid": app.sender(sender, new SenderSendGrid(sendConfig)); break;
-                              case "IGNORE"  : break;
+                  for (let sender in app("config", "senders.sms")) {
+                        let sendJSON = app("config", "senders.sms")[sender];
+                        const senderConfig : SenderConfigSMS = {
+                              service           : sendJSON.service,
+                              account           : sendJSON.account      ?? undefined,
+                              privateKey        : sendJSON.privateKey   ?? undefined,
+                              region            : sendJSON.region       ?? undefined,
+                              phone             : sendJSON.phone        ?? undefined  
+                        };
+                        switch(senderConfig.service) {
+                              case "twilio"     : app.sender(sender, "sms", new SenderTwilio(senderConfig));        break;
+                              case "SNS"        : app.sender(sender, "sms", new SenderSNS(senderConfig));           break;
+                              case "google"     : app.sender(sender, "sms", new SenderGoogleSMS(senderConfig));           break;
+                              default: app.log("INVALID SENDER TYPE ["+app("config", "servers").use+"] specified in the config file. No sender configured.", "break"); break; 
+                        }
+                  }
+                  /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+                  //|| Loop through config Email senders
+                  //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+                  for (let sender in app("config", "senders.email")) {
+                        let sendJSON = app("config", "senders.email")[sender];
+                        const senderConfig : SenderConfigEmail = {
+                              service           : sendJSON.service,
+                              account           : sendJSON.account    ?? undefined,
+                              privateKey        : sendJSON.privateKey ?? undefined,
+                              region            : sendJSON.region     ?? undefined
+                        };
+                        switch(senderConfig.service) {
+                              case "sendgrid" : app.sender(sender, "email", new SenderSendGrid(senderConfig));      break;
+                              case "google"   : app.sender(sender, "email", new SenderGoogleEmail(senderConfig));         break;
+                              case "SES"      : app.sender(sender, "email", new SenderSES(senderConfig));           break;
                               default: app.log("INVALID SENDER TYPE ["+app("config", "servers").use+"] specified in the config file. No sender configured.", "break"); break; 
                         }
                   }

@@ -107,11 +107,11 @@
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       export interface EmailOptions {
-            replyTo     : string;
-            cc          : string;
-            bcc         : string;
-            priority    : "high" | "normal" | "low";
-            attachments : Buffer[];
+            replyTo?     : string;
+            cc?          : string;
+            bcc?         : string;
+            priority?    : "high" | "normal" | "low";
+            attachments? : Buffer[];
       }
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||

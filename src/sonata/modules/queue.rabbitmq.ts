@@ -101,8 +101,13 @@
             public async consumeMessages(channel, queueName) {
                   app.log("Setting up message consumpation from queue '" + queueName + "'.", "info");
                   await this.channel.consume(queueName, async (message) => {
+                  let msgContent = "";
                   if (message !== null) {
-                        const msgContent = message.content.toString(); // Convert buffer to string
+                        try { 
+                              msgContent = message.content.toString(); // Convert buffer to string
+                        } catch (error) {
+                              msgContent = message.content;
+                        }
                         try {
                               this.channel.ack(message);
                               await Queue.consume(msgContent);

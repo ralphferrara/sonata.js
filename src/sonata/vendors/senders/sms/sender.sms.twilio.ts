@@ -7,7 +7,7 @@
       //|| Interfaces
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
                   
-      import { SenderWrapper }            from '../.interfaces.js';
+      import { SenderWrapper, SenderConfigSMS }            from '../../.interfaces.js';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| NPM Dependencies
@@ -19,7 +19,7 @@
       //|| Imports
       //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-      import  app                         from '../../app.js';
+      import  app                         from '../../../app.js';
 
       /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
       //|| Import
@@ -27,20 +27,18 @@
 
       export default class SenderTwilio implements SenderWrapper {
 
-            public client;
-            public config;
-            private phone;
+            public  client;
+            public  config : SenderConfigSMS;
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Constructor
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
-            constructor(config : any) {
+            constructor(config : SenderConfigSMS) {
                   app.log("Setting up sender [Twilio]", 'info');
                   try { 
-                        this.client = twilio(config.account, config.token);
+                        this.client = twilio(config.account, config.privateKey);
                         this.config = config;
-                        this.phone  = config.phone; 
                         this.client.api.accounts(config.account).fetch();
                         app.log('Twilio Client Initiated', 'success');
                   } catch (error) {
@@ -57,15 +55,15 @@
 
             async send(to: string, body: string): Promise<void> {
                   console.log("SENDING TO " + to);
-                  console.log("SENDING FROM " + this.phone);
+                  console.log("SENDING FROM " + this.config.phone);
                   console.log(this.config);
                   console.log("---");
                   try {                        
-                        await this.client.messages.create({body, to, from: this.phone});
+                        await this.client.messages.create({body, to, from: this.config.phone});
                         app.log(`SMS sent via Twilio to ${to} successfully.`, 'info');
                   } catch(error) {
                         console.error(error);
-                        app.log('Could not send SMS via Twilio - ' + this.phone, 'break');
+                        app.log('Could not send SMS via Twilio - ' + this.config.phone, 'break');
                   }            
             }
 

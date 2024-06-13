@@ -232,7 +232,6 @@
                   /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
                   //|| Queue Item Errored
                   //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-                  console.log(myProcessor.afterSuccess.toString());
                   if (myStatus === false) {
                         app.log("Queue.consume : Failed to process message : " + queueItem.queue, "info");
                         if (typeof(myProcessor.afterError) === "function") await myProcessor.afterError(queueItem);

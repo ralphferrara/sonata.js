@@ -1,0 +1,5 @@
+{      
+      "TWOFACTOR_EMAIL_SUBJECT"           : "Verification Code",
+      "TWOFACTOR_EMAIL_MESSAGE"           : "Your verification code is: ",
+      "TWOFACTOR_SMS_MESSAGE"             : "Your verification code is: "
+}

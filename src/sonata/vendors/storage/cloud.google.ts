@@ -45,23 +45,6 @@
             }
 
             /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-            //|| Write a File
-            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
-
-            public async write(bucketName: string, files: CloudFile[]): Promise<boolean> {
-                  app.log('CloudGoogle : write()', 'info');
-                  const myBucket = await this.openBucket(this.name, bucketName);
-                  const uploadPromises = files.map(file => this.uploadFile(myBucket, file));          
-                  return Promise.all(uploadPromises).then(() => {
-                        return true;
-                        console.log('All files uploaded successfully!')
-                  }).catch((err) => {
-                        console.error('Error uploading one or more files:', err)
-                        return false;
-                  });
-            }
-
-            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
             //|| Upload a Single File
             //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
             
@@ -100,10 +83,63 @@
           
                       stream.end(file.data);
                   });
-              }
+            }
 
-      /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
-      //|| End Class
-      //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Write a File
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            public async write(bucketName: string, files: CloudFile[]): Promise<boolean> {
+                  app.log('CloudGoogle : write()', 'info');
+                  const myBucket = await this.openBucket(this.name, bucketName);
+                  const uploadPromises = files.map(file => this.uploadFile(myBucket, file));          
+                  return Promise.all(uploadPromises).then(() => {
+                        return true;
+                        console.log('All files uploaded successfully!')
+                  }).catch((err) => {
+                        console.error('Error uploading one or more files:', err)
+                        return false;
+                  });
+            }            
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Delete a File
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            public async delete(bucketName: string, fileName: string): Promise<boolean> {
+                  app.log('CloudGoogle: delete()', 'info');
+                  const myBucket    = await this.openBucket(this.name, bucketName);
+                  const file        = myBucket.file(fileName);
+                  try {
+                        await file.delete();
+                        app.log(`Deleted file ${fileName} from Google Cloud Storage bucket ${bucketName}`, 'info');
+                        return true;
+                  } catch (error) {
+                        console.error(`Error deleting file ${fileName} from Google Cloud Storage bucket ${bucketName}:`, error);
+                        return false;
+                  }
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| Rename a File
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
+
+            public async rename(bucketName: string, oldName: string, newName: string): Promise<boolean> {
+                  app.log('CloudGoogle: rename()', 'info');
+                  const myBucket    = await this.openBucket(this.name, bucketName);
+                  const file        = myBucket.file(oldName);
+                  try {
+                        await file.move(newName);
+                        app.log(`Renamed file from ${oldName} to ${newName} in Google Cloud Storage bucket ${bucketName}`, 'info');
+                        return true;
+                  } catch (error) {
+                        console.error(`Error renaming file from ${oldName} to ${newName} in Google Cloud Storage bucket ${bucketName}:`, error);
+                        return false;
+                  }
+            }
+
+            /*||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||
+            //|| End Class
+            //||=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-||*/
 
       }

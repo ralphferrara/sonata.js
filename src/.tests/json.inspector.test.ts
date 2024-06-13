@@ -21,7 +21,7 @@ describe('JSONInspector', () => {
 
       });
 
-      it('fail.json should have error count of 11', async () => {
+      it('fail.json should have error count of 12', async () => {
 
             const jvalContent = await fs.promises.readFile(path.join(process.cwd(), 'src/.tests/assets/check.jval'), 'utf-8');
             const checkJSON = JSON.parse(jvalContent);
@@ -34,7 +34,7 @@ describe('JSONInspector', () => {
 
             const errorCount = jval.errors.length;
             //console.log(jval.errors);
-            expect(errorCount).toBe(11);
+            expect(errorCount).toBe(12);
 
       });      
 });

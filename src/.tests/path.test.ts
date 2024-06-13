@@ -1,5 +1,4 @@
 import Path from '../sonata/utils/path';
-import * as fs from 'fs';
 
 describe('Path', () => {
       let path: Path;
@@ -169,10 +168,10 @@ describe('Path', () => {
       });
 
       describe('write', () => {
-            it('should return the file content as a string', async () => {
-                  const filePath = new Path('src/.tests/assets/testwatch.txt').abs();
+            it('should return the file content as a string', async () => {                  
                   try { 
-                        const result = await filePath.write(new Date().toISOString());
+                        const filePath = new Path('src/.tests/assets/testwatch.txt').abs();                        
+                        await new Path(filePath).write(new Date().toISOString());
                         expect(true).toBe(true);
                   } catch (error) {
                         expect(false).toBe(true);
